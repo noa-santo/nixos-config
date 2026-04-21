@@ -45,6 +45,23 @@
            }
          ];
        };
+       dell = lib.nixosSystem {
+         inherit system;
+         specialArgs = { inherit inputs; };
+         modules = [
+           ./hosts/dell/configuration.nix { nixpkgs = { inherit pkgs; }; }
+           ./hosts/dell/hardware-configuration.nix
+           inputs.nix-minecraft.nixosModules.minecraft-servers
+
+           home-manager.nixosModules.home-manager
+           {
+             home-manager.useGlobalPkgs = true;
+             home-manager.useUserPackages = true;
+             home-manager.backupFileExtension = "backup";
+             home-manager.users.owo = import ./hosts/dell/home.nix { inherit pkgs; };
+           }
+         ];
+       };
      };
      devShells.${system} = builtins.listToAttrs (map
        (file: {

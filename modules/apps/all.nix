@@ -5,6 +5,6 @@
     ./general.nix
     ./dev.nix
     ./themes.nix
-    ./minecraft.nix
+    # ./minecraft.nix
   ];
 }

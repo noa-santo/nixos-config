@@ -10,5 +10,6 @@
     pay-respects
     discord
     killall
+    usbutils
   ];
 }
