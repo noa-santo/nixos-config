@@ -3,9 +3,20 @@
 
  inputs = {
    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-   home-manager.url = "github:nix-community/home-manager";
-   home-manager.inputs.nixpkgs.follows = "nixpkgs";
-   zen-browser.url = "github:MarceColl/zen-browser-flake";
+   home-manager = {
+       url = "github:nix-community/home-manager";
+       inputs.nixpkgs.follows = "nixpkgs";
+   };
+   zen-browser = {
+       url = "github:0xc000022070/zen-browser-flake";
+       inputs = {
+         nixpkgs.follows = "nixpkgs";
+       };
+     };
+   firefox-addons = {
+     url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+     inputs.nixpkgs.follows = "nixpkgs";
+   };
    nix-gaming.url = "github:fufexan/nix-gaming";
    nix-jetbrains-plugins.url = "github:theCapypara/nix-jetbrains-plugins";
    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
@@ -41,9 +52,10 @@
            home-manager.useGlobalPkgs = true;
            home-manager.useUserPackages = true;
            home-manager.backupFileExtension = "backup";
+           home-manager.extraSpecialArgs = { inherit inputs; };
          }
          ({ config, ... }: {
-           home-manager.users."${config.mainUser}" = import ./hosts/${host}/home.nix { inherit pkgs config; };
+           home-manager.users."${config.mainUser}" = import ./hosts/${host}/home.nix;
          })
        ];
      };
