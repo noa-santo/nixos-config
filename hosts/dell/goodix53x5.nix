@@ -28,7 +28,7 @@ pkgs.stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     mkdir -p $out/lib/libfprint-2/tod-1/
-    cp libfprint-2-tod1-goodix53x5.so $out/lib/libfprint-2/tod-1/
+    find . -name "*.so" -type f -exec cp -v {} $out/lib/libfprint-2/tod-1/ \;
     runHook postInstall
   '';
 }

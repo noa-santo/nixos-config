@@ -1,8 +1,10 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   imports = [
     ../../modules/all.nix
   ];
+
+  mainUser = "u200b";
 
   boot.loader.grub.enable = true;
   boot.loader.grub.device = "/dev/sda";

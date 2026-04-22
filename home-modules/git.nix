@@ -1,8 +1,10 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   programs.git = {
     enable = true;
-    userName = "u200b";
-    userEmail = "uwu@owo.computer";
+    settings.user = {
+        email = "uwu@owo.computer";
+        name = config.home.username;
+    };
   };
 }

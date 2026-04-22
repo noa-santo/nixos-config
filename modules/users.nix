@@ -1,9 +1,19 @@
-{pkgs, ...}:
+{ pkgs, lib, config, ... }:
+
 {
-  users.users.u200b = {
-    isNormalUser = true;
-    description = "u200b";
-    extraGroups = [ "networkmanager" "wheel" "video" "input" ];
-    shell=pkgs.fish;
+  options = {
+    mainUser = lib.mkOption {
+      type = lib.types.str;
+      description = "The main user of the system";
+    };
+  };
+
+  config = {
+    users.users.${config.mainUser} = {
+      isNormalUser = true;
+      description = lib.mkDefault config.mainUser;
+      extraGroups = [ "networkmanager" "wheel" "video" "input" ];
+      shell = pkgs.fish;
+    };
   };
 }
