@@ -1,18 +1,24 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
+
+let
+  cfg = config.tags;
+in
 {
-  services.xserver.enable = true;
-  services.displayManager.gdm.enable = true;
-  services.desktopManager.gnome.enable = true;
+  config = lib.mkIf (builtins.elem "gnome" cfg) {
+    services.xserver.enable = true;
+    services.displayManager.gdm.enable = true;
+    services.desktopManager.gnome.enable = true;
 
-  services.displayManager.gdm.wayland = true;
+    services.displayManager.gdm.wayland = true;
 
-  environment.systemPackages = with pkgs; [
-    gnome-tweaks
-  ];
+    environment.systemPackages = with pkgs; [
+      gnome-tweaks
+    ];
 
-  environment.gnome.excludePackages = [
-    pkgs.epiphany
-  ];
+    environment.gnome.excludePackages = [
+      pkgs.epiphany
+    ];
 
-  programs.dconf.enable = true;
+    programs.dconf.enable = true;
+  };
 }

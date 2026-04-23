@@ -2,6 +2,7 @@
 { pkgs, inputs, system, ... }:
 {
   imports = [
+    ./tags.nix
     ./apps/all.nix
     ./desktop/gnome.nix
     ./desktop/sway.nix
