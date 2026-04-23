@@ -4,7 +4,7 @@ let
 in
 {
   imports = [
-    inputs.zen-browser.homeModules.default
+    inputs.zen-browser.homeModules.beta
   ];
 
   xdg.mimeApps = {
@@ -26,10 +26,108 @@ in
       DisableTelemetry = true;
       DontCheckDefaultBrowser = true;
     };
-    profiles.default.extensions.packages = with firefox-addons; [
+    profiles.default = {
+      settings = {
+        "zen.workspaces.continue-where-left-off" = true;
+        "zen.view.compact.hide-tabbar" = true;
+        "zen.urlbar.behavior" = "float";
+        "zen.welcome-screen.seen" = true;
+      };
+
+      containersForce = true;
+      containers = {
+            Default = {
+              color = "pink";
+              icon = "circle";
+              id = 1;
+            };
+            BiVI = {
+              color = "purple";
+              icon = "pet";
+              id = 2;
+            };
+      };
+
+      spacesForce = true;
+      spaces = {
+        "General" = {
+          id = "c6de089c-410d-4206-961d-ab11f988d40a";
+          position = 1000;
+          icon = "⌂";
+          theme = {
+            type = "gradient";
+            colors = [
+              {
+                red = 252;
+                green = 5;
+                blue = 136;
+                algorithm = "floating";
+                type = "explicit-lightness";
+                lightness = 50;
+              }
+            ];
+            opacity = 0.8;
+            texture = 0.6;
+          };
+        };
+        "BiVi" = {
+            id = "284856b7-48f3-4846-abeb-14da28b1c4b6";
+            position = 1000;
+            icon = "⋈";
+            theme = {
+            type = "gradient";
+            colors = [
+              {
+                red = 153;
+                green = 2;
+                blue = 229;
+                algorithm = "floating";
+                type = "explicit-lightness";
+                lightness = 50;
+              }
+            ];
+            opacity = 0.8;
+            texture = 0.6;
+          };
+        };
+      };
+
+      extensions.packages = with firefox-addons; [
         ublock-origin
-        dearrow
         bitwarden
-     ];
+      ];
+
+      search = {
+        force = true;
+        default = "ddg";
+        engines = {
+          mynixos = {
+            name = "My NixOS";
+            urls = [
+              {
+                template = "https://mynixos.com/search?q={searchTerms}";
+                params = [
+                  {
+                    name = "query";
+                    value = "searchTerms";
+                  }
+                ];
+              }
+            ];
+            icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+            definedAliases = [ "@nx" ];
+          };
+          github = {
+            name = "GitHub Search";
+            urls = [
+              {
+                template = "https://github.com/search?q={searchTerms}";
+              }
+            ];
+            definedAliases = [ "@gh" ];
+          };
+        };
+      };
+    };
   };
 }
