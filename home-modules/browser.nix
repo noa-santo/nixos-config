@@ -1,6 +1,18 @@
 { pkgs, inputs, ... }:
 let
   firefox-addons = inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system};
+  containers = {
+    Default = {
+      color = "pink";
+      icon = "circle";
+      id = 1;
+    };
+    BiVi = {
+      color = "purple";
+      icon = "circle";
+      id = 2;
+    };
+  };
 in
 {
   imports = [
@@ -35,18 +47,7 @@ in
       };
 
       containersForce = true;
-      containers = {
-            Default = {
-              color = "pink";
-              icon = "circle";
-              id = 1;
-            };
-            BiVI = {
-              color = "purple";
-              icon = "pet";
-              id = 2;
-            };
-      };
+      inherit containers;
 
       spacesForce = true;
       spaces = {
@@ -69,12 +70,13 @@ in
             opacity = 0.8;
             texture = 0.6;
           };
+          container = containers.Default.id;
         };
         "BiVi" = {
-            id = "284856b7-48f3-4846-abeb-14da28b1c4b6";
-            position = 1000;
-            icon = "⋈";
-            theme = {
+          id = "284856b7-48f3-4846-abeb-14da28b1c4b6";
+          position = 1000;
+          icon = "⋈";
+          theme = {
             type = "gradient";
             colors = [
               {
@@ -89,6 +91,7 @@ in
             opacity = 0.8;
             texture = 0.6;
           };
+          container = containers.BiVi.id;
         };
       };
 
