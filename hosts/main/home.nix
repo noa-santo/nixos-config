@@ -1,11 +1,11 @@
-{ pkgs, config, ... }:
+{ pkgs, osConfig, ... }:
 {
   imports = [
     ../../home-modules/all.nix
   ];
 
-  home.username = config.mainUser;
-  home.homeDirectory = "/home/${config.mainUser}";
+  home.username = osConfig.mainUser;
+  home.homeDirectory = "/home/${osConfig.mainUser}";
 
   home.stateVersion = "25.05";
 }
