@@ -9,7 +9,7 @@
     openFirewall = true;
 
     servers.meow = {
-      enable = true;
+      enable = false;
       autoStart = true;
 
       package = pkgs.fabricServers.fabric-1_21_11.override {
@@ -71,8 +71,8 @@
 
       serverProperties = {
         motd = "meow meow mrrp nya";
-	difficulty = "peaceful";
-	enforce-secure-profile = false;
+	     difficulty = "peaceful";
+	     enforce-secure-profile = false;
       };
     };
   };
