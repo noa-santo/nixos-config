@@ -1,15 +1,5 @@
 { pkgs, lib, inputs, ... }:
 
-let
- inherit (inputs.nix-minecraft.lib) collectFilesAt;
-  atm10sky-modpack = pkgs.fetchPackwizModpack {
-    url = "https://raw.githubusercontent.com/noa-santo/ATM10SKY/aaccda0ae3fe9db9ea8a073a705ed1e991239933/pack.toml";
-    packHash = lib.fakeSha256;
-  };
-  atm10sky-mcVersion = atm10sky-modpack.manifest.versions.minecraft;
-  atm10sky-neoforgeVersion = atm10sky-modpack.manifest.versions.neoforge;
-  atm10sky-serverVersion = lib.replaceStrings [ "." ] [ "_" ] "neoforge-${atm10sky-mcVersion}";
-in
 {
   networking.firewall.allowedUDPPorts = [ 19132 ];
 
@@ -20,6 +10,7 @@ in
 
     servers.meow = {
       enable = true;
+      autoStart = true;
 
       package = pkgs.fabricServers.fabric-1_21_11.override {
         loaderVersion = "0.18.4";
@@ -44,9 +35,14 @@ in
              url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qvNsoO3l/lithium-fabric-0.21.3%2Bmc1.21.11.jar";
              sha512 = "2883739303f0bb602d3797cc601ed86ce6833e5ec313ddce675f3d6af3ee6a40b9b0a06dafe39d308d919669325e95c0aafd08d78c97acd976efde899c7810fd";
             };
+            LeashablePlayer = pkgs.fetchurl {
+             url = "https://cdn.modrinth.com/data/BKyMf6XK/versions/15ItkoRt/leashmod-1.2.5%2B1.21.11.jar";
+             sha512 = "sha512-cYs+NhbAOTUnOjo49pXg5oqWy5yCG/N8Hgvg0FZXT8xf1lcwygFq+lSetrrsSBRkgU3Xpww49dfH/SGuoLtwBg==";
+            };
           }
         );
       };
+
       files = {
         "config/Geyser-Fabric/config.yml" = {
           value = {
@@ -75,41 +71,15 @@ in
 
       serverProperties = {
         motd = "meow meow mrrp nya";
+	difficulty = "peaceful";
+	enforce-secure-profile = false;
       };
     };
+  };
 
-    servers.atm10sky = {
-      enable = true;
-      package= pkgs.neoforgeServers.${atm10sky-serverVersion}.override {
-        loaderVersion = atm10sky-neoforgeVersion;
-      };
-      jvmOpts = "-Xmx8G -Xms4G";
-      symlinks = {
-  "mods" = pkgs.linkFarm "mods" (
-    (collectFilesAt atm10sky-modpack "mods")
-    ++ [
-      {
-        name = "UsefulSlime-neoforge-1.21-1.12.1.jar";
-        path = pkgs.fetchurl {
-          url = "https://www.curseforge.com/minecraft/mc-mods/useful-slime/download/6282838";
-          sha256 = lib.fakeSha256;
-        };
-         {
-        name = "moreoverlays-1.24.2-mc1.21.1-neoforge.jar";
-        path = pkgs.fetchurl {
-          url = "https://www.curseforge.com/minecraft/mc-mods/useful-slime/download/6282838";
-          sha256 = lib.fakeSha256;
-        };
-      }
-    ]
-  );
-
-  "resourcepacks" = atm10sky-modpack + "/resourcepacks";
-  "config" = atm10sky-modpack + "/config";
-};
-      serverProperties = {
-        server-port = 25566;
-      };
-    };
+  users.users.minecraft = {
+    isSystemUser = true;
+    home = "/srv/minecraft";
+    shell = pkgs.bash;
   };
 }

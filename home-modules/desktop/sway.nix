@@ -60,10 +60,12 @@ in
     wrapperFeatures.gtk = true;
     config = {
       terminal = "kitty";
+      modifier = "Mod4";
       bars = [{
         command = "waybar";
       }];
       output."*".bg = "/run/current-system/sw/share/backgrounds/gnome/blobs-l.svg fill";
+      output."*".scale = "1";
     };
     extraConfig = ''
       # swayfx settings
@@ -88,37 +90,5 @@ in
       bindsym --release Mod1+F1 exec "pkill yad &"
       bindsym Mod1+F1 exec sway-cheatsheet
     '';
-  };
-
-  programs.waybar = {
-    enable = true;
-    settings = {
-      mainBar = {
-        layer = "top";
-        position = "top";
-        height = 30;
-        modules-left = [ "sway/workspaces" "sway/mode" ];
-        modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "cpu" "memory" ];
-        "sway/workspaces" = {
-          disable-scroll = true;
-          all-outputs = true;
-        };
-        clock = {
-          format = "{:%Y-%m-%d %H:%M:%S}";
-        };
-        cpu = {
-          format = "CPU: {usage}%";
-        };
-        memory = {
-          format = "Mem: {used:0.1f}G/{total:0.1f}G";
-        };
-        pulseaudio = {
-          format = "{volume}% {icon}";
-          format-muted = "muted";
-          on-click = "pavucontrol";
-        };
-      };
-    };
   };
 }
