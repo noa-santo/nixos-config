@@ -8,5 +8,9 @@
     gnome-tweaks
   ];
 
+  environment.gnome.excludePackages = [
+    pkgs.epiphany
+  ];
+
   programs.dconf.enable = true;
 }

@@ -1,5 +1,5 @@
 # dont add stuff directly in here. only import
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 {
   imports = [
     ./desktop/gnome.nix
@@ -8,5 +8,6 @@
     ./git.nix
     ./shell/all.nix
     ./dev.nix
+    ./browser.nix
   ];
 }

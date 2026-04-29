@@ -1,4 +1,4 @@
-{pkgs, ...}:
+{config, pkgs, ...}:
 let
   hanabiExtension = (import ./hanabi.nix { inherit pkgs; }).hanabi;
 in
@@ -597,52 +597,52 @@ in
       ignore-phase2-ca-cert = false;
     };
     "org/gnome/portal/filechooser/app.zen_browser.zen" = {
-      last-folder-path = "/home/u200b/Downloads/nya";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/com.brave.Browser" = {
-      last-folder-path = "/home/u200b/Downloads/terminal";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/com.discordapp.Discord" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/com.usebottles.bottles" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/dev.vencord.Vesktop" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/io.github.zen_browser.zen" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/io.gitlab.adhami3310.Footage" = {
-      last-folder-path = "/home/u200b/Videos/Screencasts";
+      last-folder-path = "${config.home.homeDirectory}";
     };
     "org/gnome/portal/filechooser/net.lutris.Lutris" = {
-      last-folder-path = "/home/u200b/Games/zenless-zone-zero/drive_c/Program Files/HoYoPlay";
+      last-folder-path = "${config.home.homeDirectory}/Games";
     };
     "org/gnome/portal/filechooser/org.gnome.Boxes" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/org.gnome.Builder" = {
-      last-folder-path = "/home/u200b/NyarchAssistant";
+      last-folder-path = "${config.home.homeDirectory}";
     };
     "org/gnome/portal/filechooser/org.gnome.GHex" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/org.gnome.TextEditor" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/org.gnome.gitlab.somas.Apostrophe" = {
-      last-folder-path = "/home/u200b/Schule";
+      last-folder-path = "${config.home.homeDirectory}";
     };
     "org/gnome/portal/filechooser/org.videolan.VLC" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/re.rizin.cutter" = {
-      last-folder-path = "/home/u200b/Downloads";
+      last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/ulauncher" = {
-      last-folder-path = "/home/u200b/full release cat";
+      last-folder-path = "${config.home.homeDirectory}";
     };
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;
@@ -870,7 +870,7 @@ in
       low-battery-threshold = 20;
       mute = true;
       show-panel-menu = true;
-      video-path = "/home/u200b/Downloads/106557-673518279_small.mp4";
+      video-path = "${config.home.homeDirectory}/Downloads/106557-673518279_small.mp4";
       volume=50;
     };
     "org/gnome/shell/extensions/top-bar-organizer" = {

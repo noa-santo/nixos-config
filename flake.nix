@@ -3,9 +3,21 @@
 
  inputs = {
    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-   home-manager.url = "github:nix-community/home-manager";
-   home-manager.inputs.nixpkgs.follows = "nixpkgs";
-   zen-browser.url = "github:MarceColl/zen-browser-flake";
+   home-manager = {
+       url = "github:nix-community/home-manager";
+       inputs.nixpkgs.follows = "nixpkgs";
+   };
+   zen-browser = {
+       url = "github:0xc000022070/zen-browser-flake/beta";
+       inputs = {
+         nixpkgs.follows = "nixpkgs";
+         home-manager.follows = "home-manager";
+       };
+     };
+   firefox-addons = {
+     url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+     inputs.nixpkgs.follows = "nixpkgs";
+   };
    nix-gaming.url = "github:fufexan/nix-gaming";
    nix-jetbrains-plugins.url = "github:theCapypara/nix-jetbrains-plugins";
    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
@@ -26,26 +38,31 @@
           (file: lib.hasSuffix ".nix" file)
           (builtins.attrNames (builtins.readDir ./overlays)));
      };
-   in {
-     nixosConfigurations = {
-       main = lib.nixosSystem {
-         inherit system;
-         specialArgs = { inherit inputs; };
-         modules = [
-           ./hosts/main/configuration.nix { nixpkgs = { inherit pkgs; }; }
-           ./hosts/main/hardware-configuration.nix
-           inputs.nix-minecraft.nixosModules.minecraft-servers
+     hosts = builtins.attrNames (builtins.readDir ./hosts);
 
-           home-manager.nixosModules.home-manager
-           {
-             home-manager.useGlobalPkgs = true;
-             home-manager.useUserPackages = true;
-             home-manager.backupFileExtension = "backup";
-             home-manager.users.u200b = import ./hosts/main/home.nix { inherit pkgs; };
-           }
-         ];
-       };
+     mkHost = host: lib.nixosSystem {
+       inherit system;
+       specialArgs = { inherit inputs; };
+       modules = [
+         ./hosts/${host}/configuration.nix { nixpkgs = { inherit pkgs; }; }
+         ./hosts/${host}/hardware-configuration.nix
+         inputs.nix-minecraft.nixosModules.minecraft-servers
+
+         home-manager.nixosModules.home-manager
+         {
+           home-manager.useGlobalPkgs = true;
+           home-manager.useUserPackages = true;
+           home-manager.backupFileExtension = "backup";
+           home-manager.extraSpecialArgs = { inherit inputs; };
+         }
+         ({ config, ... }: {
+           home-manager.users."${config.mainUser}" = import ./hosts/${host}/home.nix;
+         })
+       ];
      };
+   in {
+     nixosConfigurations = lib.genAttrs hosts mkHost;
+
      devShells.${system} = builtins.listToAttrs (map
        (file: {
          name = lib.removeSuffix ".nix" file;

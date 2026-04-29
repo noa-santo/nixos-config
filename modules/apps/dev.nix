@@ -20,9 +20,8 @@ let
   '';
 in {
   environment.systemPackages = with pkgs; [
-    (jetbrains.plugins.addPlugins jetbrains.idea-ultimate [
+    (jetbrains.plugins.addPlugins jetbrains.idea [
       jetbrains.plugins.github-copilot-fixed
-      "nixidea"
     ])
     pythonEnv
     pythonIDE
