@@ -10,7 +10,7 @@
   boot.loader.grub.device = "/dev/sda";
   boot.loader.grub.useOSProber = true;
 
-  networking.hostName = "nixos";
+  networking.hostName = "hal9000";
 
   system.stateVersion = "25.05";
 }
