@@ -10,6 +10,7 @@ pkgs.mkShell {
         "izhangzhihao.rainbow.brackets.lite"
         "com.demonwav.minecraft-dev"
     ])
+    modrinth-app
   ];
   shellHook = ''
     echo "Minecraft Mod dev environment loaded."
