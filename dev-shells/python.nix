@@ -6,7 +6,7 @@ pkgs.mkShell {
     pkgs.python3Packages.virtualenv
     pkgs.uv
     pkgs.mypy
-    (pkgs.jetbrains.plugins.addPlugins pkgs.jetbrains.pycharm-professional [
+    (pkgs.jetbrains.plugins.addPlugins pkgs.jetbrains.pycharm [
         pkgs.jetbrains.plugins.github-copilot-fixed
         "ideavim"
         "string-manipulation"

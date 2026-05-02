@@ -24,10 +24,19 @@ let
       comment = "Start Webstorm with Typescript dev environment";
       categories = [ "Development" ];
     };
+    mcModDesktop = pkgs.makeDesktopItem {
+          name = "minecraft-mods-ide";
+          exec = "minecraft-mods-ide";
+          icon = "idea";
+          desktopName = "InteliJ (Minecraft Mods Env)";
+          comment = "Start InteliJ with Minecraft modding dev environment";
+          categories = [ "Development" ];
+        };
 in {
   home.packages = [
     pythonDesktop
     vDesktop
     tsDesktop
+    mcModDesktop
   ];
 }
