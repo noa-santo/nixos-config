@@ -7,6 +7,7 @@ in
   config = lib.mkIf (builtins.elem "sway" cfg) {
     hardware.graphics.enable = true;
     services.displayManager.gdm.enable = true;
-    # Add other sway specific config here
+    services.displayManager.gdm.wayland = true;
+    programs.sway.enable = true;
   };
 }
