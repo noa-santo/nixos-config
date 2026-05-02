@@ -1,18 +1,14 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 pkgs.mkShell {
-  packages = [
-    (pkgs.jetbrains.plugins.addPlugins pkgs.jetbrains.idea [
-        "ideavim"
-        "string-manipulation"
-        "wakatime"
-        "gittoolbox"
-        "key-promoter-x"
-        "randomness"
-        "csv-editor"
-        "rainbow-brackets"
-        "-env-files"
+  packages = with inputs.nix-jetbrains-plugins.lib; [
+    (buildIdeWithPlugins pkgs "idea"  [
+        "IdeaVIM"
+        "String Manipulation"
+        "com.wakatime.intellij.plugin"
+        "Key Promoter X"
+        "com.fwdekker.randomness"
+        "izhangzhihao.rainbow.brackets.lite"
         "com.demonwav.minecraft-dev"
-        "com.intellij.grazie.pro"
     ])
   ];
   shellHook = ''

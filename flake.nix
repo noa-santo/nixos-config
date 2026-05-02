@@ -66,7 +66,7 @@
      devShells.${system} = builtins.listToAttrs (map
        (file: {
          name = lib.removeSuffix ".nix" file;
-         value = import (./dev-shells + "/${file}") { inherit pkgs; };
+         value = import (./dev-shells + "/${file}") { inherit pkgs inputs; };
        })
        (builtins.filter
          (file: lib.hasSuffix ".nix" file)

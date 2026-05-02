@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, lib, ... }:
 let
   pythonEnv = pkgs.writeShellScriptBin "python-env" ''
     exec nix develop $HOME/.config/nixos-config#python --command ${pkgs.fish}/bin/fish
@@ -24,11 +24,13 @@ let
   minecraftModIDE = pkgs.writeShellScriptBin "minecraft-mods-ide" ''
     exec nix develop $HOME/.config/nixos-config#minecraft-mods --command idea "$@"
   '';
+
+  jetbrainsPlugins = inputs.nix-jetbrains-plugins.lib.pluginsForIde pkgs pkgs.jetbrains.idea [
+    "com.github.copilot"
+  ];
 in {
   environment.systemPackages = with pkgs; [
-    (jetbrains.plugins.addPlugins jetbrains.idea [
-      jetbrains.plugins.github-copilot-fixed
-    ])
+    (jetbrains.plugins.addPlugins jetbrains.idea (lib.attrValues jetbrainsPlugins))
     pythonEnv
     pythonIDE
     vlangEnv
