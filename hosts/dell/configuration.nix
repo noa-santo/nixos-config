@@ -6,6 +6,7 @@
   ];
 
   mainUser = "owo";
+  networking.hostName = "dell";
 
   tags = [
       "laptop"
@@ -18,7 +19,6 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  networking.hostName = "dell";
 
   services.xserver.xkb = {
     layout = "us";
