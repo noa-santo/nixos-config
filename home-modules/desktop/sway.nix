@@ -184,7 +184,7 @@ in
           }
           {
             criteria = { app_id = "wofi"; };
-            command  = "floating enable, border none, move position center";
+            command  = "floating enable, border none, resize set width 640 height 480, move position center";
           }
           {
             criteria = { app_id = "pavucontrol"; };
