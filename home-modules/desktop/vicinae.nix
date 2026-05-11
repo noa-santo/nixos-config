@@ -45,6 +45,10 @@
        github
        port-killer
        wifi-commander
+       process-manager
+       wikipedia
+       player-pilot
+       it-tools
     ];
   };
 }
