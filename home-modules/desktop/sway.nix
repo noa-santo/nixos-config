@@ -54,6 +54,18 @@ let
     rm -f "$LOCK_FILE"
   '';
 
+  screenshotScript = pkgs.writeShellScriptBin "sway-screenshot" ''
+    #!/bin/sh
+    grim - | wl-copy --type image/png
+    notify-send "Screenshot copied to clipboard" -t 2000
+  '';
+
+  screenshotSelectScript = pkgs.writeShellScriptBin "sway-screenshot-select" ''
+    #!/bin/sh
+    grim -g "$(slurp)" - | wl-copy --type image/png
+    notify-send "Screenshot copied to clipboard" -t 2000
+  '';
+
 in
 {
   home.packages = with pkgs; [
@@ -77,6 +89,8 @@ in
     nerd-fonts.jetbrains-mono
     font-awesome
     cheatsheetScript
+    screenshotScript
+    screenshotSelectScript
   ];
 
   fonts.fontconfig.enable = true;
@@ -246,8 +260,8 @@ in
         "${mod}+Shift+d" = ''exec wofi --show run'';
 
         # Screenshots
-        "Print"       = "exec grim - | wl-copy";
-        "Shift+Print" = ''exec grim -g "$(slurp)" - | wl-copy'';
+        "Print"       = "exec sway-screenshot";
+        "Shift+Print" = "exec sway-screenshot-select";
 
         # Brightness
         "XF86MonBrightnessUp"   = "exec brightnessctl set +5%";
@@ -261,6 +275,8 @@ in
 
         # Lock
         "${mod}+Shift+l" = "exec swaylock -f -c 1e1e2e";
+
+        "${mod}+XF86AudioMute" = "exec sway-cheatsheet";
       };
     };
 
@@ -282,10 +298,6 @@ in
       default_dim_inactive 0.15
       dim_inactive_colors.unfocused #000000FF
 
-      # Smooth open/close/move animations (swayfx ≥ 0.4)
-      # animation_duration_ms 180
-      # TODO: use swayfx-enhanced so this works
-
       # Blur behind the waybar pill
       layer_effects waybar {
         blur enable
@@ -300,10 +312,6 @@ in
         blur enable
         corner_radius 12
       }
-
-      # Cheatsheet
-      bindsym Mod1+F1 exec sway-cheatsheet
-      bindsym --release Mod1+F1 exec "pkill -9 yad; true"
 
       # ── Idle / lock ─────────────────────────────────────────────────────────
       exec swayidle -w \
