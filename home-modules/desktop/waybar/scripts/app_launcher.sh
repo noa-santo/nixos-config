@@ -1,1 +1,1 @@
-wofi --show drun
+vicinae open
