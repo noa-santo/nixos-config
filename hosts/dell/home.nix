@@ -2,6 +2,7 @@
 {
   imports = [
     ../../home-modules/all.nix
+    inputs.vicinae.homeManagerModules.default
   ];
 
   home.username = osConfig.mainUser;

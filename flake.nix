@@ -21,9 +21,14 @@
    nix-gaming.url = "github:fufexan/nix-gaming";
    nix-jetbrains-plugins.url = "github:theCapypara/nix-jetbrains-plugins";
    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+   vicinae.url = "github:vicinaehq/vicinae";
+   vicinae-extensions = {
+     url = "github:vicinaehq/extensions";
+     inputs.nixpkgs.follows = "nixpkgs";
+   };
  };
 
- outputs = { self, nixpkgs, home-manager, ... }@inputs:
+ outputs = { self, nixpkgs, home-manager, vicinae, ... }@inputs:
    let
      system = "x86_64-linux";
      lib = nixpkgs.lib;

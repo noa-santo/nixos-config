@@ -66,6 +66,32 @@ let
     notify-send "Screenshot copied to clipboard" -t 2000
   '';
 
+  matugenWallpaperSetupScript = pkgs.writeShellScriptBin "matugen-wallpaper-setup" ''
+    #!/bin/bash
+
+    SVG_WALLPAPER="/run/current-system/sw/share/backgrounds/gnome/blobs-l.svg"
+    PNG_WALLPAPER="/tmp/current_wallpaper.png"
+
+    # Ensure rsvg-convert is available. If not, install librsvg or rsvg-utils.
+    if ! command -v rsvg-convert &> /dev/null
+    then
+        echo "rsvg-convert could not be found. Please install librsvg or rsvg-utils."
+        exit 1
+    fi
+
+    # Convert SVG to PNG
+    rsvg-convert "$SVG_WALLPAPER" -o "$PNG_WALLPAPER"
+
+    # Check if conversion was successful
+    if [ $? -ne 0 ]; then
+        echo "Failed to convert SVG wallpaper to PNG."
+        exit 1
+    fi
+
+    # Run matugen with the updated config.toml
+    matugen image "$PNG_WALLPAPER" -c "${config.home.homeDirectory}/.config/nixos-config/home-modules/matugen/config.toml"
+  '';
+
 in
 {
   home.packages = with pkgs; [
@@ -78,7 +104,7 @@ in
     swaylock
     wmenu
     swaybg
-    wofi # TODO: replace with anyrun, walker or vicinae
+    wofi # TODO: replace with vicinae
     wl-clipboard
     mako
     waybar
@@ -91,7 +117,8 @@ in
     cheatsheetScript
     screenshotScript
     screenshotSelectScript
-    vicinae
+    librsvg
+    matugenWallpaperSetupScript
   ];
 
   fonts.fontconfig.enable = true;
@@ -257,7 +284,7 @@ in
       };
 
       output."*" = {
-        bg    = "/run/current-system/sw/share/backgrounds/gnome/blobs-l.svg fill";
+        bg    = "/tmp/current_wallpaper.png fill";
         scale = "1";
       };
 
@@ -319,7 +346,8 @@ in
         corner_radius 12
       }
 
-      exec_always vicinae server
+      exec_always vicinae server --replace
+      exec_always ${matugenWallpaperSetupScript}/bin/matugen-wallpaper-setup
     '';
   };
 }

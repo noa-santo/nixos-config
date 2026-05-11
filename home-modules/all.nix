@@ -7,6 +7,7 @@
     ./desktop/waybar/waybar.nix
     ./desktop/cava.nix
     ./desktop/easyeffects.nix
+    ./desktop/vicinae.nix
     ./theming/matugen.nix
     ./theming/gtk.nix
     ./git.nix

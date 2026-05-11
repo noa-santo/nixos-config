@@ -1,5 +1,5 @@
 [config]
-reload_apps = false
+reload_apps = true
 
 [templates.kitty]
 input_path = "~/.config/matugen/templates/kitty-colors.conf.template"
