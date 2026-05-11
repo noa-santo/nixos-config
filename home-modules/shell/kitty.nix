@@ -17,19 +17,17 @@
       background_opacity = "0.75";
       window_padding_width = 4;
 
-      active_tab_foreground = "#FFFFFF";
-      active_tab_background = "#2E3440";
-      inactive_tab_foreground = "#D8DEE9";
-      inactive_tab_background = "#3B4252";
-      tab_bar_background = "#2E3440";
       tab_title_template = "{title}";
       tab_bar_style = "powerline";
 
       scrollback_lines = 10000;
-      cursor = "#81A1C1";
-      selection_foreground = "#000000";
-      selection_background = "#E5E9F0";
+
+      cursor_trail = 1;
     };
+
+    extraConfig = ''
+      include /tmp/kitty-mutagen-colors.conf
+    '';
 
     keybindings = {
       "ctrl+shift+enter" = "new_window";

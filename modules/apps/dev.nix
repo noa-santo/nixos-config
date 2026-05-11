@@ -26,7 +26,7 @@ let
   '';
 
   jetbrainsPlugins = inputs.nix-jetbrains-plugins.lib.pluginsForIde pkgs pkgs.jetbrains.idea [
-    "com.github.copilot"
+    # "com.github.copilot"
   ];
 in {
   environment.systemPackages = with pkgs; [
