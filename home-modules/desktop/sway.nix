@@ -312,13 +312,6 @@ in
         blur enable
         corner_radius 12
       }
-
-      # ── Idle / lock ─────────────────────────────────────────────────────────
-      exec swayidle -w \
-        timeout 300  'swaylock -f -c 1e1e2e' \
-        timeout 600  'swaymsg "output * dpms off"' \
-        resume       'swaymsg "output * dpms on"' \
-        before-sleep 'swaylock -f -c 1e1e2e'
     '';
   };
 }
