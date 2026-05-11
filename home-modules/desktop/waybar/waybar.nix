@@ -57,9 +57,9 @@ in
      modules-left   = ["custom/launcher" "sway/workspaces" "sway/mode" "sway/scratchpad" ];
      modules-center = [ "custom/media" ];
      modules-right  = [
-            "custom/weather"
+            "tray" "custom/weather"
             "pulseaudio" "network" "cpu" "memory"
-            "temperature" "disk" "battery" "clock" "tray"
+            "temperature" "disk" "battery" "clock"
      ];
 
      "custom/launcher" = {
