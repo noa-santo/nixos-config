@@ -60,12 +60,13 @@ in
     brightnessctl
     grim
     slurp
+    playerctl
     pulseaudio
     swayidle
     swaylock
     wmenu
     swaybg
-    wofi
+    wofi # TODO: replace with anyrun, walker or vicinae
     wl-clipboard
     mako
     waybar
