@@ -13,5 +13,6 @@
     ./misc.nix
     ./shell.nix
     ./fonts.nix
+    ./boot.nix
   ];
 }

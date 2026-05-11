@@ -263,15 +263,15 @@ in
         "Print"       = "exec sway-screenshot";
         "Shift+Print" = "exec sway-screenshot-select";
 
-        # Brightness
-        "XF86MonBrightnessUp"   = "exec brightnessctl set +5%";
-        "XF86MonBrightnessDown" = "exec brightnessctl set 5%-";
+        # Brightness — via SwayOSD for the overlay
+        "XF86MonBrightnessUp"   = "exec swayosd-client --brightness raise";
+        "XF86MonBrightnessDown" = "exec swayosd-client --brightness lower";
 
-        # Volume
-        "XF86AudioRaiseVolume"  = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%";
-        "XF86AudioLowerVolume"  = "exec pactl set-sink-volume @DEFAULT_SINK@ -5%";
-        "XF86AudioMute"         = "exec pactl set-sink-mute @DEFAULT_SINK@ toggle";
-        "XF86AudioMicMute"      = "exec pactl set-source-mute @DEFAULT_SOURCE@ toggle";
+        # Volume — via SwayOSD for the overlay
+        "XF86AudioRaiseVolume"  = "exec swayosd-client --output-volume raise";
+        "XF86AudioLowerVolume"  = "exec swayosd-client --output-volume lower";
+        "XF86AudioMute"         = "exec swayosd-client --output-volume mute-toggle";
+        "XF86AudioMicMute"      = "exec swayosd-client --input-volume mute-toggle";
 
         # Lock
         "${mod}+Shift+l" = "exec swaylock -f -c 1e1e2e";

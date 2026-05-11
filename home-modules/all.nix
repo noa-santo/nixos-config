@@ -5,6 +5,11 @@
     ./desktop/gnome.nix
     ./desktop/sway.nix
     ./desktop/waybar/waybar.nix
+    ./desktop/swayosd.nix
+    ./desktop/cava.nix
+    ./desktop/easyeffects.nix
+    ./theming/matugen.nix
+    ./theming/gtk.nix
     ./git.nix
     ./shell/all.nix
     ./dev.nix

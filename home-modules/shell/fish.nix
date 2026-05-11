@@ -1,5 +1,12 @@
 { lib, pkgs, ... }:
 {
+  home.packages = with pkgs; [
+    fzf
+    bat
+    fastfetch
+    wl-clipboard
+  ];
+
   programs.fish = {
     enable = true;
     plugins = [
@@ -12,7 +19,134 @@
     interactiveShellInit = ''
       set fish_greeting
       pay-respects fish --alias | source
-      fastfetch
+
+      # ── qcopy: fzf-select files and copy contents to clipboard ──────────────
+      function qcopy
+        if not command -v wl-copy &>/dev/null
+          echo "Error: wl-copy not found (install wl-clipboard)"
+          return 1
+        end
+        if not command -v fzf &>/dev/null
+          echo "Error: fzf not found"
+          return 1
+        end
+
+        set preview_cmd "cat {}"
+        if command -v bat &>/dev/null
+          set preview_cmd "bat --style=numbers --color=always {}"
+        end
+
+        set selected (find . -type f -not -path "*/\.git/*" 2>/dev/null | fzf --multi \
+          --layout=reverse \
+          --preview=$preview_cmd \
+          --preview-window="right:60%:wrap" \
+          --prompt="Select files > " \
+          --header="TAB=select  ENTER=copy  ESC=cancel")
+
+        if test -z "$selected"
+          echo "No files selected."
+          return 0
+        end
+
+        set tmp (mktemp)
+        for f in $selected
+          set clean (string replace -r '^\./' "" $f)
+          echo "file name: $clean" >> $tmp
+          echo "file contents:" >> $tmp
+          cat $f >> $tmp
+          printf '\n----------------------------------------\n\n' >> $tmp
+        end
+        cat $tmp | wl-copy
+        echo "Copied "(count $selected)" file(s) to clipboard."
+        rm -f $tmp
+      end
+
+      # ── pasteimg: save clipboard image to a PNG file ─────────────────────────
+      function pasteimg
+        set name (test -n "$argv[1]"; and echo $argv[1]; or echo "clipboard.png")
+        string match -q "*.png" $name; or set name "$name.png"
+        wl-paste --type image/png | sudo tee $name >/dev/null
+        echo "Saved to $name"
+      end
+
+      # ── fetch: dynamic matugen-coloured fastfetch ────────────────────────────
+      function fetch
+        set color_file /tmp/qs_colors.json
+        set config_path /tmp/qs_fastfetch.jsonc
+        set palette_file /tmp/qs_palette
+
+        # Rebuild only when the colour file is newer than the cached config
+        if test $color_file -nt $config_path 2>/dev/null; or not test -f $config_path
+
+          # Extract colours with Catppuccin Mocha fallbacks
+          if test -f $color_file
+            set c_blue     (grep -oP '"blue"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
+            set c_sapphire (grep -oP '"sapphire"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
+            set c_teal     (grep -oP '"teal"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
+            set c_mauve    (grep -oP '"mauve"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
+            set c_text     (grep -oP '"text"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
+          end
+          test -z "$c_blue";     and set c_blue     "#89b4fa"
+          test -z "$c_sapphire"; and set c_sapphire "#74c7ec"
+          test -z "$c_teal";     and set c_teal     "#94e2d5"
+          test -z "$c_mauve";    and set c_mauve    "#cba6f7"
+          test -z "$c_text";     and set c_text     "#cdd6f4"
+
+          # Build ANSI colour palette strip → /tmp/qs_palette
+          printf "" > $palette_file
+          for entry in "red:#f38ba8" "peach:#fab387" "yellow:#f9e2af" \
+                       "green:#a6e3a1" "sapphire:#74c7ec" "mauve:#cba6f7" "pink:#f5c2e7"
+            set parts (string split ":" $entry)
+            set col      $parts[1]
+            set fallback $parts[2]
+            set val ""
+            if test -f $color_file
+              set val (grep -oP "\"$col\"\\s*:\\s*\"\\K[^\"]+" $color_file 2>/dev/null)
+            end
+            test -z "$val"; and set val $fallback
+            set hex (string replace "#" "" $val)
+            set r (math "0x"(string sub -l 2 $hex))
+            set g (math "0x"(string sub -s 3 -l 2 $hex))
+            set b (math "0x"(string sub -s 5 $hex))
+            printf '\033[38;2;%d;%d;%dm● \033[0m' $r $g $b >> $palette_file
+          end
+          printf '\n' >> $palette_file
+
+          # Write the Fastfetch JSON config
+          printf '{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "source": "nixos_small",
+    "color": { "1": "%s", "2": "%s" },
+    "padding": { "top": 1, "left": 2, "right": 3 }
+  },
+  "display": {
+    "separator": "  ",
+    "color": { "separator": "%s" }
+  },
+  "modules": [
+    "break",
+    { "type": "title", "format": "{1}", "color": { "user": "%s" } },
+    "break",
+    { "type": "os",     "key": " os ",  "keyColor": "%s" },
+    { "type": "cpu",    "key": " cpu",  "keyColor": "%s" },
+    { "type": "memory", "key": " ram",  "keyColor": "%s" },
+    { "type": "shell",  "key": " sh ",  "keyColor": "%s" },
+    "break",
+    { "type": "command", "key": " ", "text": "cat /tmp/qs_palette" }
+  ]
+}\n' \
+            $c_blue $c_sapphire \
+            $c_text \
+            $c_blue \
+            $c_blue $c_sapphire $c_teal $c_mauve \
+            > $config_path
+        end
+
+        fastfetch -c $config_path
+      end
+
+      fetch
     '';
   };
 
