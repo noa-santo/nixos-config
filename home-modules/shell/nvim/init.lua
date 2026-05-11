@@ -215,30 +215,40 @@ setup_server("lua_ls", {
   }
 })
 
--- FILE WATCHER: reload colours whenever Matugen regenerates the file
+-- FILE WATCHER: reload colours whenever Matugen regenerates the file.
+-- Only start the watcher if the colours file already exists; otherwise it
+-- would fail on Linux's inotify (which requires the path to exist).
 local uv = vim.uv or vim.loop
 local matugen_path = vim.fn.stdpath("config") .. "/matugen_colors.lua"
 
-local watcher = uv.new_fs_event()
-local reload_timer = nil
+if vim.fn.filereadable(matugen_path) == 1 then
+  local watcher = uv.new_fs_event()
+  local reload_timer = nil
 
-watcher:start(matugen_path, {}, vim.schedule_wrap(function(err, filename, events)
-  if not err then
-    if reload_timer then
-      reload_timer:stop()
-      reload_timer:close()
-    end
-    reload_timer = uv.new_timer()
-    reload_timer:start(100, 0, vim.schedule_wrap(function()
-      _G.reload_matugen_colors()
-      if reload_timer then
-        reload_timer:stop()
-        reload_timer:close()
-        reload_timer = nil
+  local ok, err = pcall(function()
+    watcher:start(matugen_path, {}, vim.schedule_wrap(function(err, filename, events)
+      if not err then
+        if reload_timer then
+          reload_timer:stop()
+          reload_timer:close()
+        end
+        reload_timer = uv.new_timer()
+        reload_timer:start(100, 0, vim.schedule_wrap(function()
+          _G.reload_matugen_colors()
+          if reload_timer then
+            reload_timer:stop()
+            reload_timer:close()
+            reload_timer = nil
+          end
+        end))
       end
     end))
+  end)
+
+  if not ok then
+    vim.notify("Matugen file watcher failed: " .. tostring(err), vim.log.levels.WARN)
   end
-end))
+end
 
 -- SIGNAL LISTENER: also reload on SIGUSR1 from the OS
 vim.api.nvim_create_autocmd("Signal", {

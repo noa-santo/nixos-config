@@ -5,6 +5,7 @@
     bat
     fastfetch
     wl-clipboard
+    jq
   ];
 
   programs.fish = {
@@ -65,7 +66,7 @@
       function pasteimg
         set name (test -n "$argv[1]"; and echo $argv[1]; or echo "clipboard.png")
         string match -q "*.png" $name; or set name "$name.png"
-        wl-paste --type image/png | sudo tee $name >/dev/null
+        wl-paste --type image/png > $name
         echo "Saved to $name"
       end
 
@@ -78,32 +79,37 @@
         # Rebuild only when the colour file is newer than the cached config
         if test $color_file -nt $config_path 2>/dev/null; or not test -f $config_path
 
-          # Extract colours with Catppuccin Mocha fallbacks
+          # Parse all colours in one jq pass; fall back to Catppuccin Mocha
           if test -f $color_file
-            set c_blue     (grep -oP '"blue"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
-            set c_sapphire (grep -oP '"sapphire"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
-            set c_teal     (grep -oP '"teal"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
-            set c_mauve    (grep -oP '"mauve"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
-            set c_text     (grep -oP '"text"\s*:\s*"\K[^"]+' $color_file 2>/dev/null)
+            set parsed (jq -r '[
+              .blue     // "#89b4fa",
+              .sapphire // "#74c7ec",
+              .teal     // "#94e2d5",
+              .mauve    // "#cba6f7",
+              .text     // "#cdd6f4",
+              .red      // "#f38ba8",
+              .peach    // "#fab387",
+              .yellow   // "#f9e2af",
+              .green    // "#a6e3a1",
+              .pink     // "#f5c2e7"
+            ] | .[]' $color_file 2>/dev/null)
           end
-          test -z "$c_blue";     and set c_blue     "#89b4fa"
-          test -z "$c_sapphire"; and set c_sapphire "#74c7ec"
-          test -z "$c_teal";     and set c_teal     "#94e2d5"
-          test -z "$c_mauve";    and set c_mauve    "#cba6f7"
-          test -z "$c_text";     and set c_text     "#cdd6f4"
+
+          if test -z "$parsed"
+            set parsed "#89b4fa" "#74c7ec" "#94e2d5" "#cba6f7" "#cdd6f4" \
+                       "#f38ba8" "#fab387" "#f9e2af" "#a6e3a1" "#f5c2e7"
+          end
+
+          set c_blue     $parsed[1]
+          set c_sapphire $parsed[2]
+          set c_teal     $parsed[3]
+          set c_mauve    $parsed[4]
+          set c_text     $parsed[5]
+          set palette_hexes $parsed[6] $parsed[7] $parsed[8] $parsed[9] $parsed[2] $parsed[4] $parsed[10]
 
           # Build ANSI colour palette strip → /tmp/qs_palette
           printf "" > $palette_file
-          for entry in "red:#f38ba8" "peach:#fab387" "yellow:#f9e2af" \
-                       "green:#a6e3a1" "sapphire:#74c7ec" "mauve:#cba6f7" "pink:#f5c2e7"
-            set parts (string split ":" $entry)
-            set col      $parts[1]
-            set fallback $parts[2]
-            set val ""
-            if test -f $color_file
-              set val (grep -oP "\"$col\"\\s*:\\s*\"\\K[^\"]+" $color_file 2>/dev/null)
-            end
-            test -z "$val"; and set val $fallback
+          for val in $palette_hexes
             set hex (string replace "#" "" $val)
             set r (math "0x"(string sub -l 2 $hex))
             set g (math "0x"(string sub -s 3 -l 2 $hex))
