@@ -26,7 +26,7 @@
     };
 
     extraConfig = ''
-      include /tmp/kitty-mutagen-colors.conf
+      include /tmp/kitty-matugen-colors.conf
     '';
 
     keybindings = {
