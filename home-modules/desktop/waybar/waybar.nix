@@ -46,7 +46,7 @@ in
      modules-center = [ "sway/media" ];
      modules-right  = [
             "pulseaudio" "network" "cpu" "memory"
-            "temperature" "disk" "battery" "clock" "custom/time" "tray"
+            "temperature" "disk" "battery" "clock" "tray"
      ];
 
      "custom/launcher" = {
@@ -60,13 +60,6 @@ in
         format-charging = "󰂄";
         format-icons = ["" "" "" "" ""];
         tooltip-format = "Battery is at {capacity}%";
-     };
-
-     "custom/time" = {
-        format = "{}";
-        interval = 5;
-        exec = "date +%H:%M";
-        tooltip = false;
      };
 
      "sway/workspaces" = {

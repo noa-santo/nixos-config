@@ -160,7 +160,7 @@ in
       terminal = "kitty";
       modifier = "Mod4";
 
-      bars = [{ command = "waybar"; }];
+      bars = [{ command = "~/.config/waybar/scripts/launch.sh"; }];
 
       fonts = {
         names = [ "JetBrainsMono Nerd Font" "Font Awesome 6 Free" ];
