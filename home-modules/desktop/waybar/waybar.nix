@@ -1,13 +1,25 @@
 { pkgs, config, ... }:
 
 let
+  pythonWithGObject = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
+  playerctlTypelibPath = pkgs.lib.makeSearchPath "lib/girepository-1.0" [ pkgs.playerctl pkgs.glib ];
+  playerctlLibraryPath = pkgs.lib.makeLibraryPath [ pkgs.playerctl pkgs.glib ];
+
   appLauncherScript = pkgs.writeShellApplication {
     name = "app_launcher";
     runtimeInputs = [ pkgs.rofi ];
     text = builtins.readFile ./scripts/app_launcher.sh;
   };
 
-  mediaPlayerScript = pkgs.writeText "mediaplayer.py" (builtins.readFile ./scripts/mediaplayer.py);
+  mediaPlayerScript = pkgs.writeShellApplication {
+    name = "mediaplayer";
+    runtimeInputs = [ pkgs.playerctl ];
+    text = ''
+      export GI_TYPELIB_PATH="${playerctlTypelibPath}:''${GI_TYPELIB_PATH:-}"
+      export LD_LIBRARY_PATH="${playerctlLibraryPath}:''${LD_LIBRARY_PATH:-}"
+      exec ${pythonWithGObject}/bin/python3 ${./scripts/mediaplayer.py} "$@"
+    '';
+  };
 
   getWeatherScript = pkgs.writeShellApplication {
     name = "get_weather";
@@ -40,11 +52,12 @@ in
      margin-top    = 6;
      margin-left   = 12;
      margin-right  = 12;
-     margin-bottom = 0;
+     margin-bottom = 8;
 
      modules-left   = ["custom/launcher" "sway/workspaces" "sway/mode" "sway/scratchpad" ];
-     modules-center = [ "sway/media" ];
+     modules-center = [ "custom/media" ];
      modules-right  = [
+            "custom/weather"
             "pulseaudio" "network" "cpu" "memory"
             "temperature" "disk" "battery" "clock" "tray"
      ];
@@ -53,6 +66,14 @@ in
         format = "";
         on-click = "${appLauncherScript}/bin/app_launcher";
         tooltip-format = "Launch your favorite apps";
+     };
+
+     "custom/weather" = {
+        format = "{}";
+        return-type = "json";
+        tooltip = true;
+        exec = "${getWeatherScript}/bin/get_weather Munich";
+        interval = 300;
      };
 
      battery = {
@@ -195,7 +216,7 @@ in
             smooth-scrolling-threshold = 1;
             on-scroll-up = "playerctl next";
             on-scroll-down = "playerctl previous";
-            exec = "${pkgs.python3}/bin/python3 ${mediaPlayerScript}/mediaplayer.py 2> /dev/null";
+            exec = "${mediaPlayerScript}/bin/mediaplayer";
           };
 
           tray = {
@@ -207,12 +228,11 @@ in
 
   home.file = {
     ".config/waybar/style.css".source = ./style.css;
-    ".config/waybar/colors.css".source = ./colors.css;
 
     ".config/waybar/scripts/app_launcher.sh".source = "${appLauncherScript}/bin/app_launcher.sh";
     ".config/waybar/scripts/get_weather.sh".source = "${getWeatherScript}/bin/get_weather";
     ".config/waybar/scripts/get_window.sh".source = "${getWindowScript}/bin/get_window";
     ".config/waybar/scripts/launch.sh".source = "${launchScript}/bin/launch";
-    ".config/waybar/scripts/mediaplayer.py".source = mediaPlayerScript;
+    ".config/waybar/scripts/mediaplayer.py".source = "${mediaPlayerScript}/bin/mediaplayer";
   };
 }
