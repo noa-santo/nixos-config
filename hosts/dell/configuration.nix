@@ -48,6 +48,8 @@
   security.pam.services.login.fprintAuth = lib.mkForce true;
   security.pam.services.sudo.fprintAuth = lib.mkForce true;
   security.pam.services.gdm-fingerprint.fprintAuth = lib.mkForce true;
+  security.pam.services.login.enableGnomeKeyring = true;
+  security.pam.services.gdm-password.enableGnomeKeyring = true;
 
   system.stateVersion = "25.11";
 }

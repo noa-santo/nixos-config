@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, config, ... }:
 
 let
   c = {
@@ -161,7 +161,7 @@ in
       terminal = "kitty";
       modifier = "Mod4";
 
-      bars = [{ command = "~/.config/waybar/scripts/launch.sh"; }];
+      bars = [{ command = "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh"; }];
 
       fonts = {
         names = [ "JetBrainsMono Nerd Font" "Font Awesome 6 Free" ];
