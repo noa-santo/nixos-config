@@ -283,6 +283,7 @@ in
 
       # Smooth open/close/move animations (swayfx ≥ 0.4)
       # animation_duration_ms 180
+      # TODO: use swayfx-enhanced so this works
 
       # Blur behind the waybar pill
       layer_effects waybar {
