@@ -348,6 +348,7 @@ in
 
       exec_always vicinae server --replace
       exec_always ${matugenWallpaperSetupScript}/bin/matugen-wallpaper-setup
+      exec_always ~/.config/waybar/scripts/launch.sh
     '';
   };
 }
