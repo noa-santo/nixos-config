@@ -17,6 +17,33 @@
      fi
     fi
    '')
+    (pkgs.writeShellScriptBin "tmp" ''
+     if [ "$#" -lt 1 ]; then
+       echo "usage: tmp <package> [args...]" >&2
+       exit 2
+     fi
+     pkg="$1"
+     shift
+
+     nix shell "nixpkgs#''${pkg}" --command "''${pkg}" "$@" 2>/tmp/tmp-error-$$.log
+     rc=$?
+
+     if [ $rc -eq 0 ]; then
+       exit 0
+     fi
+
+     if grep -qiE "unfree|not allowed|non-free|license" /tmp/tmp-error-$$.log; then
+       echo "Attempting with NIXPKGS_ALLOW_UNFREE=1..." >&2
+       rm -f /tmp/tmp-error-$$.log
+       NIXPKGS_ALLOW_UNFREE=1 nix shell "nixpkgs#''${pkg}" --command "''${pkg}" "$@"
+       exit $?
+     fi
+
+     cat /tmp/tmp-error-$$.log >&2
+     rm -f /tmp/tmp-error-$$.log
+     exit $rc
+    ''
+    )
   ];
 
   programs.fish.enable = true;
