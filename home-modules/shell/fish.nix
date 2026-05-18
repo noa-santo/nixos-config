@@ -85,7 +85,7 @@
           if grep -qiE "unfree|not allowed|non-free|license" /tmp/tmp-error-keep-$fish_pid.log
             echo "Attempting with NIXPKGS_ALLOW_UNFREE=1..." >&2
             rm -f /tmp/tmp-error-keep-$fish_pid.log
-            NIXPKGS_ALLOW_UNFREE=1 nix shell "nixpkgs#$pkg" --command fish $argv
+            NIXPKGS_ALLOW_UNFREE=1 nix shell --impure "nixpkgs#$pkg" --command fish $argv
             return $status
           else
             cat /tmp/tmp-error-keep-$fish_pid.log >&2

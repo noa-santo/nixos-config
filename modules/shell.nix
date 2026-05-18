@@ -35,7 +35,7 @@
      if grep -qiE "unfree|not allowed|non-free|license" /tmp/tmp-error-$$.log; then
        echo "Attempting with NIXPKGS_ALLOW_UNFREE=1..." >&2
        rm -f /tmp/tmp-error-$$.log
-       NIXPKGS_ALLOW_UNFREE=1 nix shell "nixpkgs#''${pkg}" --command "''${pkg}" "$@"
+       NIXPKGS_ALLOW_UNFREE=1 nix shell --impure "nixpkgs#''${pkg}" --command "''${pkg}" "$@"
        exit $?
      fi
 
