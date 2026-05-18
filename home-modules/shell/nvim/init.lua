@@ -18,74 +18,36 @@ vim.opt.signcolumn = 'yes'
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- DYNAMIC THEME LOGIC
--- Uses catppuccin-nvim as the pastel base, then overlays Matugen-generated
--- accent colours so the neovim palette stays soft while picking up wallpaper
--- hues.  The overrides file is written by `matugen gen <wallpaper>`.
-_G.reload_matugen_colors = function()
-  vim.schedule(function()
-    local matugen_path = vim.fn.stdpath("config") .. "/matugen_colors.lua"
-    local overrides = {}
-
-    if vim.fn.filereadable(matugen_path) == 1 then
-      local chunk = loadfile(matugen_path)
-      if chunk then
-        local colors = chunk()
-        if type(colors) == "table" then
-          overrides = { all = colors, mocha = colors }
-        end
-      end
-    end
-
-    for k, _ in pairs(package.loaded) do
-      if k:match("^catppuccin") then
-        package.loaded[k] = nil
-      end
-    end
-
-    vim.cmd("hi clear")
-    if vim.fn.exists("syntax_on") then
-      vim.cmd("syntax reset")
-    end
-    vim.g.colors_name = nil
-
-    require("catppuccin").setup({
-      flavour = "mocha",
-      compile = { enabled = false },
-      color_overrides = overrides,
-      integrations = {
-        cmp = true,
-        gitsigns = true,
-        nvimtree = true,
-        treesitter = true,
-        bufferline = true,
-        telescope = { enabled = true },
-        indent_blankline = { enabled = true },
-        native_lsp = {
-          enabled = true,
-          underlines = {
-            errors = { "undercurl" },
-            hints = { "undercurl" },
-            warnings = { "undercurl" },
-            information = { "undercurl" },
-          },
-        },
+-- THEME SETUP
+require("catppuccin").setup({
+  flavour = "mocha",
+  compile = { enabled = false },
+  integrations = {
+    cmp = true,
+    gitsigns = true,
+    nvimtree = true,
+    treesitter = true,
+    bufferline = true,
+    telescope = { enabled = true },
+    indent_blankline = { enabled = true },
+    native_lsp = {
+      enabled = true,
+      underlines = {
+        errors = { "undercurl" },
+        hints = { "undercurl" },
+        warnings = { "undercurl" },
+        information = { "undercurl" },
       },
-    })
+    },
+  },
+})
 
-    vim.cmd("colorscheme catppuccin")
+vim.cmd("colorscheme catppuccin")
 
-    local ok_lualine, lualine = pcall(require, "lualine")
-    if ok_lualine then
-      lualine.setup { options = { theme = 'catppuccin' } }
-    end
-
-    vim.cmd("redraw!")
-    vim.notify("Matugen colors reloaded!", vim.log.levels.INFO)
-  end)
+local ok_lualine, lualine = pcall(require, "lualine")
+if ok_lualine then
+  lualine.setup { options = { theme = 'catppuccin' } }
 end
-
-_G.reload_matugen_colors()
 
 -- PLUGIN CONFIGURATIONS
 require('nvim-treesitter.configs').setup {
@@ -215,45 +177,3 @@ setup_server("lua_ls", {
   }
 })
 
--- FILE WATCHER: reload colours whenever Matugen regenerates the file.
--- Only start the watcher if the colours file already exists; otherwise it
--- would fail on Linux's inotify (which requires the path to exist).
-local uv = vim.uv or vim.loop
-local matugen_path = vim.fn.stdpath("config") .. "/matugen_colors.lua"
-
-if vim.fn.filereadable(matugen_path) == 1 then
-  local watcher = uv.new_fs_event()
-  local reload_timer = nil
-
-  local ok, err = pcall(function()
-    watcher:start(matugen_path, {}, vim.schedule_wrap(function(err, filename, events)
-      if not err then
-        if reload_timer then
-          reload_timer:stop()
-          reload_timer:close()
-        end
-        reload_timer = uv.new_timer()
-        reload_timer:start(100, 0, vim.schedule_wrap(function()
-          _G.reload_matugen_colors()
-          if reload_timer then
-            reload_timer:stop()
-            reload_timer:close()
-            reload_timer = nil
-          end
-        end))
-      end
-    end))
-  end)
-
-  if not ok then
-    vim.notify("Matugen file watcher failed: " .. tostring(err), vim.log.levels.WARN)
-  end
-end
-
--- SIGNAL LISTENER: also reload on SIGUSR1 from the OS
-vim.api.nvim_create_autocmd("Signal", {
-  pattern = "SIGUSR1",
-  callback = function()
-    _G.reload_matugen_colors()
-  end,
-})

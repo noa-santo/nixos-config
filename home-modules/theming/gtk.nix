@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ pkgs, lib, ... }:
 
  {
    home.packages = with pkgs; [
@@ -16,13 +16,6 @@
 
    gtk = {
      enable = true;
-
-     gtk3.extraCss = ''
-       @import url("file://${config.home.homeDirectory}/.cache/matugen/colors-gtk.css");
-     '';
-     gtk4.extraCss = ''
-       @import url("file://${config.home.homeDirectory}/.cache/matugen/colors-gtk.css");
-     '';
 
      gtk3.extraConfig = {
        gtk-application-prefer-dark-theme = 1;

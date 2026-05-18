@@ -25,9 +25,6 @@
       cursor_trail = 1;
     };
 
-    extraConfig = ''
-      include /tmp/kitty-matugen-colors.conf
-    '';
 
     keybindings = {
       "ctrl+shift+enter" = "new_window";
