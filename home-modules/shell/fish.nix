@@ -68,6 +68,33 @@
         echo "Saved to $name"
       end
 
+      function tnl --description "Launch an interactive nix shell with a package available (tnl = temporary nix shell)"
+        if test (count $argv) -lt 1
+          echo "usage: tnl <package> [args...]" >&2
+          echo "Example: tnl ffmpeg" >&2
+          return 2
+        end
+
+        set pkg "$argv[1]"
+        set -e argv[1]
+
+        nix shell "nixpkgs#$pkg" --command fish $argv 2>/tmp/tmp-error-keep-$fish_pid.log
+        set rc $status
+
+        if test $rc -ne 0
+          if grep -qiE "unfree|not allowed|non-free|license" /tmp/tmp-error-keep-$fish_pid.log
+            echo "Attempting with NIXPKGS_ALLOW_UNFREE=1..." >&2
+            rm -f /tmp/tmp-error-keep-$fish_pid.log
+            NIXPKGS_ALLOW_UNFREE=1 nix shell "nixpkgs#$pkg" --command fish $argv
+            return $status
+          else
+            cat /tmp/tmp-error-keep-$fish_pid.log >&2
+            rm -f /tmp/tmp-error-keep-$fish_pid.log
+            return $rc
+          end
+        end
+      end
+
       fastfetch
     '';
   };
