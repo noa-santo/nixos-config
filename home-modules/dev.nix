@@ -32,6 +32,14 @@ let
           comment = "Start InteliJ with Minecraft modding dev environment";
           categories = [ "Development" ];
         };
+    goDesktop = pkgs.makeDesktopItem {
+      name = "go-ide";
+      exec = "go-ide";
+      icon = "goland";
+      desktopName = "Goland (Go Env)";
+      comment = "Start Goland with Go dev environment";
+      categories = [ "Development" ];
+    };
 in {
   home.packages = [
     pythonDesktop
