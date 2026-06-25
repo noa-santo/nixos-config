@@ -12,6 +12,7 @@ pkgs.mkShell {
             "com.github.copilot"
     ])
     pkgs.go
+    pkgs.direnv
   ];
   shellHook = ''
     echo "Go dev environment loaded."
