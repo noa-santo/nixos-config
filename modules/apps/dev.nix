@@ -4,7 +4,7 @@ let
     exec nix develop $HOME/.config/nixos-config#python --command ${pkgs.fish}/bin/fish
   '';
   pythonIDE = pkgs.writeShellScriptBin "python-ide" ''
-    exec nix develop $HOME/.config/nixos-config#python --command pycharm-professional "$@"
+    exec nix develop $HOME/.config/nixos-config#python --command pycharm "$@"
   '';
   vlangEnv = pkgs.writeShellScriptBin "vlang-env" ''
     exec nix develop $HOME/.config/nixos-config#vlang --command ${pkgs.fish}/bin/fish
