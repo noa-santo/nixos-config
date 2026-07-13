@@ -8,7 +8,6 @@ pkgs.mkShell {
             "Key Promoter X"
             "com.fwdekker.randomness"
             "izhangzhihao.rainbow.brackets.lite"
-            "com.demonwav.minecraft-dev"
             "com.github.copilot"
     ])
     pkgs.go
