@@ -7,10 +7,15 @@ let
       icon = "circle";
       id = 1;
     };
+    TUM = {
+      color = "blue";
+      icon = "circle";
+      id = 2;
+    };
     BiVi = {
       color = "purple";
       icon = "circle";
-      id = 2;
+      id = 3;
     };
   };
 in
@@ -71,6 +76,27 @@ in
             texture = 0.6;
           };
           container = containers.Default.id;
+        };
+        "TUM" = {
+          id = "5fc2f2b7-1d58-4c26-9521-92af647f56c4";
+          position = 1000;
+          icon = "T";
+          theme = {
+            type = "gradient";
+            colors = [
+              {
+                red = 0;
+                green = 150;
+                blue = 250;
+                algorithm = "floating";
+                type = "explicit-lightness";
+                lightness = 50;
+              }
+            ];
+            opacity = 0.8;
+            texture = 0.6;
+          };
+          container = containers.TUM.id;
         };
         "BiVi" = {
           id = "284856b7-48f3-4846-abeb-14da28b1c4b6";
