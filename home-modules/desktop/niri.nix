@@ -209,19 +209,19 @@ in
       "Mod+K".action.focus-window-up        = [ ];
       "Mod+L".action.focus-column-right     = [ ];
 
-      "Mod+Ctrl+Left".action.move-column-left   = [ ];
-      "Mod+Ctrl+Down".action.move-window-down   = [ ];
-      "Mod+Ctrl+Up".action.move-window-up       = [ ];
-      "Mod+Ctrl+Right".action.move-column-right = [ ];
-      "Mod+Ctrl+H".action.move-column-left      = [ ];
-      "Mod+Ctrl+J".action.move-window-down      = [ ];
-      "Mod+Ctrl+K".action.move-window-up        = [ ];
-      "Mod+Ctrl+L".action.move-column-right     = [ ];
+      "Mod+Shift+Left".action.move-column-left   = [ ];
+      "Mod+Shift+Down".action.move-window-down   = [ ];
+      "Mod+Shift+Up".action.move-window-up       = [ ];
+      "Mod+Shift+Right".action.move-column-right = [ ];
+      "Mod+Shift+H".action.move-column-left      = [ ];
+      "Mod+Shift+J".action.move-window-down      = [ ];
+      "Mod+Shift+K".action.move-window-up        = [ ];
+      "Mod+Shift+L".action.move-column-right     = [ ];
 
       "Mod+Home".action.focus-column-first      = [ ];
       "Mod+End".action.focus-column-last        = [ ];
-      "Mod+Ctrl+Home".action.move-column-to-first = [ ];
-      "Mod+Ctrl+End".action.move-column-to-last   = [ ];
+      "Mod+Shift+Home".action.move-column-to-first = [ ];
+      "Mod+Shift+End".action.move-column-to-last   = [ ];
 
       "Mod+1".action.focus-workspace = 1;
       "Mod+2".action.focus-workspace = 2;
