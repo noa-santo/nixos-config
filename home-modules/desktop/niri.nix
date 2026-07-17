@@ -167,15 +167,20 @@ in
         };
         custom-shader = builtins.readFile ../../assets/shaders/perlin/close.glsl;
       };
+      window-resize = {
+        kind.easing = {
+          duration-ms = 500;
+          curve = "ease-out-cubic";
+        };
+        custom-shader = builtins.readFile ../../assets/shaders/perlin/resize.glsl;
+      };
     };
 
     binds = {
       "Mod+Shift+Slash".action.show-hotkey-overlay = [ ];
 
-      # Launcher / notifications / lock
       "Mod+D".action.spawn       = [ "vicinae" "open" ];
       "Mod+Shift+D".action.spawn = [ "fuzzel" ];
-      "Mod+Shift+L".action.spawn = [ "swaylock" "-f" "-c" "1e1e2e" ];
       "Mod+Return".action.spawn   = [ "kitty" ];
 
       # Screenshots
