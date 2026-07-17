@@ -1,6 +1,11 @@
-{ pkgs, config, ... }:
+{ pkgs, config, lib, hostTags ? [], ... }:
 
 let
+  # niri and sway each ship their own waybar workspace/window modules; pick
+  # whichever compositor is actually tagged on for this host.
+  isNiri = builtins.elem "niri" hostTags;
+  workspacesModule = if isNiri then "niri/workspaces" else "sway/workspaces";
+
   pythonWithGObject = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
   playerctlTypelibPath = pkgs.lib.makeSearchPath "lib/girepository-1.0" [ pkgs.playerctl pkgs.glib ];
   playerctlLibraryPath = pkgs.lib.makeLibraryPath [ pkgs.playerctl pkgs.glib ];
@@ -54,7 +59,8 @@ in
      margin-right  = 12;
      margin-bottom = 8;
 
-     modules-left   = ["custom/launcher" "sway/workspaces" "sway/mode" "sway/scratchpad" ];
+     modules-left   = ["custom/launcher" workspacesModule]
+       ++ lib.optionals (!isNiri) [ "sway/mode" "sway/scratchpad" ];
      modules-center = [ "custom/media" ];
      modules-right  = [
             "tray" "custom/weather"
@@ -109,6 +115,20 @@ in
 
      "sway/mode" = {
        format = "<span style='italic'>  {}</span>";
+     };
+
+     "niri/workspaces" = {
+       disable-scroll = true;
+       format         = "{icon}";
+       format-icons = {
+          active   = "";
+          default  = "○";
+       };
+     };
+
+     "niri/window" = {
+       max-length = 60;
+       format     = "  {title}";
      };
 
      "sway/scratchpad" = {
