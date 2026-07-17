@@ -89,6 +89,10 @@ in
         scroll-method    = "two-finger";
       };
       mouse.natural-scroll = true;
+      focus-follows-mouse = {
+        enable = true;
+        max-scroll-amount = "100%";
+      };
     };
 
     cursor.theme = "Bibata-Modern-Pink";
