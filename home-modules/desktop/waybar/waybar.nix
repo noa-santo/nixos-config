@@ -1,8 +1,6 @@
 { pkgs, config, lib, hostTags ? [], ... }:
 
 let
-  # niri and sway each ship their own waybar workspace/window modules; pick
-  # whichever compositor is actually tagged on for this host.
   isNiri = builtins.elem "niri" hostTags;
   workspacesModule = if isNiri then "niri/workspaces" else "sway/workspaces";
 
@@ -99,8 +97,8 @@ in
           "4" = "4"; "5" = "5"; "6" = "6";
           "7" = "7"; "8" = "8"; "9" = "9";
           "10" = "0";
-          urgent   = "";
-          focused  = "";
+          urgent   = "!";
+          focused  = "";
           default  = "○";
        };
      };
@@ -121,8 +119,13 @@ in
        disable-scroll = true;
        format         = "{icon}";
        format-icons = {
-          active   = "";
-          default  = "○";
+         "1" = "1"; "2" = "2"; "3" = "3";
+         "4" = "4"; "5" = "5"; "6" = "6";
+         "7" = "7"; "8" = "8"; "9" = "9";
+         "10" = "0";
+	 urgent   = "!";
+         active   = "";
+         default  = "○";
        };
      };
 
