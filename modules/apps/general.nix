@@ -8,6 +8,7 @@
     grc
     pay-respects
     discord
+    signal-desktop
     killall
     usbutils
   ];
