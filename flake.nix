@@ -45,20 +45,24 @@
      };
      hosts = builtins.attrNames (builtins.readDir ./hosts);
 
-     mkHost = host: lib.nixosSystem {
+     mkHost = host:
+       let
+         tagsPath = ./hosts/${host}/tags.nix;
+         hostTags = if builtins.pathExists tagsPath then import tagsPath else [];
+       in
+     lib.nixosSystem {
        inherit system;
-       specialArgs = { inherit inputs; };
+       specialArgs = { inherit inputs hostTags; };
        modules = [
          ./hosts/${host}/configuration.nix { nixpkgs = { inherit pkgs; }; }
          ./hosts/${host}/hardware-configuration.nix
          inputs.nix-minecraft.nixosModules.minecraft-servers
-
          home-manager.nixosModules.home-manager
          {
            home-manager.useGlobalPkgs = true;
            home-manager.useUserPackages = true;
            home-manager.backupFileExtension = "backup";
-           home-manager.extraSpecialArgs = { inherit inputs; };
+           home-manager.extraSpecialArgs = { inherit inputs hostTags; };
          }
          ({ config, ... }: {
            home-manager.users."${config.mainUser}" = import ./hosts/${host}/home.nix;

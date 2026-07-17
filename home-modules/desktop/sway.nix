@@ -1,3 +1,4 @@
+# tags: sway
 { pkgs, lib, config, ... }:
 
 let
@@ -257,7 +258,7 @@ in
       };
 
       output."*" = {
-        bg    = "/run/current-system/sw/share/backgrounds/gnome/blobs-l.svg fill";
+        bg    = "~/.config/nixos-config/assets/wallpapers/blob.webp fill";
         scale = "1";
       };
 

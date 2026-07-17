@@ -1,3 +1,4 @@
+# tags: minecraft, server
 { pkgs, lib, inputs, ... }:
 
 {

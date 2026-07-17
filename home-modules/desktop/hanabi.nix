@@ -1,3 +1,4 @@
+# no-auto-import
 {pkgs, ... }:
 {
   hanabi = pkgs.stdenv.mkDerivation rec {

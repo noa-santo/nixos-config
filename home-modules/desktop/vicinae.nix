@@ -1,6 +1,10 @@
 { inputs, pkgs, ... }:
 
 {
+  imports = [
+    inputs.vicinae.homeManagerModules.default
+  ];
+
   programs.vicinae = {
     enable = true;
     package = pkgs.vicinae;
@@ -38,7 +42,7 @@
       };
     };
     extensions = with inputs.vicinae-extensions.packages.${pkgs.stdenv.hostPlatform.system}; [
-       bluetooth
+       # bluetooth temp disabled till fixed todo
        nix
        power-profile
        color-converter

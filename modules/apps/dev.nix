@@ -1,3 +1,4 @@
+# tags: dev
 { pkgs, inputs, lib, ... }:
 let
   pythonEnv = pkgs.writeShellScriptBin "python-env" ''

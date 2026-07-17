@@ -1,3 +1,4 @@
+# tags: dev
 { config, pkgs, ... }:
 {
   programs.git = {

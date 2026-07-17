@@ -1,3 +1,4 @@
+# no-auto-import
 { pkgs, lib, inputs, ... }:
 
 {

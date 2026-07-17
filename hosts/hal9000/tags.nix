@@ -1,0 +1,1 @@
+["desktop" "server" "gnome" "sway" "minecraft-server" "docker"]

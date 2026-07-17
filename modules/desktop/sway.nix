@@ -1,12 +1,7 @@
-{ pkgs, inputs, config, lib, ... }:
-
-let
-  cfg = config.tags;
-in
+# tags: sway
+{ pkgs, inputs, lib, ... }:
 {
-  config = lib.mkIf (builtins.elem "sway" cfg) {
-    hardware.graphics.enable = true;
-    services.displayManager.gdm.enable = true;
-    programs.sway.enable = true;
-  };
+  hardware.graphics.enable = true;
+  services.displayManager.gdm.enable = true;
+  programs.sway.enable = true;
 }

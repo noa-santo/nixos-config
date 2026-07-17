@@ -3,6 +3,21 @@ let
   staticGc = pkgs.pkgsStatic.boehmgc;
 in
 pkgs.mkShell {
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    glibc
+    zlib
+    libGL
+    wayland
+    libxkbcommon
+    libx11
+    libxcursor
+    libxi
+    libxinerama
+    libxrandr
+  ];
+
   packages = with inputs.nix-jetbrains-plugins.lib; [
     pkgs.vlang
     pkgs.pkg-config

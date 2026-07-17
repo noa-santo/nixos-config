@@ -1,3 +1,4 @@
+# tags: dev
 {pkgs, ...}:
 let
   pythonDesktop = pkgs.makeDesktopItem {
