@@ -55,7 +55,7 @@ window#waybar {
 #battery,
 #tray,
 #custom-weather {
-  padding: 0 12px;
+  padding: 0 6px;
   color: @text;
 }
 

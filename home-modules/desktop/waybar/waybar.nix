@@ -163,7 +163,7 @@ in
           };
 
           cpu = {
-            format   = "CPU: {usage}%";
+            format   = " {usage}%";
             tooltip  = true;
             interval = 2;
             on-click = "kitty -e btop";
