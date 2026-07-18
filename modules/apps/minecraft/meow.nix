@@ -3,35 +3,36 @@
 
 {
   services.minecraft-servers.servers.meow = {
-    enable = false;
+    enable = true;
     autoStart = true;
 
-    package = pkgs.fabricServers.fabric-1_21_11.override {
-      loaderVersion = "0.18.4";
+    package = pkgs.fabricServers.fabric-26_2.override {
+      loaderVersion = "0.19.3";
+      jre_headless = pkgs.openjdk25_headless;
     };
 
     symlinks = {
       mods = pkgs.linkFarmFromDrvs "mods" (
         builtins.attrValues {
           Fabric-API = pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/i5tSkVBH/fabric-api-0.141.3%2B1.21.11.jar";
-            sha256 = "hsRTqGE5Zi53VpfQOwynhn9Uc3SGjAyz49wG+Y2/7vU=";
+            url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/lVXlbH4w/fabric-api-0.155.2%2B26.2.jar";
+            sha256 = "sha256-1lGMdwAky+ilViSPFvzbuRxqYvUCJ6bDuugZBRHiwbg=";
           };
           Geyser = pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/wKkoqHrH/versions/BhQ8mVAx/geyser-fabric-Geyser-Fabric-2.9.4-b1081.jar";
-            sha256 = "mblFlIOh5eNx4NAbtv03BKKTUQOc6iqjzqMlOePiUx8=";
+            url = "https://cdn.modrinth.com/data/wKkoqHrH/versions/rRRaN6Lg/Geyser-Fabric-2.11.0-b1200.jar";
+            sha256 = "sha256-sAoWWRHAJYNBkbH9lT2hMScEzl2tF2Cx30aQ3Co/wP0=";
           };
           Floodgate = pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/bWrNNfkb/versions/wzwExuYr/Floodgate-Fabric-2.2.6-b54.jar";
-            sha256 = "KVfeM69JWnYBpTyKfGMbXH9SayR+/GJ50RWxd7Y258g=";
+            url = "https://cdn.modrinth.com/data/bWrNNfkb/versions/urOFTrVX/Floodgate-Fabric-2.2.6-b67.jar";
+            sha256 = "sha256-n3Nro+6GuPhhOGj+r6NfmjIYw8Re9LfkmSw06hsETcQ=";
           };
           Lithium = pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qvNsoO3l/lithium-fabric-0.21.3%2Bmc1.21.11.jar";
-            sha512 = "2883739303f0bb602d3797cc601ed86ce6833e5ec313ddce675f3d6af3ee6a40b9b0a06dafe39d308d919669325e95c0aafd08d78c97acd976efde899c7810fd";
+            url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/UPNexAfy/lithium-fabric-0.25.2%2Bmc26.2.jar";
+            sha256 = "sha256-dYjUp2mJSY9W4R5jorEXD/9Hbo2cSqyU4xCz59tGng8=";
           };
-          LeashablePlayer = pkgs.fetchurl {
-            url = "https://cdn.modrinth.com/data/BKyMf6XK/versions/15ItkoRt/leashmod-1.2.5%2B1.21.11.jar";
-            sha512 = "sha512-cYs+NhbAOTUnOjo49pXg5oqWy5yCG/N8Hgvg0FZXT8xf1lcwygFq+lSetrrsSBRkgU3Xpww49dfH/SGuoLtwBg==";
+          LeashAll = pkgs.fetchurl {
+            url = "https://cdn.modrinth.com/data/oKERV1Bi/versions/KbYUstkL/leashall-fabric-26.2-26.2-1.3.4-26.2.jar";
+            sha256 = "sha256-KrQHk+S3Wm2YFeQACKKtRODI2XzzsX6e3mEkIcU5B1c=";
           };
         }
       );
