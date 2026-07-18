@@ -10,6 +10,7 @@
 
    dconf.settings = {
      "org/gnome/desktop/interface" = {
+       color-scheme = "prefer-dark";
        gtk-theme = lib.mkDefault "adw-gtk3-dark";
      };
    };
