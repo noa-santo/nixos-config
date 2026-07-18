@@ -39,6 +39,10 @@ to reboot automatically
 
 `update`: update all packages. requires a rebuild to apply
 
+`cleanup`: remove old unused nix os stuff. optionally accepts a time range like "day", "week", "month", or "year" and
+optionally a quantifier before it.
+example usage: "cleanup 3 months", "cleanup day", "cleanup"
+
 `tmp`: execute a command without installing it. automatically detects unfree packages and allows them. example:
 `tmp tree` executes the tree command without it being installed. note: may fail if package name and command name differ
 

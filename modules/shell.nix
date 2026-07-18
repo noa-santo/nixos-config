@@ -4,7 +4,6 @@
   rebuild = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname)";
   rebuild-fast = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname) --option substituters 'https://cache.nixos.org https://nix-community.cachix.org https://niri.cachix.org' --option trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= niri.cachix.org-1:MaumDbS0f85L59U3bM75R7x7Yw+Y194d6s2YpWn8qYc='";
   update = "sudo nix flake update --flake $HOME/.config/nixos-config";
-  # TODO: cleanup command that deletes unused stuff and old config backups
  };
 
  environment.systemPackages = with pkgs; [
@@ -44,6 +43,32 @@
      exit $rc
     ''
     )
+    (pkgs.writeShellScriptBin "cleanup" ''
+      count=30
+      unit="d"
+
+      if [ "$#" -eq 2 ]; then
+        count=$1
+        case $2 in
+          day*)    unit="d" ;;
+          week*)   unit="d"; count=$((count * 7)) ;;
+          month*)  unit="d"; count=$((count * 30)) ;;
+          year*)   unit="d"; count=$((count * 365)) ;;
+          *) echo "Invalid unit. Use day, week, month, or year."; exit 1 ;;
+        esac
+      elif [ "$#" -eq 1 ]; then
+        case $1 in
+          day*)    count=1; unit="d" ;;
+          week*)   count=7; unit="d" ;;
+          month*)  count=30; unit="d" ;;
+          year*)   count=365; unit="d" ;;
+          *) echo "Usage: cleanup [number] [day|week|month|year]"; exit 1 ;;
+        esac
+      fi
+
+      echo "Cleaning up generations older than $count days..."
+      sudo nix-collect-garbage --delete-older-than "$count$unit" && sudo nixos-rebuild boot --flake $HOME/.config/nixos-config#$(hostname)
+    '')
   ];
 
   programs.fish.enable = true;
