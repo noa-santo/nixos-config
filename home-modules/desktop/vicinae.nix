@@ -53,6 +53,7 @@
        wikipedia
        player-pilot
        it-tools
+       niri
     ];
   };
 }
