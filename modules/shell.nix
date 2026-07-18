@@ -2,7 +2,7 @@
 {
  environment.shellAliases = {
   rebuild = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname)";
-  rebuild-fast = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname) --option substituters 'https://cache.nixos.org https://nix-community.cachix.org' --option trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs='";
+  rebuild-fast = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname) --option substituters 'https://cache.nixos.org https://nix-community.cachix.org https://niri.cachix.org' --option trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= niri.cachix.org-1:MaumDbS0f85L59U3bM75R7x7Yw+Y194d6s2YpWn8qYc='";
   update = "sudo nix flake update --flake $HOME/.config/nixos-config";
   # TODO: cleanup command that deletes unused stuff and old config backups
  };
