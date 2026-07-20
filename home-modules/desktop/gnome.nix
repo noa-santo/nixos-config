@@ -1,8 +1,5 @@
 # tags: gnome
 {config, pkgs, ...}:
-let
-  hanabiExtension = (import ./hanabi.nix { inherit pkgs; }).hanabi;
-in
 {
   programs.gnome-shell = {
     enable = true;
@@ -26,7 +23,6 @@ in
       { package = pkgs.gnomeExtensions.rounded-corners; }
       { package = pkgs.gnomeExtensions.messaging-menu; }
       { package = pkgs.gnomeExtensions.top-bar-organizer; }
-      { id = "hanabi-extension@jeffshee.github.io"; package = hanabiExtension; }
     ];
   };
 
