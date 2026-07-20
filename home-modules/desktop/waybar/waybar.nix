@@ -1,7 +1,7 @@
 { pkgs, config, lib, hostTags ? [], ... }:
 
 let
-  isNiri = builtins.elem "niri" hostTags;
+  isNiri = builtins.elem "niri" hostTags; # todo detect at runtime via what DE is actually running
   isKdeConnect = builtins.elem "kde-connect" hostTags;
   workspacesModule = if isNiri then "niri/workspaces" else "sway/workspaces";
 
@@ -41,6 +41,12 @@ let
     name = "launch";
     runtimeInputs = [ pkgs.waybar pkgs.swaynotificationcenter ];
     text = builtins.readFile ./scripts/launch.sh;
+  };
+
+  niriOrderWorkspacesScript = pkgs.writeShellApplication {
+    name = "niri-order-workspaces";
+    runtimeInputs = [ pkgs.niri ];
+    text = builtins.readFile ./scripts/niri_order_workspaces.sh;
   };
 in
 {
@@ -131,6 +137,7 @@ in
        disable-scroll = true;
        format         = "{icon}";
        format-icons = {
+         "browser" = ""; "ide" = ""; "social" = "󰭹"; "terminal" = "";
          "1" = "1"; "2" = "2"; "3" = "3";
          "4" = "4"; "5" = "5"; "6" = "6";
          "7" = "7"; "8" = "8"; "9" = "9";
@@ -139,6 +146,7 @@ in
          active   = "";
          default  = "○";
        };
+       on-update = "${niriOrderWorkspacesScript}/bin/niri-order-workspaces";
      };
 
      "niri/window" = {

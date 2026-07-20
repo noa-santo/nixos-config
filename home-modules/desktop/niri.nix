@@ -1,7 +1,9 @@
 # tags: niri
-{ pkgs, lib, config, inputs, ... }:
+{ pkgs, lib, config, inputs, hostTags, ... }:
 
 let
+  isKdeConnect = builtins.elem "kde-connect" hostTags;
+
   c = {
     base     = "#1e1e2e"; mantle   = "#181825"; crust    = "#11111b";
     s0       = "#313244"; s1       = "#45475a"; s2       = "#585b70";
@@ -35,7 +37,7 @@ in
     swayidle
     swaylock
     swaybg
-    fuzzel # app launcher fallback; vicinae is the primary launcher
+    fuzzel
     wl-clipboard
     mako
     waybar
@@ -125,6 +127,32 @@ in
         };
         clip-to-geometry = true;
       }
+      {
+        matches = [{ app-id = "^zen-beta$"; }];
+        open-on-workspace = "browser";
+      }
+      {
+        matches = [
+          { app-id = "^jetbrains-idea$"; }
+          { app-id = "^jetbrains-pycharm$"; }
+          { app-id = "^jetbrains-clion"; }
+          { app-id = "^jetbrains-webstorm"; }
+        ];
+        open-on-workspace = "ide";
+      }
+      {
+        matches = [
+          { app-id = "^discord$"; }
+          { app-id = "^signal$"; }
+        ];
+        open-on-workspace = "social";
+      }
+      {
+        matches = [
+          { app-id = "^kitty$"; }
+        ];
+        open-on-workspace = "terminal";
+      }
     ];
 
     layer-rules = [
@@ -150,6 +178,8 @@ in
       { argv = [ "swaybg" "--image" "${config.home.homeDirectory}/.config/nixos-config/assets/wallpapers/blob.webp" "--mode" "fill" ]; }
       { argv = [ "vicinae" "server" "--replace" ]; }
       { argv = [ "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh" ]; }
+    ] ++ lib.optionals (isKdeConnect) [
+      { argv = [ "kdeconnectd" ]; }
     ];
 
     animations = {
@@ -174,6 +204,13 @@ in
         };
         custom-shader = builtins.readFile ../../assets/shaders/perlin/resize.glsl;
       };
+    };
+
+    workspaces = {
+      "terminal" = {};
+      "social" = {};
+      "ide" = {};
+      "browser" = {};
     };
 
     binds = {
@@ -203,7 +240,7 @@ in
       "XF86AudioPrev".action.spawn = [ "playerctl" "previous" ];
 
       # Window / column navigation
-      "Mod+Q".action.close-window = [ ];
+      "Mod+Shift+Q".action.close-window = [ ];
 
       "Mod+Left".action.focus-column-left   = [ ];
       "Mod+Down".action.focus-window-down   = [ ];
@@ -223,30 +260,37 @@ in
       "Mod+Shift+K".action.move-window-up        = [ ];
       "Mod+Shift+L".action.move-column-right     = [ ];
 
+      "Mod+Ctrl+Left".action.consume-or-expel-window-left   = [ ];
+      "Mod+Ctrl+Right".action.consume-or-expel-window-right = [ ];
+      "Mod+Ctrl+H".action.consume-or-expel-window-left      = [ ];
+      "Mod+Ctrl+L".action.consume-or-expel-window-right     = [ ];
+
       "Mod+Home".action.focus-column-first      = [ ];
       "Mod+End".action.focus-column-last        = [ ];
       "Mod+Shift+Home".action.move-column-to-first = [ ];
       "Mod+Shift+End".action.move-column-to-last   = [ ];
 
-      "Mod+1".action.focus-workspace = 1;
-      "Mod+2".action.focus-workspace = 2;
-      "Mod+3".action.focus-workspace = 3;
-      "Mod+4".action.focus-workspace = 4;
+      "Mod+1".action.focus-workspace = "browser";
+      "Mod+2".action.focus-workspace = "ide";
+      "Mod+3".action.focus-workspace = "social";
+      "Mod+4".action.focus-workspace = "terminal";
       "Mod+5".action.focus-workspace = 5;
       "Mod+6".action.focus-workspace = 6;
       "Mod+7".action.focus-workspace = 7;
       "Mod+8".action.focus-workspace = 8;
       "Mod+9".action.focus-workspace = 9;
+      "Mod+0".action.focus-workspace = 10;
 
-      "Mod+Shift+1".action.move-column-to-workspace = 1;
-      "Mod+Shift+2".action.move-column-to-workspace = 2;
-      "Mod+Shift+3".action.move-column-to-workspace = 3;
-      "Mod+Shift+4".action.move-column-to-workspace = 4;
+      "Mod+Shift+1".action.move-column-to-workspace = "browser";
+      "Mod+Shift+2".action.move-column-to-workspace = "ide";
+      "Mod+Shift+3".action.move-column-to-workspace = "social";
+      "Mod+Shift+4".action.move-column-to-workspace = "terminal";
       "Mod+Shift+5".action.move-column-to-workspace = 5;
       "Mod+Shift+6".action.move-column-to-workspace = 6;
       "Mod+Shift+7".action.move-column-to-workspace = 7;
       "Mod+Shift+8".action.move-column-to-workspace = 8;
       "Mod+Shift+9".action.move-column-to-workspace = 9;
+      "Mod+Shift+0".action.move-column-to-workspace = 10;
 
       "Mod+Page_Down".action.focus-workspace-down = [ ];
       "Mod+Page_Up".action.focus-workspace-up     = [ ];
