@@ -1,5 +1,7 @@
-{ inputs, pkgs, ... }:
-
+{ inputs, pkgs, lib, hostTags ? [], ... }:
+let
+  isNiri = builtins.elem "niri" hostTags;
+in
 {
   imports = [
     inputs.vicinae.homeManagerModules.default
@@ -53,7 +55,6 @@
        wikipedia
        player-pilot
        it-tools
-       niri
-    ];
+    ] ++ lib.optionals (isNiri) [ niri ];
   };
 }
