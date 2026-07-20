@@ -46,7 +46,7 @@ in
           device_phone_text = "Phone ";
           device_tablet_text = "Tablet ";
           device_laptop_text = "Laptop ";
-          is_charging_text = "󰂄 Charging ...";
+          is_charging_text = "󰂄 Charging...";
           isnt_charging_text = "󱟩 Not charging";
           notification_grouped_format = "{CustomIcon} {CountText} ";
           notification_single_format = "  -{CustomIcon} : {Title}\n{Content}\n";

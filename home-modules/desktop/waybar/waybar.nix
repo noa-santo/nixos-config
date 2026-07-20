@@ -60,12 +60,24 @@ in
 
      modules-left   = ["custom/launcher" workspacesModule]
        ++ lib.optionals (!isNiri) [ "sway/mode" "sway/scratchpad" ];
-     modules-center = [ "custom/media" ] ++ lib.optionals (isKdeConnect) [ "custom/kdeconnect" ];
-     modules-right  = [
-            "tray" "custom/weather"
-            "pulseaudio" "network" "cpu" "memory"
-            "temperature" "disk" "battery" "clock"
-     ];
+     modules-center = [ "custom/media" ];
+     modules-right  = lib.optionals (isKdeConnect) [ "custom/kdeconnect" ] ++ [ "group/rightinfo" ];
+
+     "group/rightinfo" = {
+       orientation = "horizontal";
+       modules = [
+           "tray"
+           "custom/weather"
+           "pulseaudio"
+           "network"
+           "cpu"
+           "memory"
+           "temperature"
+           "disk"
+           "battery"
+           "clock"
+       ];
+     };
 
      "custom/launcher" = {
         format = "";
@@ -247,8 +259,6 @@ in
              format = "{}";
              exec = "kdeconnect_waybar";
              return-type = "json";
-             interval = 5;
-             restart-interval = 2;
              on-click = "kdeconnect-app";
           };
 
