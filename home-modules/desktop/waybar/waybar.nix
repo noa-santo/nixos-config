@@ -2,6 +2,7 @@
 
 let
   isNiri = builtins.elem "niri" hostTags;
+  isKdeConnect = builtins.elem "kde-connect" hostTags;
   workspacesModule = if isNiri then "niri/workspaces" else "sway/workspaces";
 
   pythonWithGObject = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
@@ -59,7 +60,7 @@ in
 
      modules-left   = ["custom/launcher" workspacesModule]
        ++ lib.optionals (!isNiri) [ "sway/mode" "sway/scratchpad" ];
-     modules-center = [ "custom/media" ];
+     modules-center = [ "custom/media" ] ++ lib.optionals (isKdeConnect) [ "custom/kdeconnect" ];
      modules-right  = [
             "tray" "custom/weather"
             "pulseaudio" "network" "cpu" "memory"
@@ -240,6 +241,15 @@ in
             on-scroll-up = "playerctl next";
             on-scroll-down = "playerctl previous";
             exec = "${mediaPlayerScript}/bin/mediaplayer";
+          };
+
+          "custom/kdeconnect" = {
+             format = "{}";
+             exec = "kdeconnect_waybar";
+             return-type = "json";
+             interval = 5;
+             restart-interval = 2;
+             on-click = "kdeconnect-app";
           };
 
           tray = {

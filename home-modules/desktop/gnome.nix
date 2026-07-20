@@ -1,11 +1,13 @@
 # tags: gnome
-{config, pkgs, ...}:
+{config, pkgs, lib, hostTags ? [], ...}:
+let
+  isKdeConnect = builtins.elem "kde-connect" hostTags;
+in
 {
   programs.gnome-shell = {
     enable = true;
     extensions = [
       { package = pkgs.gnomeExtensions.blur-my-shell; }
-      { package = pkgs.gnomeExtensions.gsconnect; }
       { package = pkgs.gnomeExtensions.runcat; }
       # { package = pkgs.gnomeExtensions.drive-menu; } # TODO: find correct name to install package
       { package = pkgs.gnomeExtensions.yakuake; }
@@ -23,7 +25,7 @@
       { package = pkgs.gnomeExtensions.rounded-corners; }
       { package = pkgs.gnomeExtensions.messaging-menu; }
       { package = pkgs.gnomeExtensions.top-bar-organizer; }
-    ];
+    ] ++ lib.optionals (isKdeConnect) [ { package = pkgs.gnomeExtensions.gsconnect; } ];
   };
 
 

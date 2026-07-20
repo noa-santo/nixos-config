@@ -1,1 +1,1 @@
-["laptop" "sway" "niri" "dev" "docker" "gaming" "superdirve" "scanner"]
+["laptop" "sway" "niri" "dev" "docker" "gaming" "superdirve" "scanner" "kde-connect"]

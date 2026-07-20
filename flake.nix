@@ -30,6 +30,7 @@
      url = "github:vicinaehq/extensions";
      inputs.nixpkgs.follows = "nixpkgs";
    };
+   fenix.url = "github:nix-community/fenix";
  };
 
  outputs = { self, nixpkgs, home-manager, vicinae, ... }@inputs:
@@ -41,6 +42,7 @@
       config.allowUnfree = true;
       overlays = [
         inputs.nix-minecraft.overlay
+        inputs.fenix.overlays.default
       ] ++ builtins.map
         (file: import (./overlays + "/${file}"))
         (builtins.filter
