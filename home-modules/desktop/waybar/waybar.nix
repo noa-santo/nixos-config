@@ -61,12 +61,11 @@ in
      modules-left   = ["custom/launcher" workspacesModule]
        ++ lib.optionals (!isNiri) [ "sway/mode" "sway/scratchpad" ];
      modules-center = [ "custom/media" ];
-     modules-right  = lib.optionals (isKdeConnect) [ "custom/kdeconnect" ] ++ [ "group/rightinfo" ];
+     modules-right  = lib.optionals (isKdeConnect) [ "custom/kdeconnect" ] ++ [ "tray" "group/rightinfo" ];
 
      "group/rightinfo" = {
        orientation = "horizontal";
        modules = [
-           "tray"
            "custom/weather"
            "pulseaudio"
            "network"
@@ -136,7 +135,7 @@ in
          "4" = "4"; "5" = "5"; "6" = "6";
          "7" = "7"; "8" = "8"; "9" = "9";
          "10" = "0";
-	 urgent   = "!";
+	     urgent   = "!";
          active   = "";
          default  = "○";
        };
@@ -157,8 +156,8 @@ in
 
           clock = {
             timezone       = "Europe/Berlin";
-            format         = "  {:%H:%M}";
-            format-alt     = "  {:%a %d %b}";
+            format         = " {:%H:%M}";
+            format-alt     = " {:%a %d %b}";
             tooltip-format = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
             calendar = {
               mode          = "year";

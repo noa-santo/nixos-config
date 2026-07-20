@@ -39,8 +39,7 @@ window#waybar {
   background-color: alpha(@base, 0.5);
   border: 1px solid alpha(@text, 0.2);
   border-radius: 12px;
-  margin: 4px;
-  padding: 0 6px;
+  padding: 0 8px;
 }
 
 #workspaces,
@@ -58,8 +57,16 @@ window#waybar {
 #tray,
 #custom-weather,
 #custom-kdeconnect {
-  padding: 0 6px;
+  margin: 0 8px;
   color: @text;
+}
+
+#custom-weather {
+  margin-left: 12px;
+}
+
+#clock {
+  margin-right: 12px;
 }
 
 #workspaces button {
