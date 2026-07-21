@@ -197,6 +197,9 @@ in
           bottom-right = 12.0;
         };
         shadow.enable = true;
+        background-effect = {
+          blur = true;
+        };
       }
       {
         matches = [ { namespace = "^notifications$"; } ];
@@ -207,6 +210,9 @@ in
           bottom-right = 10.0;
         };
         shadow.enable = true;
+        background-effect = {
+          blur = true;
+        };
       }
     ];
 
