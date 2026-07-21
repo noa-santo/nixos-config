@@ -8,7 +8,7 @@
 
   programs.niri = {
     enable = true;
-    package = pkgs.niri-unstable;
+    package = pkgs.niri-stable;
   };
 
   # niri has no CSD/no built-in polkit agent of its own; gnome-keyring +

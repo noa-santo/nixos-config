@@ -22,7 +22,7 @@
    nix-jetbrains-plugins.url = "github:theCapypara/nix-jetbrains-plugins";
    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
    niri = {
-     url = "github:sodiboo/niri-flake";
+     url = "github:epireyn/niri-flake";
      inputs.nixpkgs.follows = "nixpkgs";
    };
    vicinae.url = "github:vicinaehq/vicinae";
