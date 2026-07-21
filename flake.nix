@@ -43,6 +43,7 @@
       overlays = [
         inputs.nix-minecraft.overlay
         inputs.fenix.overlays.default
+        inputs.niri.overlays.niri
       ] ++ builtins.map
         (file: import (./overlays + "/${file}"))
         (builtins.filter

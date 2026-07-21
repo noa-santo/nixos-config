@@ -80,6 +80,7 @@ in
     topMargin = 0.9;
   };
 
+  programs.niri.package = pkgs.niri-unstable;
   programs.niri.settings = {
     input = {
       keyboard.xkb = {};
@@ -152,6 +153,9 @@ in
           { app-id = "^kitty$"; }
         ];
         open-on-workspace = "terminal";
+        # background-effect = {
+        #   blur = true;
+        # };
       }
     ];
 
