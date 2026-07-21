@@ -1,5 +1,10 @@
 # no-auto-import
-{ pkgs, lib, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 let
   modpack = pkgs.fetchPackwizModpack {
@@ -16,7 +21,7 @@ in
 
     jvmOpts = "-Xmx16G -Xms16G";
 
-   symlinks = {
+    symlinks = {
       "mods" = "${modpack}/mods";
     };
 

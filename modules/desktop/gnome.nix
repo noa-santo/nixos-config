@@ -1,5 +1,10 @@
 # tags: gnome
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   services.displayManager.gdm.enable = true;
   services.desktopManager.gnome.enable = true;

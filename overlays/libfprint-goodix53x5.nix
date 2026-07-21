@@ -2,26 +2,31 @@ final: prev:
 
 let
   goodixSrc = prev.fetchFromGitHub {
-    owner  = "AndyHazz";
-    repo   = "goodix53x5-libfprint";
-    rev    = "main";
-    hash   = "sha256-wJV4dz2DxpfPUIHPjHcgv8tE3pLHBdhjFOd1E7F3LT4=";
+    owner = "AndyHazz";
+    repo = "goodix53x5-libfprint";
+    rev = "main";
+    hash = "sha256-wJV4dz2DxpfPUIHPjHcgv8tE3pLHBdhjFOd1E7F3LT4=";
   };
 
-in {
+in
+{
   libfprint-goodix53x5 = prev.libfprint.overrideAttrs (old: {
     pname = "libfprint-goodix53x5";
     doCheck = false;
 
-    nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ prev.pkg-config ];
-    buildInputs = (old.buildInputs or []) ++ [ prev.opencv4 prev.openssl prev.glib ];
+    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ prev.pkg-config ];
+    buildInputs = (old.buildInputs or [ ]) ++ [
+      prev.opencv4
+      prev.openssl
+      prev.glib
+    ];
 
     prePatch = (old.prePatch or "") + ''
       cp -r --no-preserve=mode ${goodixSrc}/drivers/goodix53x5 libfprint/drivers/goodix53x5
       cp -r --no-preserve=mode ${goodixSrc}/sigfm libfprint/sigfm
     '';
 
-    patches = (old.patches or []) ++ [ "${goodixSrc}/meson-integration.patch" ];
+    patches = (old.patches or [ ]) ++ [ "${goodixSrc}/meson-integration.patch" ];
 
     postPatch = (old.postPatch or "") + ''
       substituteInPlace libfprint/meson.build \
@@ -54,9 +59,9 @@ in {
     '';
 
     meta = old.meta // {
-      description  = "libfprint with Goodix HTK32 (27c6:5385/5395) driver";
-      homepage     = "https://github.com/AndyHazz/goodix53x5-libfprint";
-      license      = prev.lib.licenses.lgpl21Plus;
+      description = "libfprint with Goodix HTK32 (27c6:5385/5395) driver";
+      homepage = "https://github.com/AndyHazz/goodix53x5-libfprint";
+      license = prev.lib.licenses.lgpl21Plus;
     };
   });
 }

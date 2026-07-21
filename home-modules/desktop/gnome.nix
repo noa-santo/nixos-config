@@ -1,5 +1,11 @@
 # tags: gnome
-{config, pkgs, lib, hostTags ? [], ...}:
+{
+  config,
+  pkgs,
+  lib,
+  hostTags ? [ ],
+  ...
+}:
 let
   isKdeConnect = builtins.elem "kde-connect" hostTags;
 in
@@ -25,9 +31,9 @@ in
       { package = pkgs.gnomeExtensions.rounded-corners; }
       { package = pkgs.gnomeExtensions.messaging-menu; }
       { package = pkgs.gnomeExtensions.top-bar-organizer; }
-    ] ++ lib.optionals (isKdeConnect) [ { package = pkgs.gnomeExtensions.gsconnect; } ];
+    ]
+    ++ lib.optionals (isKdeConnect) [ { package = pkgs.gnomeExtensions.gsconnect; } ];
   };
-
 
   dconf.settings = {
     "org/fedorahosted/background-logo-extension" = {
@@ -60,18 +66,37 @@ in
       notification-flag = 2;
       volume-rate = "0.5376129150390625";
       window-maximized = false;
-      window-position = [  ];
-      window-size = [  ];
+      window-position = [ ];
+      window-size = [ ];
     };
     "org/gnome/TextEditor" = {
       style-variant = "dark";
     };
     "org/gnome/Totem" = {
-      active-plugins = [ "skipto" "recent" "movie-properties" "apple-trailers" "autoload-subtitles" "mpris" "vimeo" "screensaver" "screenshot" "save-file" "open-directory" "rotation" "variable-rate" ];
+      active-plugins = [
+        "skipto"
+        "recent"
+        "movie-properties"
+        "apple-trailers"
+        "autoload-subtitles"
+        "mpris"
+        "vimeo"
+        "screensaver"
+        "screenshot"
+        "save-file"
+        "open-directory"
+        "rotation"
+        "variable-rate"
+      ];
       subtitle-encoding = "UTF-8";
     };
     "org/gnome/Weather" = {
-      locations = [ "Halifax" "CYHZ" "Munich" "EDDM" ];
+      locations = [
+        "Halifax"
+        "CYHZ"
+        "Munich"
+        "EDDM"
+      ];
       window-height = 415;
       window-maximized = false;
       window-width = 440;
@@ -103,8 +128,16 @@ in
       window-size = "(768, 1036)";
     };
     "org/gnome/clocks" = {
-      timers = [ "duration" "name" "pizza" ];
-      world-clocks = [ "location" "Halifax" "CYHZ" ];
+      timers = [
+        "duration"
+        "name"
+        "pizza"
+      ];
+      world-clocks = [
+        "location"
+        "Halifax"
+        "CYHZ"
+      ];
     };
     "org/gnome/clocks/state/window" = {
       maximized = false;
@@ -126,7 +159,12 @@ in
       high-contrast = false;
     };
     "org/gnome/desktop/app-folders" = {
-      folder-children = [ "System" "Utilities" "YaST" "Pardus" ];
+      folder-children = [
+        "System"
+        "Utilities"
+        "YaST"
+        "Pardus"
+      ];
     };
     "org/gnome/desktop/app-folders/folders/Pardus" = {
       categories = [ "X-Pardus-Apps" ];
@@ -134,12 +172,24 @@ in
       translate = true;
     };
     "org/gnome/desktop/app-folders/folders/System" = {
-      apps = [ "org.gnome.baobab.desktop" "org.gnome.DiskUtility.desktop" "org.gnome.Logs.desktop" "org.gnome.SystemMonitor.desktop" ];
+      apps = [
+        "org.gnome.baobab.desktop"
+        "org.gnome.DiskUtility.desktop"
+        "org.gnome.Logs.desktop"
+        "org.gnome.SystemMonitor.desktop"
+      ];
       name = "X-GNOME-Shell-System.directory";
       translate = true;
     };
     "org/gnome/desktop/app-folders/folders/Utilities" = {
-      apps = [ "org.gnome.Connections.desktop" "org.gnome.Evince.desktop" "org.gnome.FileRoller.desktop" "org.gnome.font-viewer.desktop" "org.gnome.Loupe.desktop" "org.gnome.seahorse.Application.desktop" ];
+      apps = [
+        "org.gnome.Connections.desktop"
+        "org.gnome.Evince.desktop"
+        "org.gnome.FileRoller.desktop"
+        "org.gnome.font-viewer.desktop"
+        "org.gnome.Loupe.desktop"
+        "org.gnome.seahorse.Application.desktop"
+      ];
       name = "X-GNOME-Shell-Utilities.directory";
       translate = true;
     };
@@ -165,10 +215,18 @@ in
       play-sound = true;
     };
     "org/gnome/desktop/input-sources" = {
-      mru-sources = [ "xkb" "de+qwerty" ];
+      mru-sources = [
+        "xkb"
+        "de+qwerty"
+      ];
       per-window = false;
       show-all-sources = true;
-      sources = [ "xkb" "de+qwerty" "xkb" "us" ];
+      sources = [
+        "xkb"
+        "de+qwerty"
+        "xkb"
+        "us"
+      ];
       xkb-options = [ "lv3:ralt_switch" ];
     };
     "org/gnome/desktop/interface" = {
@@ -183,15 +241,92 @@ in
       toolkit-accessibility = false;
     };
     "org/gnome/desktop/notifications" = {
-      application-children = [ "org-gnome-software" "firefox" "org-gnome-console" "org-gnome-characters" "ulauncher" "dev-vencord-vesktop" "com-spotify-client" "com-brave-browser" "gnome-power-panel" "org-gnome-nautilus" "org-gnome-builder" "org-gnome-shell-extensions-gsconnect" "io-github-qwersyk-newelle" "org-gnome-evolution-alarm-notify" "com-usebottles-bottles" "com-obsproject-studio" "de-haeckerfelix-fragments" "org-gnome-firmware" "org-gnome-extensions" "org-gnome-tweaks" "org-gnome-boxes" "org-gnome-geary" "com-discordapp-discord" "waydroid" "waydroid-com-android-vending" "waydroid-org-fdroid-fdroid" "waydroid-com-roblox-client" "jetbrains-toolbox" "jetbrains-webstorm-85ec44be-6d8d-42a4-a6e8-29c209125efb" "com-termius-termius" "com-modrinth-modrinthapp" "waydroid-com-android-settings" "waydroid-org-lineageos-jelly" "appimagelaunchersettings" "appimagekit-d8f769bc9f9c41674793686e08ccce5c-obsidian" "jetbrains-goland-de06ab32-1063-42af-9586-deda6ab15947" "sh-ppy-osu" "org-gnome-clocks" "vesktop" "io-github-thaunknown-miru" "jetbrains-pycharm-efc1bfaf-ec1b-4217-86b5-defbcdfb9918" "kitty" "com-dec05eba-gpu-screen-recorder" "audacity" "jetbrains-fleet" "org-gnome-settings" "jetbrains-clion-d1058284-5b80-4e43-9d1f-627829ece02b" "org-gnome-fractal" "filezilla" "com-mattjakeman-extensionmanager" "org-gnome-gitlab-somas-apostrophe" "org-gimp-gimp" "org-gnome-systemmonitor" "org-gnome-shell-extensions" "org-gnome-shell-extensions-gsconnect-preferences" "jetbrains-fleet-db1ed3eb-c0b7-4214-a168-b944380e019c" "org-gnome-texteditor" "org-gnome-lollypop" "org-gnome-terminal" "app-zen-browser-zen" "org-gnome-evince" "org-gnome-ghex" "re-rizin-cutter" "org-ghidra-sre-ghidra" "org-wireshark-wireshark" "com-github-draqzziq-riscvsimulator" "org-bluej-bluej" "xdg-desktop-portal-gnome" "moe-nyarchlinux-updater" "org-manjaro-pamac-manager" "moe-nyarchlinux-assistant" "jetbrains-studio-d9bfc116-8a6b-41d9-87d0-4d14f1833f0a" "org-rncbc-qjackctl" "org-rncbc-qsynth" "com-adrienplazas-metronome" ];
+      application-children = [
+        "org-gnome-software"
+        "firefox"
+        "org-gnome-console"
+        "org-gnome-characters"
+        "ulauncher"
+        "dev-vencord-vesktop"
+        "com-spotify-client"
+        "com-brave-browser"
+        "gnome-power-panel"
+        "org-gnome-nautilus"
+        "org-gnome-builder"
+        "org-gnome-shell-extensions-gsconnect"
+        "io-github-qwersyk-newelle"
+        "org-gnome-evolution-alarm-notify"
+        "com-usebottles-bottles"
+        "com-obsproject-studio"
+        "de-haeckerfelix-fragments"
+        "org-gnome-firmware"
+        "org-gnome-extensions"
+        "org-gnome-tweaks"
+        "org-gnome-boxes"
+        "org-gnome-geary"
+        "com-discordapp-discord"
+        "waydroid"
+        "waydroid-com-android-vending"
+        "waydroid-org-fdroid-fdroid"
+        "waydroid-com-roblox-client"
+        "jetbrains-toolbox"
+        "jetbrains-webstorm-85ec44be-6d8d-42a4-a6e8-29c209125efb"
+        "com-termius-termius"
+        "com-modrinth-modrinthapp"
+        "waydroid-com-android-settings"
+        "waydroid-org-lineageos-jelly"
+        "appimagelaunchersettings"
+        "appimagekit-d8f769bc9f9c41674793686e08ccce5c-obsidian"
+        "jetbrains-goland-de06ab32-1063-42af-9586-deda6ab15947"
+        "sh-ppy-osu"
+        "org-gnome-clocks"
+        "vesktop"
+        "io-github-thaunknown-miru"
+        "jetbrains-pycharm-efc1bfaf-ec1b-4217-86b5-defbcdfb9918"
+        "kitty"
+        "com-dec05eba-gpu-screen-recorder"
+        "audacity"
+        "jetbrains-fleet"
+        "org-gnome-settings"
+        "jetbrains-clion-d1058284-5b80-4e43-9d1f-627829ece02b"
+        "org-gnome-fractal"
+        "filezilla"
+        "com-mattjakeman-extensionmanager"
+        "org-gnome-gitlab-somas-apostrophe"
+        "org-gimp-gimp"
+        "org-gnome-systemmonitor"
+        "org-gnome-shell-extensions"
+        "org-gnome-shell-extensions-gsconnect-preferences"
+        "jetbrains-fleet-db1ed3eb-c0b7-4214-a168-b944380e019c"
+        "org-gnome-texteditor"
+        "org-gnome-lollypop"
+        "org-gnome-terminal"
+        "app-zen-browser-zen"
+        "org-gnome-evince"
+        "org-gnome-ghex"
+        "re-rizin-cutter"
+        "org-ghidra-sre-ghidra"
+        "org-wireshark-wireshark"
+        "com-github-draqzziq-riscvsimulator"
+        "org-bluej-bluej"
+        "xdg-desktop-portal-gnome"
+        "moe-nyarchlinux-updater"
+        "org-manjaro-pamac-manager"
+        "moe-nyarchlinux-assistant"
+        "jetbrains-studio-d9bfc116-8a6b-41d9-87d0-4d14f1833f0a"
+        "org-rncbc-qjackctl"
+        "org-rncbc-qsynth"
+        "com-adrienplazas-metronome"
+      ];
       show-banners = true;
     };
     "org/gnome/desktop/notifications/application/app-zen-browser-zen" = {
       application-id = "app.zen_browser.zen.desktop";
     };
-    "org/gnome/desktop/notifications/application/appimagekit-d8f769bc9f9c41674793686e08ccce5c-obsidian" = {
-      application-id = "appimagekit_d8f769bc9f9c41674793686e08ccce5c-Obsidian.desktop";
-    };
+    "org/gnome/desktop/notifications/application/appimagekit-d8f769bc9f9c41674793686e08ccce5c-obsidian" =
+      {
+        application-id = "appimagekit_d8f769bc9f9c41674793686e08ccce5c-Obsidian.desktop";
+      };
     "org/gnome/desktop/notifications/application/appimagelaunchersettings" = {
       application-id = "appimagelaunchersettings.desktop";
     };
@@ -252,30 +387,36 @@ in
     "org/gnome/desktop/notifications/application/io-github-thaunknown-miru" = {
       application-id = "io.github.thaunknown.miru.desktop";
     };
-    "org/gnome/desktop/notifications/application/jetbrains-clion-d1058284-5b80-4e43-9d1f-627829ece02b" = {
-      application-id = "jetbrains-clion-d1058284-5b80-4e43-9d1f-627829ece02b.desktop";
-    };
-    "org/gnome/desktop/notifications/application/jetbrains-fleet-db1ed3eb-c0b7-4214-a168-b944380e019c" = {
-      application-id = "jetbrains-fleet-db1ed3eb-c0b7-4214-a168-b944380e019c.desktop";
-    };
+    "org/gnome/desktop/notifications/application/jetbrains-clion-d1058284-5b80-4e43-9d1f-627829ece02b" =
+      {
+        application-id = "jetbrains-clion-d1058284-5b80-4e43-9d1f-627829ece02b.desktop";
+      };
+    "org/gnome/desktop/notifications/application/jetbrains-fleet-db1ed3eb-c0b7-4214-a168-b944380e019c" =
+      {
+        application-id = "jetbrains-fleet-db1ed3eb-c0b7-4214-a168-b944380e019c.desktop";
+      };
     "org/gnome/desktop/notifications/application/jetbrains-fleet" = {
       application-id = "jetbrains-fleet.desktop";
     };
-    "org/gnome/desktop/notifications/application/jetbrains-goland-de06ab32-1063-42af-9586-deda6ab15947" = {
-      application-id = "jetbrains-goland-de06ab32-1063-42af-9586-deda6ab15947.desktop";
-    };
-    "org/gnome/desktop/notifications/application/jetbrains-pycharm-efc1bfaf-ec1b-4217-86b5-defbcdfb9918" = {
-      application-id = "jetbrains-pycharm-efc1bfaf-ec1b-4217-86b5-defbcdfb9918.desktop";
-    };
-    "org/gnome/desktop/notifications/application/jetbrains-studio-d9bfc116-8a6b-41d9-87d0-4d14f1833f0a" = {
-      application-id = "jetbrains-studio-d9bfc116-8a6b-41d9-87d0-4d14f1833f0a.desktop";
-    };
+    "org/gnome/desktop/notifications/application/jetbrains-goland-de06ab32-1063-42af-9586-deda6ab15947" =
+      {
+        application-id = "jetbrains-goland-de06ab32-1063-42af-9586-deda6ab15947.desktop";
+      };
+    "org/gnome/desktop/notifications/application/jetbrains-pycharm-efc1bfaf-ec1b-4217-86b5-defbcdfb9918" =
+      {
+        application-id = "jetbrains-pycharm-efc1bfaf-ec1b-4217-86b5-defbcdfb9918.desktop";
+      };
+    "org/gnome/desktop/notifications/application/jetbrains-studio-d9bfc116-8a6b-41d9-87d0-4d14f1833f0a" =
+      {
+        application-id = "jetbrains-studio-d9bfc116-8a6b-41d9-87d0-4d14f1833f0a.desktop";
+      };
     "org/gnome/desktop/notifications/application/jetbrains-toolbox" = {
       application-id = "jetbrains-toolbox.desktop";
     };
-    "org/gnome/desktop/notifications/application/jetbrains-webstorm-85ec44be-6d8d-42a4-a6e8-29c209125efb" = {
-      application-id = "jetbrains-webstorm-85ec44be-6d8d-42a4-a6e8-29c209125efb.desktop";
-    };
+    "org/gnome/desktop/notifications/application/jetbrains-webstorm-85ec44be-6d8d-42a4-a6e8-29c209125efb" =
+      {
+        application-id = "jetbrains-webstorm-85ec44be-6d8d-42a4-a6e8-29c209125efb.desktop";
+      };
     "org/gnome/desktop/notifications/application/kitty" = {
       application-id = "kitty.desktop";
     };
@@ -425,7 +566,12 @@ in
     };
     "org/gnome/desktop/search-providers" = {
       enabled = [ "org.gnome.Weather.desktop" ];
-      sort-order = [ "org.gnome.Settings.desktop" "org.gnome.Contacts.desktop" "org.gnome.Documents.desktop" "org.gnome.Nautilus.desktop" ];
+      sort-order = [
+        "org.gnome.Settings.desktop"
+        "org.gnome.Contacts.desktop"
+        "org.gnome.Documents.desktop"
+        "org.gnome.Nautilus.desktop"
+      ];
     };
     "org/gnome/epiphany/state" = {
       is-maximized = true;
@@ -506,12 +652,12 @@ in
     "org/gnome/gnome-system-monitor/proctree" = {
       col-26-visible = false;
       col-26-width = 0;
-      columns-order = [  ];
+      columns-order = [ ];
       sort-col = 8;
       sort-order = 0;
     };
     "org/gnome/maps" = {
-      last-viewed-location = [  ];
+      last-viewed-location = [ ];
       map-type = "MapsStreetSource";
       osm-username-oauth2 = "bivirus";
       transportation-type = "pedestrian";
@@ -637,12 +783,106 @@ in
       sleep-inactive-battery-type = "suspend";
     };
     "org/gnome/shell" = {
-      app-picker-layout = [ "org.gnome.clocks.desktop" "position" "org.gnome.Totem.desktop" "position" "org.gnome.Weather.desktop" "position" "org.gnome.Maps.desktop" "position" "org.gnome.Calculator.desktop" "position" "org.gnome.Geary.desktop" "position" "simple-scan.desktop" "position" "org.gnome.Settings.desktop" "position" "org.gnome.Terminal.desktop" "position" "moe.nyarchlinux.tour.desktop" "position" "moe.nyarchlinux.customize.desktop" "position" "de.haeckerfelix.Shortwave.desktop" "position" "info.febvre.Komikku.desktop" "position" "com.github.tchx84.Flatseal.desktop" "position" "de.haeckerfelix.Fragments.desktop" "position" "org.gnome.Lollypop.desktop" "position" "webapp-manager.desktop" "position" "chromium.desktop""position" "com.mattjakeman.ExtensionManager.desktop" "position" "org.gnome.Tour.desktop" "position" "Utilities" "position" "org.gnome.PackageUpdater.desktop" "position" "org.gnome.Packages.desktop" "position" "pavucontrol.desktop" "position" "org.gnome.TextEditor.desktop" "position" "appimagelaunchersettings.desktop" "position" "yelp.desktop" "position" "htop.desktop" "position" "kitty.desktop" "position" "cups.desktop" "position" "2613ee0d-5a8a-4cb0-9d8e-4594074d5956" "position" "mpv.desktop" "position" "ezmaint.desktop" "position" "gnome-system-monitor.desktop" "position" "org.gnome.Extensions.desktop" "position" ];
+      app-picker-layout = [
+        "org.gnome.clocks.desktop"
+        "position"
+        "org.gnome.Totem.desktop"
+        "position"
+        "org.gnome.Weather.desktop"
+        "position"
+        "org.gnome.Maps.desktop"
+        "position"
+        "org.gnome.Calculator.desktop"
+        "position"
+        "org.gnome.Geary.desktop"
+        "position"
+        "simple-scan.desktop"
+        "position"
+        "org.gnome.Settings.desktop"
+        "position"
+        "org.gnome.Terminal.desktop"
+        "position"
+        "moe.nyarchlinux.tour.desktop"
+        "position"
+        "moe.nyarchlinux.customize.desktop"
+        "position"
+        "de.haeckerfelix.Shortwave.desktop"
+        "position"
+        "info.febvre.Komikku.desktop"
+        "position"
+        "com.github.tchx84.Flatseal.desktop"
+        "position"
+        "de.haeckerfelix.Fragments.desktop"
+        "position"
+        "org.gnome.Lollypop.desktop"
+        "position"
+        "webapp-manager.desktop"
+        "position"
+        "chromium.desktop"
+        "position"
+        "com.mattjakeman.ExtensionManager.desktop"
+        "position"
+        "org.gnome.Tour.desktop"
+        "position"
+        "Utilities"
+        "position"
+        "org.gnome.PackageUpdater.desktop"
+        "position"
+        "org.gnome.Packages.desktop"
+        "position"
+        "pavucontrol.desktop"
+        "position"
+        "org.gnome.TextEditor.desktop"
+        "position"
+        "appimagelaunchersettings.desktop"
+        "position"
+        "yelp.desktop"
+        "position"
+        "htop.desktop"
+        "position"
+        "kitty.desktop"
+        "position"
+        "cups.desktop"
+        "position"
+        "2613ee0d-5a8a-4cb0-9d8e-4594074d5956"
+        "position"
+        "mpv.desktop"
+        "position"
+        "ezmaint.desktop"
+        "position"
+        "gnome-system-monitor.desktop"
+        "position"
+        "org.gnome.Extensions.desktop"
+        "position"
+      ];
       disable-extension-version-validation = true;
       disable-user-extensions = false;
-      disabled-extensions = [  ];
-      enabled-extensions = [ "blur-my-shell@aunetx" "gsconnect@andyholmes.github.io" "runcat@kolesnikov.se" "drive-menu@gnome-shell-extensions.gcampax.github.com" "yakuake-extension@kde.org" "arcmenu@arcmenu.com" "CustomizeClockOnLockScreen@pratap.fastmail.fm" "just-perfection-desktop@just-perfection" "quick-lofi@eucaue" "reboottouefi@ubaygd.com" "Vitals@CoreCoding.com" "clipboard-indicator@tudmotu.com" "paperwm@paperwm.github.com" "KeepAwake@jepfa.de" "color-picker@tuberry" "appindicatorsupport@rgcjonas.gmail.com" "Rounded_Corners@lennart-k" ];
-      favorite-apps = [ "org.gnome.Calendar.desktop" "org.gnome.Nautilus.desktop" "kitty.desktop" "com.spotify.Client.desktop" ];
+      disabled-extensions = [ ];
+      enabled-extensions = [
+        "blur-my-shell@aunetx"
+        "gsconnect@andyholmes.github.io"
+        "runcat@kolesnikov.se"
+        "drive-menu@gnome-shell-extensions.gcampax.github.com"
+        "yakuake-extension@kde.org"
+        "arcmenu@arcmenu.com"
+        "CustomizeClockOnLockScreen@pratap.fastmail.fm"
+        "just-perfection-desktop@just-perfection"
+        "quick-lofi@eucaue"
+        "reboottouefi@ubaygd.com"
+        "Vitals@CoreCoding.com"
+        "clipboard-indicator@tudmotu.com"
+        "paperwm@paperwm.github.com"
+        "KeepAwake@jepfa.de"
+        "color-picker@tuberry"
+        "appindicatorsupport@rgcjonas.gmail.com"
+        "Rounded_Corners@lennart-k"
+      ];
+      favorite-apps = [
+        "org.gnome.Calendar.desktop"
+        "org.gnome.Nautilus.desktop"
+        "kitty.desktop"
+        "com.spotify.Client.desktop"
+      ];
       last-selected-power-profile = "performance";
       welcome-dialog-last-shown-version = "48.2";
     };
@@ -661,14 +901,45 @@ in
       sleep-inactive-battery-type = "nothing";
     };
     "org/gnome/shell/extensions/arcmenu" = {
-      application-shortcuts = [ "name" "Software" "icon" "org.gnome.Software" "id" "ArcMenu_Software" "name" "Settings" "icon" "org.gnome.Settings" "id" "org.gnome.Settings.desktop" "name" "Tweaks" "icon" "org.gnome.tweaks" "id" "org.gnome.tweaks.desktop" "name" "Activities Overview" "icon" "view-fullscreen-symbolic" "id" "ArcMenu_ActivitiesOverview" "name" "Extension Manager" "icon" "com.mattjakeman.ExtensionManager" "id" "com.mattjakeman.ExtensionManager.desktop" ];
+      application-shortcuts = [
+        "name"
+        "Software"
+        "icon"
+        "org.gnome.Software"
+        "id"
+        "ArcMenu_Software"
+        "name"
+        "Settings"
+        "icon"
+        "org.gnome.Settings"
+        "id"
+        "org.gnome.Settings.desktop"
+        "name"
+        "Tweaks"
+        "icon"
+        "org.gnome.tweaks"
+        "id"
+        "org.gnome.tweaks.desktop"
+        "name"
+        "Activities Overview"
+        "icon"
+        "view-fullscreen-symbolic"
+        "id"
+        "ArcMenu_ActivitiesOverview"
+        "name"
+        "Extension Manager"
+        "icon"
+        "com.mattjakeman.ExtensionManager"
+        "id"
+        "com.mattjakeman.ExtensionManager.desktop"
+      ];
       application-shortcuts-list = "@aas []";
       button-item-icon-size = "Small";
       custom-menu-button-icon-size = "23.0";
       dash-to-panel-standalone = false;
       disable-recently-installed-apps = true;
       distro-icon = 22;
-      extra-categories = [  ];
+      extra-categories = [ ];
       force-menu-location = "Off";
       highlight-search-result-terms = true;
       hotkey-open-primary-monitor = true;
@@ -693,13 +964,18 @@ in
       multi-monitor = true;
       override-menu-theme = true;
       pinned-app-list = "@as []";
-      pinned-apps = [ "name" "Files" "id" "org.gnome.Nautilus.desktop" ];
+      pinned-apps = [
+        "name"
+        "Files"
+        "id"
+        "org.gnome.Nautilus.desktop"
+      ];
       pop-folders-data = "{'Library Home': 'Library Home', 'Utilities': 'Utilities', 'System': 'System'}";
       position-in-panel = "Left";
       power-display-style = "Menu";
-      power-options = [  ];
+      power-options = [ ];
       prefs-visible-page = 0;
-      recently-installed-apps = [];
+      recently-installed-apps = [ ];
       runner-hotkey-open-primary-monitor = false;
       search-entry-border-radius = "(true, 25)";
       search-provider-open-windows = true;
@@ -732,11 +1008,11 @@ in
       toggle-menu = [ "<Shift><Super>v" ];
     };
     "org/gnome/shell/extensions/color-picker" = {
-      color-history = [  ];
+      color-history = [ ];
       preview-style = "uint32 1";
     };
     "org/gnome/shell/extensions/gsconnect" = {
-      devices = [];
+      devices = [ ];
       enabled = true;
       name = "nixos";
       show-indicators = false;
@@ -765,7 +1041,12 @@ in
     };
     "org/gnome/shell/extensions/paperwm" = {
       animation-time = "0.19999999999999996";
-      cycle-width-steps = [0.38195000000000001 0.5 0.61804000000000003 1.0];
+      cycle-width-steps = [
+        0.38195000000000001
+        0.5
+        0.61804000000000003
+        1.0
+      ];
       horizontal-margin = 4;
       last-used-display-server = "Wayland";
       open-window-position = 0;
@@ -788,7 +1069,12 @@ in
       switch-right = [ "" ];
     };
     "org/gnome/shell/extensions/paperwm/workspaces" = {
-      list = [ "dee7f8c6-fcb9-468c-989a-5997725f997c" "50de0e8d-319a-4b63-a674-583de3def5c1" "60a3ca08-0524-4546-a314-1bd7ca9b9474" "88249277-7bad-4df2-a51e-04fb0b606557" ];
+      list = [
+        "dee7f8c6-fcb9-468c-989a-5997725f997c"
+        "50de0e8d-319a-4b63-a674-583de3def5c1"
+        "60a3ca08-0524-4546-a314-1bd7ca9b9474"
+        "88249277-7bad-4df2-a51e-04fb0b606557"
+      ];
     };
     "org/gnome/shell/extensions/paperwm/workspaces/50de0e8d-319a-4b63-a674-583de3def5c1" = {
       index = 1;
@@ -806,7 +1092,11 @@ in
     };
     "org/gnome/shell/extensions/quick-lofi" = {
       current-radio-playing = "";
-      radios = [ "Lofi Girl - https://play.streamafrica.net/lofiradio - wlx|EB=^g<" "Lofi Hunter - https://live.hunter.fm/lofi_high - yUV;c$X7yJ" "Lofi Hip-hop - http://hyades.shoutca.st:8043/stream - aJ}M#=8u@|" ];
+      radios = [
+        "Lofi Girl - https://play.streamafrica.net/lofiradio - wlx|EB=^g<"
+        "Lofi Hunter - https://live.hunter.fm/lofi_high - yUV;c$X7yJ"
+        "Lofi Hip-hop - http://hyades.shoutca.st:8043/stream - aJ}M#=8u@|"
+      ];
       volume = 11;
     };
     "org/gnome/shell/extensions/runcat" = {
@@ -826,15 +1116,21 @@ in
       battery-slot = 0;
       hide-icons = false;
       hide-zeros = true;
-      hot-sensors = ["_memory_usage_" "_processor_usage_" "__network-rx_max__" "_storage_free_" "__temperature_avg__"];
+      hot-sensors = [
+        "_memory_usage_"
+        "_processor_usage_"
+        "__network-rx_max__"
+        "_storage_free_"
+        "__temperature_avg__"
+      ];
       icon-style = 1;
       include-static-gpu-info = false;
       include-static-info = true;
       menu-centered = true;
       show-battery = false;
-      show-fan=false;
+      show-fan = false;
       show-gpu = false;
-      show-voltage=false;
+      show-voltage = false;
       update-time = 1;
       use-higher-precision = false;
     };
@@ -850,12 +1146,31 @@ in
       mute = true;
       show-panel-menu = true;
       video-path = "${config.home.homeDirectory}/Downloads/106557-673518279_small.mp4";
-      volume=50;
+      volume = 50;
     };
     "org/gnome/shell/extensions/top-bar-organizer" = {
-      right-box-order=["quick-lofi@eucaue" "color-picker@tuberry" "messageMenu" "runcat-indicator" "vitalsMenu" "clipboardIndicator" "screenRecording" "screenSharing" "dwellClick" "a11y" "keyboard" "quickSettings"];
-      left-box-order = ["ArcMenu" "WorkspaceMenu" "FocusButton" "OpenPositionButton" "activities"];
-      center-box-order = ["dateMenu"];
+      right-box-order = [
+        "quick-lofi@eucaue"
+        "color-picker@tuberry"
+        "messageMenu"
+        "runcat-indicator"
+        "vitalsMenu"
+        "clipboardIndicator"
+        "screenRecording"
+        "screenSharing"
+        "dwellClick"
+        "a11y"
+        "keyboard"
+        "quickSettings"
+      ];
+      left-box-order = [
+        "ArcMenu"
+        "WorkspaceMenu"
+        "FocusButton"
+        "OpenPositionButton"
+        "activities"
+      ];
+      center-box-order = [ "dateMenu" ];
     };
 
     "org/gnome/shell/keybindings" = {
@@ -866,10 +1181,18 @@ in
     };
     "org/gnome/shell/weather" = {
       automatic-location = true;
-      locations = [ "Halifax" "CYHZ" "Munich" "EDDM" ];
+      locations = [
+        "Halifax"
+        "CYHZ"
+        "Munich"
+        "EDDM"
+      ];
     };
     "org/gnome/shell/world-clocks" = {
-      locations = [ "Halifax" "CYHZ" ];
+      locations = [
+        "Halifax"
+        "CYHZ"
+      ];
     };
     "org/gnome/system/location" = {
       enabled = true;
@@ -879,7 +1202,7 @@ in
       show-extensions-notice = false;
     };
     "org/gtk/gtk4/settings/color-chooser" = {
-      custom-colors = [  ];
+      custom-colors = [ ];
       selected-color = "(true, 1.0, 0.0, 0.0, 1.0)";
     };
     "org/gtk/gtk4/settings/file-chooser" = {

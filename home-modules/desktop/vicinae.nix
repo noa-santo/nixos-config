@@ -1,4 +1,10 @@
-{ inputs, pkgs, lib, hostTags ? [], ... }:
+{
+  inputs,
+  pkgs,
+  lib,
+  hostTags ? [ ],
+  ...
+}:
 let
   isNiri = builtins.elem "niri" hostTags;
 in
@@ -43,18 +49,21 @@ in
         opacity = 0.98;
       };
     };
-    extensions = with inputs.vicinae-extensions.packages.${pkgs.stdenv.hostPlatform.system}; [
-       # bluetooth temp disabled till fixed todo
-       nix
-       power-profile
-       color-converter
-       github
-       port-killer
-       wifi-commander
-       process-manager
-       wikipedia
-       player-pilot
-       it-tools
-    ] ++ lib.optionals (isNiri) [ niri ];
+    extensions =
+      with inputs.vicinae-extensions.packages.${pkgs.stdenv.hostPlatform.system};
+      [
+        # bluetooth temp disabled till fixed todo
+        nix
+        power-profile
+        color-converter
+        github
+        port-killer
+        wifi-commander
+        process-manager
+        wikipedia
+        player-pilot
+        it-tools
+      ]
+      ++ lib.optionals (isNiri) [ niri ];
   };
 }

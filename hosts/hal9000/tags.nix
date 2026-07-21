@@ -1,1 +1,8 @@
-["desktop" "server" "sway" "minecraft" "docker" "dev"]
+[
+  "desktop"
+  "server"
+  "sway"
+  "minecraft"
+  "docker"
+  "dev"
+]

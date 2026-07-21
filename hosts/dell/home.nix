@@ -1,4 +1,10 @@
-{ pkgs, osConfig, inputs, lib, ... }:
+{
+  pkgs,
+  osConfig,
+  inputs,
+  lib,
+  ...
+}:
 {
   imports = [
     ../../home-modules/all.nix

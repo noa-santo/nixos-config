@@ -1,18 +1,38 @@
 # tags: niri
-{ pkgs, lib, config, inputs, hostTags, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  inputs,
+  hostTags,
+  ...
+}:
 
 let
   isKdeConnect = builtins.elem "kde-connect" hostTags;
 
   c = {
-    base     = "#1e1e2e"; mantle   = "#181825"; crust    = "#11111b";
-    s0       = "#313244"; s1       = "#45475a"; s2       = "#585b70";
-    ov0      = "#6c7086"; ov2      = "#9399b2";
-    text     = "#cdd6f4"; subtext  = "#a6adc8";
-    mauve    = "#cba6f7"; blue     = "#89b4fa"; lavender = "#b4befe";
-    sapphire = "#74c7ec"; teal     = "#94e2d5"; green    = "#a6e3a1";
-    yellow   = "#f9e2af"; peach    = "#fab387"; red      = "#f38ba8";
-    pink     = "#f5c2e7"; sky      = "#89dceb";
+    base = "#1e1e2e";
+    mantle = "#181825";
+    crust = "#11111b";
+    s0 = "#313244";
+    s1 = "#45475a";
+    s2 = "#585b70";
+    ov0 = "#6c7086";
+    ov2 = "#9399b2";
+    text = "#cdd6f4";
+    subtext = "#a6adc8";
+    mauve = "#cba6f7";
+    blue = "#89b4fa";
+    lavender = "#b4befe";
+    sapphire = "#74c7ec";
+    teal = "#94e2d5";
+    green = "#a6e3a1";
+    yellow = "#f9e2af";
+    peach = "#fab387";
+    red = "#f38ba8";
+    pink = "#f5c2e7";
+    sky = "#89dceb";
   };
 
   screenshotScript = pkgs.writeShellScriptBin "niri-screenshot" ''
@@ -56,40 +76,40 @@ in
   fonts.fontconfig.enable = true;
 
   services.mako = {
-    enable       = true;
+    enable = true;
     settings = {
-      font         = "JetBrains Mono 11";
+      font = "JetBrains Mono 11";
       backgroundColor = c.base;
-      textColor    = c.text;
-      borderColor  = c.mauve;
+      textColor = c.text;
+      borderColor = c.mauve;
       borderRadius = 10;
-      borderSize   = 2;
+      borderSize = 2;
       defaultTimeout = 5000;
-      padding      = "12,16";
-      margin       = "8";
-      width        = 380;
+      padding = "12,16";
+      margin = "8";
+      width = 380;
     };
-    extraConfig  = ''
+    extraConfig = ''
       [urgency=high]
       border-color=${c.red}
     '';
   };
 
   services.swayosd = {
-    enable    = true;
+    enable = true;
     topMargin = 0.9;
   };
 
   programs.niri.package = pkgs.niri-stable;
   programs.niri.settings = {
     input = {
-      keyboard.xkb = {};
+      keyboard.xkb = { };
       touchpad = {
-        tap              = true;
-        dwt              = true;
-        natural-scroll   = true;
+        tap = true;
+        dwt = true;
+        natural-scroll = true;
         middle-emulation = true;
-        scroll-method    = "two-finger";
+        scroll-method = "two-finger";
       };
       mouse.natural-scroll = true;
       focus-follows-mouse = {
@@ -107,29 +127,37 @@ in
     layout = {
       gaps = 8;
       border = {
-        enable   = true;
-        width    = 2;
-        active   = { color = c.mauve; };
-        inactive = { color = c.s0; };
-        urgent   = { color = c.red; };
+        enable = true;
+        width = 2;
+        active = {
+          color = c.mauve;
+        };
+        inactive = {
+          color = c.s0;
+        };
+        urgent = {
+          color = c.red;
+        };
       };
-      focus-ring.enable  = false;
-      background-color   = c.base;
-      shadow.enable      = true;
-      shadow.color       = "#00000066";
+      focus-ring.enable = false;
+      background-color = c.base;
+      shadow.enable = true;
+      shadow.color = "#00000066";
     };
 
     window-rules = [
       {
-        matches = [{ }];
+        matches = [ { } ];
         geometry-corner-radius = {
-          top-left = 12.0; top-right = 12.0;
-          bottom-left = 12.0; bottom-right = 12.0;
+          top-left = 12.0;
+          top-right = 12.0;
+          bottom-left = 12.0;
+          bottom-right = 12.0;
         };
         clip-to-geometry = true;
       }
       {
-        matches = [{ app-id = "^zen-beta$"; }];
+        matches = [ { app-id = "^zen-beta$"; } ];
         open-on-workspace = "browser";
       }
       {
@@ -161,28 +189,47 @@ in
 
     layer-rules = [
       {
-        matches = [{ namespace = "^waybar$"; }];
+        matches = [ { namespace = "^waybar$"; } ];
         geometry-corner-radius = {
-          top-left = 12.0; top-right = 12.0;
-          bottom-left = 12.0; bottom-right = 12.0;
+          top-left = 12.0;
+          top-right = 12.0;
+          bottom-left = 12.0;
+          bottom-right = 12.0;
         };
         shadow.enable = true;
       }
       {
-        matches = [{ namespace = "^notifications$"; }];
+        matches = [ { namespace = "^notifications$"; } ];
         geometry-corner-radius = {
-          top-left = 10.0; top-right = 10.0;
-          bottom-left = 10.0; bottom-right = 10.0;
+          top-left = 10.0;
+          top-right = 10.0;
+          bottom-left = 10.0;
+          bottom-right = 10.0;
         };
         shadow.enable = true;
       }
     ];
 
     spawn-at-startup = [
-      { argv = [ "swaybg" "--image" "${config.home.homeDirectory}/.config/nixos-config/assets/wallpapers/blob.webp" "--mode" "fill" ]; }
-      { argv = [ "vicinae" "server" "--replace" ]; }
+      {
+        argv = [
+          "swaybg"
+          "--image"
+          "${config.home.homeDirectory}/.config/nixos-config/assets/wallpapers/blob.webp"
+          "--mode"
+          "fill"
+        ];
+      }
+      {
+        argv = [
+          "vicinae"
+          "server"
+          "--replace"
+        ];
+      }
       { argv = [ "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh" ]; }
-    ] ++ lib.optionals (isKdeConnect) [
+    ]
+    ++ lib.optionals (isKdeConnect) [
       { argv = [ "kdeconnectd" ]; }
     ];
 
@@ -211,68 +258,104 @@ in
     };
 
     workspaces = {
-      "terminal" = {};
-      "social" = {};
-      "ide" = {};
-      "browser" = {};
+      "terminal" = { };
+      "social" = { };
+      "ide" = { };
+      "browser" = { };
     };
 
     binds = {
       "Mod+Shift+Slash".action.show-hotkey-overlay = [ ];
 
-      "Mod+D".action.spawn       = [ "vicinae" "open" ];
+      "Mod+D".action.spawn = [
+        "vicinae"
+        "open"
+      ];
       "Mod+Shift+D".action.spawn = [ "fuzzel" ];
-      "Mod+Return".action.spawn   = [ "kitty" ];
+      "Mod+Return".action.spawn = [ "kitty" ];
 
       # Screenshots
-      "Print".action.spawn       = "${screenshotScript}/bin/niri-screenshot";
+      "Print".action.spawn = "${screenshotScript}/bin/niri-screenshot";
       "Shift+Print".action.spawn = "${screenshotSelectScript}/bin/niri-screenshot-select";
 
       # Brightness
-      "XF86MonBrightnessUp".action.spawn   = [ "swayosd-client" "--brightness" "raise" ];
-      "XF86MonBrightnessDown".action.spawn = [ "swayosd-client" "--brightness" "lower" ];
+      "XF86MonBrightnessUp".action.spawn = [
+        "swayosd-client"
+        "--brightness"
+        "raise"
+      ];
+      "XF86MonBrightnessDown".action.spawn = [
+        "swayosd-client"
+        "--brightness"
+        "lower"
+      ];
 
       # Volume
-      "XF86AudioRaiseVolume".action.spawn = [ "swayosd-client" "--output-volume" "raise" ];
-      "XF86AudioLowerVolume".action.spawn = [ "swayosd-client" "--output-volume" "lower" ];
-      "XF86AudioMute".action.spawn        = [ "swayosd-client" "--output-volume" "mute-toggle" ];
-      "XF86AudioMicMute".action.spawn     = [ "swayosd-client" "--input-volume" "mute-toggle" ];
+      "XF86AudioRaiseVolume".action.spawn = [
+        "swayosd-client"
+        "--output-volume"
+        "raise"
+      ];
+      "XF86AudioLowerVolume".action.spawn = [
+        "swayosd-client"
+        "--output-volume"
+        "lower"
+      ];
+      "XF86AudioMute".action.spawn = [
+        "swayosd-client"
+        "--output-volume"
+        "mute-toggle"
+      ];
+      "XF86AudioMicMute".action.spawn = [
+        "swayosd-client"
+        "--input-volume"
+        "mute-toggle"
+      ];
 
       # Media
-      "XF86AudioPlay".action.spawn = [ "playerctl" "play-pause" ];
-      "XF86AudioNext".action.spawn = [ "playerctl" "next" ];
-      "XF86AudioPrev".action.spawn = [ "playerctl" "previous" ];
+      "XF86AudioPlay".action.spawn = [
+        "playerctl"
+        "play-pause"
+      ];
+      "XF86AudioNext".action.spawn = [
+        "playerctl"
+        "next"
+      ];
+      "XF86AudioPrev".action.spawn = [
+        "playerctl"
+        "previous"
+      ];
 
       # Window / column navigation
       "Mod+Shift+Q".action.close-window = [ ];
 
-      "Mod+Left".action.focus-column-left   = [ ];
-      "Mod+Down".action.focus-window-down   = [ ];
-      "Mod+Up".action.focus-window-up       = [ ];
+      "Mod+Left".action.focus-column-left = [ ];
+      "Mod+Down".action.focus-window-down = [ ];
+      "Mod+Up".action.focus-window-up = [ ];
       "Mod+Right".action.focus-column-right = [ ];
-      "Mod+H".action.focus-column-left      = [ ];
-      "Mod+J".action.focus-window-down      = [ ];
-      "Mod+K".action.focus-window-up        = [ ];
-      "Mod+L".action.focus-column-right     = [ ];
+      "Mod+H".action.focus-column-left = [ ];
+      "Mod+J".action.focus-window-down = [ ];
+      "Mod+K".action.focus-window-up = [ ];
+      "Mod+L".action.focus-column-right = [ ];
 
-      "Mod+Shift+Left".action.move-column-left   = [ ];
-      "Mod+Shift+Down".action.move-window-down   = [ ];
-      "Mod+Shift+Up".action.move-window-up       = [ ];
+      "Mod+Shift+Left".action.move-column-left = [ ];
+      "Mod+Shift+Down".action.move-window-down = [ ];
+      "Mod+Shift+Up".action.move-window-up = [ ];
       "Mod+Shift+Right".action.move-column-right = [ ];
-      "Mod+Shift+H".action.move-column-left      = [ ];
-      "Mod+Shift+J".action.move-window-down      = [ ];
-      "Mod+Shift+K".action.move-window-up        = [ ];
-      "Mod+Shift+L".action.move-column-right     = [ ];
+      "Mod+Shift+H".action.move-column-left = [ ];
+      "Mod+Shift+J".action.move-window-down = [ ];
+      "Mod+Shift+K".action.move-window-up = [ ];
+      "Mod+Shift+L".action.move-column-right = [ ];
 
-      "Mod+Ctrl+Left".action.consume-or-expel-window-left   = [ ];
+      "Mod+Ctrl+Left".action.consume-or-expel-window-left = [ ];
       "Mod+Ctrl+Right".action.consume-or-expel-window-right = [ ];
-      "Mod+Ctrl+H".action.consume-or-expel-window-left      = [ ];
-      "Mod+Ctrl+L".action.consume-or-expel-window-right     = [ ];
+      "Mod+Ctrl+H".action.consume-or-expel-window-left = [ ];
+      "Mod+Ctrl+L".action.consume-or-expel-window-right = [ ];
 
-      "Mod+Home".action.focus-column-first      = [ ];
-      "Mod+End".action.focus-column-last        = [ ];
+      "Mod+Home".action.focus-column-first = [ ];
+      "Mod+End".action.focus-column-last = [ ];
       "Mod+Shift+Home".action.move-column-to-first = [ ];
-      "Mod+Shift+End".action.move-column-to-last   = [ ];
+      "Mod+Shift+End".action.move-column-to-last = [ ];
 
       "Mod+1".action.focus-workspace = "browser";
       "Mod+2".action.focus-workspace = "ide";
@@ -297,18 +380,18 @@ in
       "Mod+Shift+0".action.move-column-to-workspace = 10;
 
       "Mod+Page_Down".action.focus-workspace-down = [ ];
-      "Mod+Page_Up".action.focus-workspace-up     = [ ];
+      "Mod+Page_Up".action.focus-workspace-up = [ ];
 
       "Mod+Comma".action.consume-window-into-column = [ ];
-      "Mod+Period".action.expel-window-from-column  = [ ];
+      "Mod+Period".action.expel-window-from-column = [ ];
 
-      "Mod+R".action.switch-preset-column-width       = [ ];
+      "Mod+R".action.switch-preset-column-width = [ ];
       "Mod+Shift+R".action.switch-preset-column-width-back = [ ];
-      "Mod+F".action.maximize-column        = [ ];
+      "Mod+F".action.maximize-column = [ ];
       "Mod+Shift+F".action.fullscreen-window = [ ];
-      "Mod+V".action.toggle-window-floating  = [ ];
+      "Mod+V".action.toggle-window-floating = [ ];
       "Mod+W".action.toggle-column-tabbed-display = [ ];
-      "Mod+O".action.toggle-overview         = [ ];
+      "Mod+O".action.toggle-overview = [ ];
 
       "Mod+Shift+E".action.quit = [ ];
     };

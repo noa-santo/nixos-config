@@ -25,7 +25,6 @@
       cursor_trail = 1;
     };
 
-
     keybindings = {
       "ctrl+shift+enter" = "new_window";
       "ctrl+shift+t" = "new_tab";

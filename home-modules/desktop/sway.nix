@@ -1,16 +1,34 @@
 # tags: sway
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
   c = {
-    base     = "#1e1e2e"; mantle   = "#181825"; crust    = "#11111b";
-    s0       = "#313244"; s1       = "#45475a"; s2       = "#585b70";
-    ov0      = "#6c7086"; ov2      = "#9399b2";
-    text     = "#cdd6f4"; subtext  = "#a6adc8";
-    mauve    = "#cba6f7"; blue     = "#89b4fa"; lavender = "#b4befe";
-    sapphire = "#74c7ec"; teal     = "#94e2d5"; green    = "#a6e3a1";
-    yellow   = "#f9e2af"; peach    = "#fab387"; red      = "#f38ba8";
-    pink     = "#f5c2e7"; sky      = "#89dceb";
+    base = "#1e1e2e";
+    mantle = "#181825";
+    crust = "#11111b";
+    s0 = "#313244";
+    s1 = "#45475a";
+    s2 = "#585b70";
+    ov0 = "#6c7086";
+    ov2 = "#9399b2";
+    text = "#cdd6f4";
+    subtext = "#a6adc8";
+    mauve = "#cba6f7";
+    blue = "#89b4fa";
+    lavender = "#b4befe";
+    sapphire = "#74c7ec";
+    teal = "#94e2d5";
+    green = "#a6e3a1";
+    yellow = "#f9e2af";
+    peach = "#fab387";
+    red = "#f38ba8";
+    pink = "#f5c2e7";
+    sky = "#89dceb";
   };
 
   cheatsheetScript = pkgs.writeShellScriptBin "sway-cheatsheet" ''
@@ -98,20 +116,20 @@ in
   fonts.fontconfig.enable = true;
 
   services.mako = {
-    enable       = true;
+    enable = true;
     settings = {
-      font         = "JetBrains Mono 11";
+      font = "JetBrains Mono 11";
       backgroundColor = c.base;
-      textColor    = c.text;
-      borderColor  = c.mauve;
+      textColor = c.text;
+      borderColor = c.mauve;
       borderRadius = 10;
-      borderSize   = 2;
+      borderSize = 2;
       defaultTimeout = 5000;
-      padding      = "12,16";
-      margin       = "8";
-      width        = 380;
+      padding = "12,16";
+      margin = "8";
+      width = 380;
     };
-    extraConfig  = ''
+    extraConfig = ''
       [urgency=high]
       border-color=${c.red}
     '';
@@ -168,13 +186,13 @@ in
   '';
 
   services.swayosd = {
-      enable = true;
-      topMargin = 0.9;
-    };
+    enable = true;
+    topMargin = 0.9;
+  };
 
   wayland.windowManager.sway = {
-    enable     = true;
-    package    = pkgs.swayfx;
+    enable = true;
+    package = pkgs.swayfx;
     checkConfig = false;
     wrapperFeatures.gtk = true;
 
@@ -182,61 +200,87 @@ in
       terminal = "kitty";
       modifier = "Mod4";
 
-      bars = [{ command = "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh"; }];
+      bars = [ { command = "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh"; } ];
 
       fonts = {
-        names = [ "JetBrainsMono Nerd Font" "Font Awesome 6 Free" ];
-        size  = 11.0;
+        names = [
+          "JetBrainsMono Nerd Font"
+          "Font Awesome 6 Free"
+        ];
+        size = 11.0;
       };
 
       gaps = {
-        inner        = 8;
-        outer        = 6;
+        inner = 8;
+        outer = 6;
         smartBorders = "on";
-        smartGaps    = true;
+        smartGaps = true;
       };
 
       window = {
-        border   = 2;
+        border = 2;
         titlebar = false;
         commands = [
           {
-            criteria = { title = "Sway Keybindings"; };
-            command  = "floating enable, border none, opacity 0.92, move position center";
+            criteria = {
+              title = "Sway Keybindings";
+            };
+            command = "floating enable, border none, opacity 0.92, move position center";
           }
           {
-            criteria = { app_id = "wofi"; };
-            command  = "floating enable, border none, resize set width 640 height 480, move position center";
+            criteria = {
+              app_id = "wofi";
+            };
+            command = "floating enable, border none, resize set width 640 height 480, move position center";
           }
           {
-            criteria = { app_id = "pavucontrol"; };
-            command  = "floating enable, resize set width 700 height 500, move position center";
+            criteria = {
+              app_id = "pavucontrol";
+            };
+            command = "floating enable, resize set width 700 height 500, move position center";
           }
           {
-            criteria = { window_type = "dialog"; };
-            command  = "floating enable, move position center";
+            criteria = {
+              window_type = "dialog";
+            };
+            command = "floating enable, move position center";
           }
         ];
       };
 
-      floating = { border = 2; titlebar = false; };
+      floating = {
+        border = 2;
+        titlebar = false;
+      };
 
       colors = {
         focused = {
-          border = c.mauve; background = c.base; text = c.text;
-          indicator = c.mauve; childBorder = c.mauve;
+          border = c.mauve;
+          background = c.base;
+          text = c.text;
+          indicator = c.mauve;
+          childBorder = c.mauve;
         };
         unfocused = {
-          border = c.s0; background = c.base; text = c.ov0;
-          indicator = c.s1; childBorder = c.s0;
+          border = c.s0;
+          background = c.base;
+          text = c.ov0;
+          indicator = c.s1;
+          childBorder = c.s0;
         };
         focusedInactive = {
-          border = c.s0; background = c.base; text = c.ov0;
-          indicator = c.s1; childBorder = c.s0;
+          border = c.s0;
+          background = c.base;
+          text = c.ov0;
+          indicator = c.s1;
+          childBorder = c.s0;
         };
         urgent = {
-          border = c.red; background = c.base; text = c.text;
-          indicator = c.red; childBorder = c.red;
+          border = c.red;
+          background = c.base;
+          text = c.text;
+          indicator = c.red;
+          childBorder = c.red;
         };
       };
 
@@ -245,46 +289,50 @@ in
           natural_scroll = "enabled";
         };
         "type:touchpad" = {
-          natural_scroll   = "enabled";
-          tap              = "enabled";
-          dwt              = "enabled";
+          natural_scroll = "enabled";
+          tap = "enabled";
+          dwt = "enabled";
           middle_emulation = "enabled";
-          scroll_method    = "two_finger";
+          scroll_method = "two_finger";
         };
         "type:keyboard" = {
           repeat_delay = "300";
-          repeat_rate  = "50";
+          repeat_rate = "50";
         };
       };
 
       output."*" = {
-        bg    = "~/.config/nixos-config/assets/wallpapers/blob.webp fill";
+        bg = "~/.config/nixos-config/assets/wallpapers/blob.webp fill";
         scale = "1";
       };
 
-      keybindings = let mod = "Mod4"; in lib.mkOptionDefault {
-        "${mod}+d"       = ''exec vicinae open'';
-        "${mod}+Shift+d" = ''exec wofi --show run'';
+      keybindings =
+        let
+          mod = "Mod4";
+        in
+        lib.mkOptionDefault {
+          "${mod}+d" = "exec vicinae open";
+          "${mod}+Shift+d" = "exec wofi --show run";
 
-        # Screenshots
-        "Print"       = "exec sway-screenshot";
-        "Shift+Print" = "exec sway-screenshot-select";
+          # Screenshots
+          "Print" = "exec sway-screenshot";
+          "Shift+Print" = "exec sway-screenshot-select";
 
-        # Brightness
-        "XF86MonBrightnessUp"   = "exec swayosd-client --brightness raise";
-        "XF86MonBrightnessDown" = "exec swayosd-client --brightness lower";
+          # Brightness
+          "XF86MonBrightnessUp" = "exec swayosd-client --brightness raise";
+          "XF86MonBrightnessDown" = "exec swayosd-client --brightness lower";
 
-        # Volume
-        "XF86AudioRaiseVolume"  = "exec swayosd-client --output-volume raise";
-        "XF86AudioLowerVolume"  = "exec swayosd-client --output-volume lower";
-        "XF86AudioMute"         = "exec swayosd-client --output-volume mute-toggle";
-        "XF86AudioMicMute"      = "exec swayosd-client --input-volume mute-toggle";
+          # Volume
+          "XF86AudioRaiseVolume" = "exec swayosd-client --output-volume raise";
+          "XF86AudioLowerVolume" = "exec swayosd-client --output-volume lower";
+          "XF86AudioMute" = "exec swayosd-client --output-volume mute-toggle";
+          "XF86AudioMicMute" = "exec swayosd-client --input-volume mute-toggle";
 
-        # Lock
-        "${mod}+Shift+l" = "exec swaylock -f -c 1e1e2e";
+          # Lock
+          "${mod}+Shift+l" = "exec swaylock -f -c 1e1e2e";
 
-        "${mod}+XF86AudioMute" = "exec sway-cheatsheet";
-      };
+          "${mod}+XF86AudioMute" = "exec sway-cheatsheet";
+        };
     };
 
     extraConfig = ''

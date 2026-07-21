@@ -1,5 +1,10 @@
 # tags: dev
-{ pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  inputs,
+  lib,
+  ...
+}:
 let
   pythonEnv = pkgs.writeShellScriptBin "python-env" ''
     exec nix develop $HOME/.config/nixos-config#python --command ${pkgs.fish}/bin/fish
@@ -35,7 +40,8 @@ let
   jetbrainsPlugins = inputs.nix-jetbrains-plugins.lib.pluginsForIde pkgs pkgs.jetbrains.idea [
     "com.github.copilot"
   ];
-in {
+in
+{
   environment.systemPackages = with pkgs; [
     (jetbrains.plugins.addPlugins jetbrains.idea (lib.attrValues jetbrainsPlugins))
     pythonEnv

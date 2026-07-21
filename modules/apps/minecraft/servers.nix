@@ -1,5 +1,10 @@
 # tags: minecraft, server
-{ pkgs, lib, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 {
 
@@ -9,11 +14,11 @@
   ];
 
   environment.systemPackages = with pkgs; [
-   tmux
+    tmux
     (pkgs.writeShellScriptBin "mc-attach" ''
-       exec sudo tmux -S /run/minecraft/"$1".sock attach
-     '')
-   ];
+      exec sudo tmux -S /run/minecraft/"$1".sock attach
+    '')
+  ];
 
   networking.firewall.allowedUDPPorts = [ 19132 ];
 

@@ -1,5 +1,10 @@
 # tags: kde-connect
-{ pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  inputs,
+  lib,
+  ...
+}:
 
 let
   toolchain = inputs.fenix.packages.${pkgs.stdenv.hostPlatform.system}.latest.toolchain;
@@ -18,8 +23,14 @@ let
     };
     cargoHash = "sha256-8es8y/d+mToWGcDfIPHtlogKiUJ+MjFCw5USRBRBCjg=";
     doCheck = false;
-    nativeBuildInputs = [ pkgs.pkg-config pkgs.makeWrapper ];
-    buildInputs = [ pkgs.glib pkgs.dbus ];
+    nativeBuildInputs = [
+      pkgs.pkg-config
+      pkgs.makeWrapper
+    ];
+    buildInputs = [
+      pkgs.glib
+      pkgs.dbus
+    ];
 
     postInstall = ''
       wrapProgram $out/bin/kdeconnect_waybar \
@@ -52,10 +63,10 @@ in
           notification_single_format = "  -{CustomIcon} : {Title}\n{Content}\n";
           app_icons = {
             "Instagram" = "";
-          	"Snapchat" = "";
-          	"YouTube" = "󰗃";
-          	"WhatsApp" = "";
-          	"Discord" = "";
+            "Snapchat" = "";
+            "YouTube" = "󰗃";
+            "WhatsApp" = "";
+            "Discord" = "";
           };
           notifications_count_text = {
             "1" = "󰲠";

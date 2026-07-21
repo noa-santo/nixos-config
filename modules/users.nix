@@ -1,4 +1,9 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   options = {
@@ -12,7 +17,12 @@
     users.users.${config.mainUser} = {
       isNormalUser = true;
       description = lib.mkDefault config.mainUser;
-      extraGroups = [ "networkmanager" "wheel" "video" "input" ];
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+        "video"
+        "input"
+      ];
       shell = pkgs.fish;
     };
   };

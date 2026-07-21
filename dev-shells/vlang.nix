@@ -32,21 +32,27 @@ pkgs.mkShell {
     pkgs.libxrandr
 
     (buildIdeWithPlugins pkgs "clion" [
-       "IdeaVIM"
-       "String Manipulation"
-       "com.wakatime.intellij.plugin"
-       "Key Promoter X"
-       "com.fwdekker.randomness"
-       "izhangzhihao.rainbow.brackets.lite"
-       "io.vlang"
-       "org.editorconfig.editorconfigjetbrains"
+      "IdeaVIM"
+      "String Manipulation"
+      "com.wakatime.intellij.plugin"
+      "Key Promoter X"
+      "com.fwdekker.randomness"
+      "izhangzhihao.rainbow.brackets.lite"
+      "io.vlang"
+      "org.editorconfig.editorconfigjetbrains"
     ])
   ];
   shellHook = ''
     mkdir -p "$HOME/.cache/nix-toolchains/v-env"
     ln -sfn "${pkgs.vlang}/bin/v" "$HOME/.cache/nix-toolchains/v-env/v"
     ln -sfn "${pkgs.vlang}/lib" "$HOME/.cache/nix-toolchains/v-env/vlib"
-    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${pkgs.lib.makeLibraryPath [ pkgs.libGL pkgs.wayland pkgs.libxkbcommon ]}:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=/run/opengl-driver/lib:${
+      pkgs.lib.makeLibraryPath [
+        pkgs.libGL
+        pkgs.wayland
+        pkgs.libxkbcommon
+      ]
+    }:$LD_LIBRARY_PATH
     export PKG_CONFIG_PATH=${pkgs.wayland}/lib/pkgconfig:${pkgs.libxkbcommon}/lib/pkgconfig:$PKG_CONFIG_PATH
 
     V_GC_DIR="./v/thirdparty/tcc/lib"

@@ -1,5 +1,10 @@
 # tags: sway
-{ pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  inputs,
+  lib,
+  ...
+}:
 {
   hardware.graphics.enable = true;
   services.displayManager.gdm.enable = true;

@@ -1,5 +1,10 @@
 # no-auto-import
-{ pkgs, lib, inputs, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 {
   services.minecraft-servers.servers.meow = {

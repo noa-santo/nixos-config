@@ -1,5 +1,10 @@
 # tags: niri
-{ pkgs, inputs, lib, ... }:
+{
+  pkgs,
+  inputs,
+  lib,
+  ...
+}:
 {
   imports = [ inputs.niri.nixosModules.niri ];
 
