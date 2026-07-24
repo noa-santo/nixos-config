@@ -31,6 +31,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fenix.url = "github:nix-community/fenix";
+    niri-screen-time.url = "github:probeldev/niri-screen-time";
   };
 
   outputs =

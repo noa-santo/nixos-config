@@ -51,10 +51,10 @@ let
     pname = "wavepaper";
     version = "0.1.1";
     src = pkgs.fetchFromGitHub {
-        owner = "noa-santo";
-        repo = "wavepaper";
-        rev = "919298196efbe33a7ca32d0712a336c52b58d01d";
-        hash = "sha256-iEbYPvA8iwtFv+eEsRiDZXyWngLAptcsM1m54jt/GyE=";
+      owner = "noa-santo";
+      repo = "wavepaper";
+      rev = "919298196efbe33a7ca32d0712a336c52b58d01d";
+      hash = "sha256-iEbYPvA8iwtFv+eEsRiDZXyWngLAptcsM1m54jt/GyE=";
     };
     vendorHash = "sha256-PkX/1LBBQMI8mavbpLeBD5Pmn0t3Vs0sM3l/QrGsZjk=";
     nativeBuildInputs = [ pkgs.librsvg ];
@@ -251,6 +251,12 @@ in
           "vicinae"
           "server"
           "--replace"
+        ];
+      }
+      {
+        argv = [
+          "niri-screen-time"
+          "-daemon"
         ];
       }
       { argv = [ "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh" ]; }
