@@ -46,6 +46,19 @@ let
     grim -g "$(slurp)" - | wl-copy --type image/png
     notify-send "Screenshot copied to clipboard" -t 2000
   '';
+
+  wavepaper = pkgs.buildGoModule {
+    pname = "wavepaper";
+    version = "0.1.1";
+    src = pkgs.fetchFromGitHub {
+        owner = "noa-santo";
+        repo = "wavepaper";
+        rev = "919298196efbe33a7ca32d0712a336c52b58d01d";
+        hash = "sha256-iEbYPvA8iwtFv+eEsRiDZXyWngLAptcsM1m54jt/GyE=";
+    };
+    vendorHash = "sha256-PkX/1LBBQMI8mavbpLeBD5Pmn0t3Vs0sM3l/QrGsZjk=";
+    nativeBuildInputs = [ pkgs.librsvg ];
+  };
 in
 {
   home.packages = with pkgs; [
@@ -71,6 +84,7 @@ in
     screenshotSelectScript
     librsvg
     xwayland-satellite
+    wavepaper
   ];
 
   fonts.fontconfig.enable = true;
@@ -140,7 +154,7 @@ in
         };
       };
       focus-ring.enable = false;
-      background-color = c.base;
+      background-color = "transparent";
       shadow.enable = true;
       shadow.color = "#00000066";
     };
@@ -189,6 +203,10 @@ in
 
     layer-rules = [
       {
+        matches = [ { namespace = "^wavepaper$"; } ];
+        place-within-backdrop = true;
+      }
+      {
         matches = [ { namespace = "^waybar$"; } ];
         geometry-corner-radius = {
           top-left = 12.0;
@@ -219,11 +237,13 @@ in
     spawn-at-startup = [
       {
         argv = [
-          "swaybg"
-          "--image"
-          "${config.home.homeDirectory}/.config/nixos-config/assets/wallpapers/blob.webp"
-          "--mode"
-          "fill"
+          "wavepaper"
+          "--svg"
+          "${config.home.homeDirectory}/.config/nixos-config/assets/wallpapers/blob.svg"
+          "--wave-amplitude"
+          "12"
+          "--wave-speed"
+          "0.1"
         ];
       }
       {
