@@ -3,9 +3,21 @@
 { pkgs, ... }:
 
 let
-  launchMinecraft = pkgs.writeShellScript "launch-minecraft-sunshine" ''
+  mods = pkgs.linkFarm "minecraft-sunshine-mods" [
+  ];
+
+  mcVersion = "fabric:26.2";
+  workDir = "$HOME/.minecraft-sunshine";
+
+  launchMinecraft = pkgs.writeShellScript "launch-sunshine-mc" ''
+    mkdir -p "${workDir}/mods"
+    rm -f "${workDir}/mods"/*.jar
+    if compgen -G "${mods}/*.jar" > /dev/null; then
+      ln -sf ${mods}/*.jar "${workDir}/mods/"
+    fi
+
     ${pkgs.gamescope}/bin/gamescope -W $SUNSHINE_CLIENT_WIDTH -H $SUNSHINE_CLIENT_HEIGHT -f -- \
-      ${pkgs.portablemc}/bin/portablemc start release
+      ${pkgs.portablemc}/bin/portablemc --main-dir "${workDir}" start "${mcVersion}"
   '';
 in
 {
@@ -17,7 +29,7 @@ in
         name = "Minecraft";
         cmd = "${launchMinecraft}";
         auto-detach = "true";
-        output = "/home/owo/sunshine.log";
+        output = "${workDir}/sunshine.log";
       }
     ];
   };
