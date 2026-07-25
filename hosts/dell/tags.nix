@@ -8,4 +8,5 @@
   "superdirve"
   "scanner"
   "kde-connect"
+  "sunshine"
 ]
