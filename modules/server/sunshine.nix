@@ -1,7 +1,9 @@
 # tags: sunshine
 # todo: add "server" tag
-{ config, ... }:
+{ pkgs, config, ... }:
 {
+  environment.systemPackages = [ pkgs.gamescope ];
+
   services.sunshine = {
     enable = true;
     autoStart = true;
