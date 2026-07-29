@@ -6,15 +6,8 @@
   ...
 }:
 {
-  imports = [ inputs.niri.nixosModules.niri ];
-
   hardware.graphics.enable = true;
   services.displayManager.gdm.enable = true;
-
-  programs.niri = {
-    enable = true;
-    package = pkgs.niri-stable;
-  };
 
   # niri has no CSD/no built-in polkit agent of its own; gnome-keyring +
   # polkit are already wired up by the gnome module, but make sure they're

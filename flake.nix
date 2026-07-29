@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -23,7 +24,7 @@
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     niri = {
       url = "github:epireyn/niri-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
     vicinae.url = "github:vicinaehq/vicinae";
     vicinae-extensions = {
@@ -73,6 +74,7 @@
             { nixpkgs = { inherit pkgs; }; }
             ./hosts/${host}/hardware-configuration.nix
             inputs.nix-minecraft.nixosModules.minecraft-servers
+            inputs.niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
