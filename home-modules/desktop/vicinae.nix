@@ -64,6 +64,6 @@ in
         player-pilot
         it-tools
       ]
-      ++ lib.optionals (isNiri) [ niri ];
+      ++ lib.optionals isNiri [ niri ];
   };
 }

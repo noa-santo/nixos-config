@@ -4,7 +4,6 @@
 {
   config,
   lib,
-  pkgs,
   modulesPath,
   ...
 }:
@@ -14,16 +13,18 @@
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "ahci"
-    "usb_storage"
-    "usbhid"
-    "sd_mod"
-  ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
+  boot = {
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "ahci"
+      "usb_storage"
+      "usbhid"
+      "sd_mod"
+    ];
+    initrd.kernelModules = [ ];
+    kernelModules = [ ];
+    extraModulePackages = [ ];
+  };
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/86663296-28ea-47d5-9cc7-f2653f27746c";

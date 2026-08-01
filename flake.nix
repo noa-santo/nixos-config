@@ -37,15 +37,13 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       home-manager,
-      vicinae,
       ...
     }@inputs:
     let
       system = "x86_64-linux";
-      lib = nixpkgs.lib;
+      inherit (nixpkgs) lib;
       pkgs = import nixpkgs {
         inherit system lib;
         config.allowUnfree = true;
@@ -54,7 +52,7 @@
           inputs.fenix.overlays.default
           inputs.niri.overlays.niri
         ]
-        ++ builtins.map (file: import (./overlays + "/${file}")) (
+        ++ map (file: import (./overlays + "/${file}")) (
           builtins.filter (file: lib.hasSuffix ".nix" file) (builtins.attrNames (builtins.readDir ./overlays))
         );
       };
@@ -77,10 +75,12 @@
             inputs.niri.nixosModules.niri
             home-manager.nixosModules.home-manager
             {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.extraSpecialArgs = { inherit inputs hostTags; };
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "backup";
+                extraSpecialArgs = { inherit inputs hostTags; };
+              };
             }
             ({ config, ... }: {
               home-manager.users."${config.mainUser}" = import ./hosts/${host}/home.nix;

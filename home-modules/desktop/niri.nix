@@ -3,8 +3,8 @@
   pkgs,
   lib,
   config,
-  inputs,
   hostTags,
+  inputs,
   ...
 }:
 
@@ -114,7 +114,7 @@ in
     topMargin = 0.9;
   };
 
-  programs.niri.package = pkgs.niri-stable.override { libdisplay-info = pkgs.libdisplay-info_0_3; };
+  programs.niri.package = pkgs.niri-stable;
   programs.niri.settings = {
     input = {
       keyboard.xkb = { };
@@ -261,7 +261,7 @@ in
       }
       { argv = [ "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh" ]; }
     ]
-    ++ lib.optionals (isKdeConnect) [
+    ++ lib.optionals isKdeConnect [
       { argv = [ "kdeconnectd" ]; }
     ];
 

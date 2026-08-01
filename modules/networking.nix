@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+_: {
   networking.networkmanager.enable = true;
 
   networking.firewall = rec {

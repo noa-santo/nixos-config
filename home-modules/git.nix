@@ -1,5 +1,5 @@
 # tags: dev
-{ config, pkgs, ... }:
+{ config, ... }:
 {
   programs.git = {
     enable = true;

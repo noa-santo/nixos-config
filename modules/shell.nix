@@ -6,7 +6,7 @@
     update = "sudo nix flake update --flake $HOME/.config/nixos-config";
   };
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
     (pkgs.writeShellScriptBin "rebuild-reboot" ''
       sudo nixos-rebuild boot --flake $HOME/.config/nixos-config#$(hostname)
       if [ $? -eq 0 ]; then

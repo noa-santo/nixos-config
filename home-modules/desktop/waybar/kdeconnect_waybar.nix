@@ -12,7 +12,7 @@ let
     cargo = toolchain;
     rustc = toolchain;
   };
-  kdeconnect-waybar = rustPlatform.buildRustPackage rec {
+  kdeconnect-waybar = rustPlatform.buildRustPackage {
     pname = "kdeconnect_waybar";
     version = "1.1.0";
     src = pkgs.fetchFromGitHub {

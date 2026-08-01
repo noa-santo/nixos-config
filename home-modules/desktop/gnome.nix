@@ -32,7 +32,7 @@ in
       { package = pkgs.gnomeExtensions.messaging-menu; }
       { package = pkgs.gnomeExtensions.top-bar-organizer; }
     ]
-    ++ lib.optionals (isKdeConnect) [ { package = pkgs.gnomeExtensions.gsconnect; } ];
+    ++ lib.optionals isKdeConnect [ { package = pkgs.gnomeExtensions.gsconnect; } ];
   };
 
   dconf.settings = {
@@ -740,7 +740,7 @@ in
       last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/io.gitlab.adhami3310.Footage" = {
-      last-folder-path = "${config.home.homeDirectory}";
+      last-folder-path = config.home.homeDirectory;
     };
     "org/gnome/portal/filechooser/net.lutris.Lutris" = {
       last-folder-path = "${config.home.homeDirectory}/Games";
@@ -749,7 +749,7 @@ in
       last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/org.gnome.Builder" = {
-      last-folder-path = "${config.home.homeDirectory}";
+      last-folder-path = config.home.homeDirectory;
     };
     "org/gnome/portal/filechooser/org.gnome.GHex" = {
       last-folder-path = "${config.home.homeDirectory}/Downloads";
@@ -758,7 +758,7 @@ in
       last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/org.gnome.gitlab.somas.Apostrophe" = {
-      last-folder-path = "${config.home.homeDirectory}";
+      last-folder-path = config.home.homeDirectory;
     };
     "org/gnome/portal/filechooser/org.videolan.VLC" = {
       last-folder-path = "${config.home.homeDirectory}/Downloads";
@@ -767,7 +767,7 @@ in
       last-folder-path = "${config.home.homeDirectory}/Downloads";
     };
     "org/gnome/portal/filechooser/ulauncher" = {
-      last-folder-path = "${config.home.homeDirectory}";
+      last-folder-path = config.home.homeDirectory;
     };
     "org/gnome/settings-daemon/plugins/color" = {
       night-light-enabled = true;

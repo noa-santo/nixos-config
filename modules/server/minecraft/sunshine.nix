@@ -77,7 +77,7 @@ in
     apps = [
       {
         name = "Minecraft";
-        cmd = "${launchMinecraft}";
+        cmd = launchMinecraft;
         auto-detach = "true";
         output = "${workDir}/sunshine.log";
       }

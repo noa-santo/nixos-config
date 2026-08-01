@@ -1,6 +1,5 @@
 {
   pkgs,
-  config,
   lib,
   hostTags ? [ ],
   ...
@@ -67,7 +66,7 @@ let
 
   niriOrderWorkspacesScript = pkgs.writeShellApplication {
     name = "niri-order-workspaces";
-    runtimeInputs = [ pkgs.niri ];
+    runtimeInputs = [ pkgs.niri-stable ];
     text = builtins.readFile ./scripts/niri_order_workspaces.sh;
   };
 in
@@ -96,7 +95,7 @@ in
           "sway/scratchpad"
         ];
         modules-center = [ "custom/media" ];
-        modules-right = lib.optionals (isKdeConnect) [ "custom/kdeconnect" ] ++ [
+        modules-right = lib.optionals isKdeConnect [ "custom/kdeconnect" ] ++ [
           "tray"
           "group/rightinfo"
         ];

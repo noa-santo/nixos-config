@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
     pkgs.bibata-cursors
     (pkgs.stdenvNoCC.mkDerivation {
       pname = "bibata-modern-pink";

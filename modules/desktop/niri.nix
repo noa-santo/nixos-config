@@ -1,11 +1,5 @@
 # tags: niri
-{
-  pkgs,
-  inputs,
-  lib,
-  ...
-}:
-{
+_: {
   hardware.graphics.enable = true;
   services.displayManager.gdm.enable = true;
 

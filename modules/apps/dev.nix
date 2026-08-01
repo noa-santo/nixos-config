@@ -37,9 +37,40 @@ let
     exec nix develop $HOME/.config/nixos-config#golang --command goland "$@"
   '';
 
-  jetbrainsPlugins = inputs.nix-jetbrains-plugins.lib.pluginsForIde pkgs pkgs.jetbrains.idea [
-    "com.github.copilot"
-  ];
+  jetbrainsPlugins =
+    inputs.nix-jetbrains-plugins.lib.pluginsForIdeWith
+      {
+        extraOverrides."dev.jetplugins.nix-pro" =
+          origPlugin:
+          origPlugin.overrideAttrs (old: {
+            nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [
+              pkgs.unzip
+              pkgs.zip
+              pkgs.xmlstarlet
+            ];
+            postInstall = (old.postInstall or "") + ''
+              jar=$(find $out -name '*.jar' | grep -m1 "nix-pro")
+              work=$(mktemp -d)
+              (cd "$work" && unzip -q "$jar" META-INF/plugin.xml)
+              xmlstarlet ed -d "//product-descriptor" "$work/META-INF/plugin.xml" > "$work/META-INF/plugin.xml.new"
+              mv "$work/META-INF/plugin.xml.new" "$work/META-INF/plugin.xml"
+              (cd "$work" && zip -q "$jar" META-INF/plugin.xml)
+              rm -rf "$work"
+            '';
+          });
+      }
+      pkgs
+      pkgs.jetbrains.idea
+      [
+        "IdeaVIM"
+        "String Manipulation"
+        "com.wakatime.intellij.plugin"
+        "Key Promoter X"
+        "com.fwdekker.randomness"
+        "izhangzhihao.rainbow.brackets.lite"
+        "com.github.copilot"
+        "dev.jetplugins.nix-pro"
+      ];
 in
 {
   environment.systemPackages = with pkgs; [

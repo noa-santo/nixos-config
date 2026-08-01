@@ -7,7 +7,7 @@
 let
   allFiles = lib.filesystem.listFilesRecursive ./.;
   nixFiles = builtins.filter (
-    f: lib.hasSuffix ".nix" (builtins.toString f) && builtins.baseNameOf f != "all.nix"
+    f: lib.hasSuffix ".nix" (toString f) && baseNameOf f != "all.nix"
   ) allFiles;
   shouldImport =
     file:

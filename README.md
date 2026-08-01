@@ -1,7 +1,7 @@
 # nixos-config
 
 This is my personal nixos config. Feel free to look around and check out how I have configured things.
-However, this config is pretty specific for my needs so just using it yourself as is will probably not work :p
+However, this config is pretty specific for my needs, so just using it yourself as is will probably not work :p
 
 ### Structure
 
@@ -43,8 +43,9 @@ to reboot automatically
 optionally a quantifier before it.
 example usage: "cleanup 3 months", "cleanup day", "cleanup"
 
-`tmp`: execute a command without installing it. automatically detects unfree packages and allows them. example:
-`tmp tree` executes the tree command without it being installed. note: may fail if package name and command name differ
+`tmp`: execute a command without installing it. it automatically detects unfree packages and allows them. example:
+`tmp tree` executes the tree command without it being installed. note: may fail if the package name and command name
+differ
 
 `tnl`: creates a temporary nix shell with the given package. example: `tnl ffmpeg`
 
@@ -55,7 +56,7 @@ example usage: "cleanup 3 months", "cleanup day", "cleanup"
 ### Tag system
 
 Different host machines require different packages.
-For example a server needs a different set of packages than a laptop.
+For example, a server needs a different set of packages than a laptop.
 Also, you may want to use Gnome on one device but Sway on another.
 
 For that reason I made a tag system in my config.
@@ -67,6 +68,6 @@ The tags of a file are configured in a comment in the first line with the follow
 
 `# tags: <tag1>, <tag2>, ...`
 
-To exclude a file from being imported automatically you can put the following comment in the first line:
+To exclude a file from being imported automatically, you can put the following comment in the first line:
 
 `# no-auto-import`

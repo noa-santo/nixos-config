@@ -48,5 +48,6 @@ in
     vDesktop
     tsDesktop
     mcModDesktop
+    goDesktop
   ];
 }

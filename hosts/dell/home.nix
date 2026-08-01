@@ -1,7 +1,5 @@
 {
-  pkgs,
   osConfig,
-  inputs,
   lib,
   ...
 }:
@@ -10,14 +8,15 @@
     ../../home-modules/all.nix
   ];
 
-  home.username = osConfig.mainUser;
-  home.homeDirectory = "/home/${osConfig.mainUser}";
+  home = {
+    username = osConfig.mainUser;
+    homeDirectory = "/home/${osConfig.mainUser}";
+    stateVersion = "25.11";
+  };
 
   wayland.windowManager.sway = {
     config = {
       output."*".scale = lib.mkForce "2";
     };
   };
-
-  home.stateVersion = "25.11";
 }

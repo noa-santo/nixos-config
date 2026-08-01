@@ -257,7 +257,7 @@ in
         focused = {
           border = c.mauve;
           background = c.base;
-          text = c.text;
+          inherit (c) text;
           indicator = c.mauve;
           childBorder = c.mauve;
         };
@@ -278,7 +278,7 @@ in
         urgent = {
           border = c.red;
           background = c.base;
-          text = c.text;
+          inherit (c) text;
           indicator = c.red;
           childBorder = c.red;
         };

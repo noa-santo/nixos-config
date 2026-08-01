@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 pkgs.mkShell {
   packages = with inputs.nix-jetbrains-plugins.lib; [
     pkgs.nodejs_24
@@ -12,14 +12,14 @@ pkgs.mkShell {
     pkgs.nodePackages_latest.pnpm
     pkgs.nodePackages_latest.typescript-language-server
 
-     (buildIdeWithPlugins pkgs "webstorm" [
-          "IdeaVIM"
-          "String Manipulation"
-          "com.wakatime.intellij.plugin"
-          "Key Promoter X"
-          "com.fwdekker.randomness"
-          "izhangzhihao.rainbow.brackets.lite"
-        ])
+    (buildIdeWithPlugins pkgs "webstorm" [
+      "IdeaVIM"
+      "String Manipulation"
+      "com.wakatime.intellij.plugin"
+      "Key Promoter X"
+      "com.fwdekker.randomness"
+      "izhangzhihao.rainbow.brackets.lite"
+    ])
   ];
   shellHook = ''
     echo "Typescript dev environment loaded."

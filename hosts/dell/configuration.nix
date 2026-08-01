@@ -1,10 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
-
+{ ... }:
 {
   imports = [
     ../../modules/all.nix
