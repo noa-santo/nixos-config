@@ -3,37 +3,16 @@
   pkgs,
   lib,
   config,
+  osConfig,
   hostTags,
-  inputs,
   ...
 }:
 
 let
   isKdeConnect = builtins.elem "kde-connect" hostTags;
 
-  c = {
-    base = "#1e1e2e";
-    mantle = "#181825";
-    crust = "#11111b";
-    s0 = "#313244";
-    s1 = "#45475a";
-    s2 = "#585b70";
-    ov0 = "#6c7086";
-    ov2 = "#9399b2";
-    text = "#cdd6f4";
-    subtext = "#a6adc8";
-    mauve = "#cba6f7";
-    blue = "#89b4fa";
-    lavender = "#b4befe";
-    sapphire = "#74c7ec";
-    teal = "#94e2d5";
-    green = "#a6e3a1";
-    yellow = "#f9e2af";
-    peach = "#fab387";
-    red = "#f38ba8";
-    pink = "#f5c2e7";
-    sky = "#89dceb";
-  };
+  c = osConfig.styling.theme.palette;
+  u = osConfig.styling.theme.ui;
 
   screenshotScript = pkgs.writeShellScriptBin "niri-screenshot" ''
     #!/bin/sh
@@ -58,6 +37,26 @@ let
     };
     vendorHash = "sha256-PkX/1LBBQMI8mavbpLeBD5Pmn0t3Vs0sM3l/QrGsZjk=";
     nativeBuildInputs = [ pkgs.librsvg ];
+  };
+
+  geometry-corner-radius = {
+    top-left = u.cornerRadius + 0.0;
+    top-right = u.cornerRadius + 0.0;
+    bottom-left = u.cornerRadius + 0.0;
+    bottom-right = u.cornerRadius + 0.0;
+  };
+
+  mkNiriAnim = shaderPath: {
+    kind.easing = {
+      duration-ms = u.animation.duration;
+      curve = u.animation.curve;
+    };
+    custom-shader = builtins.readFile shaderPath;
+  };
+  niriAnimations = {
+    window-open = mkNiriAnim u.niri.shaders.window-open;
+    window-close = mkNiriAnim u.niri.shaders.window-close;
+    window-resize = mkNiriAnim u.niri.shaders.window-resize;
   };
 in
 {
@@ -92,16 +91,16 @@ in
   services.mako = {
     enable = true;
     settings = {
-      font = "JetBrains Mono 11";
+      font = "${u.font} ${toString u.fontSize.sm}";
       backgroundColor = c.base;
       textColor = c.text;
       borderColor = c.mauve;
-      borderRadius = 10;
-      borderSize = 2;
+      borderRadius = u.radius.md;
+      borderSize = u.borderWidth;
       defaultTimeout = 5000;
-      padding = "12,16";
-      margin = "8";
-      width = 380;
+      padding = "${toString u.spacing.md},${toString u.spacing.lg}";
+      margin = toString u.spacing.sm;
+      width = u.mako.width;
     };
     extraConfig = ''
       [urgency=high]
@@ -125,24 +124,24 @@ in
         middle-emulation = true;
         scroll-method = "two-finger";
       };
-      mouse.natural-scroll = true;
+      mouse.natural-scroll = false;
       focus-follows-mouse = {
         enable = true;
         max-scroll-amount = "100%";
       };
     };
 
-    cursor.theme = "Bibata-Modern-Pink";
+    cursor.theme = osConfig.styling.theme.cursor.name;
 
     prefer-no-csd = true;
 
     hotkey-overlay.skip-at-startup = true;
 
     layout = {
-      gaps = 8;
+      gaps = u.gap;
       border = {
         enable = true;
-        width = 2;
+        width = u.borderWidth;
         active = {
           color = c.mauve;
         };
@@ -156,18 +155,13 @@ in
       focus-ring.enable = false;
       background-color = "transparent";
       shadow.enable = true;
-      shadow.color = "#00000066";
+      shadow.color = u.shadow.color;
     };
 
     window-rules = [
       {
         matches = [ { } ];
-        geometry-corner-radius = {
-          top-left = 12.0;
-          top-right = 12.0;
-          bottom-left = 12.0;
-          bottom-right = 12.0;
-        };
+        inherit geometry-corner-radius;
         clip-to-geometry = true;
       }
       {
@@ -208,12 +202,7 @@ in
       }
       {
         matches = [ { namespace = "^waybar$"; } ];
-        geometry-corner-radius = {
-          top-left = 12.0;
-          top-right = 12.0;
-          bottom-left = 12.0;
-          bottom-right = 12.0;
-        };
+        inherit geometry-corner-radius;
         shadow.enable = true;
         background-effect = {
           blur = true;
@@ -221,12 +210,7 @@ in
       }
       {
         matches = [ { namespace = "^notifications$"; } ];
-        geometry-corner-radius = {
-          top-left = 10.0;
-          top-right = 10.0;
-          bottom-left = 10.0;
-          bottom-right = 10.0;
-        };
+        inherit geometry-corner-radius;
         shadow.enable = true;
         background-effect = {
           blur = true;
@@ -239,7 +223,7 @@ in
         argv = [
           "wavepaper"
           "--svg"
-          "${config.home.homeDirectory}/.config/nixos-config/assets/wallpapers/blob.svg"
+          "${osConfig.styling.theme.svg}"
           "--wave-amplitude"
           "12"
           "--wave-speed"
@@ -265,29 +249,7 @@ in
       { argv = [ "kdeconnectd" ]; }
     ];
 
-    animations = {
-      window-open = {
-        kind.easing = {
-          duration-ms = 500;
-          curve = "ease-out-cubic";
-        };
-        custom-shader = builtins.readFile ../../assets/shaders/perlin/open.glsl;
-      };
-      window-close = {
-        kind.easing = {
-          duration-ms = 500;
-          curve = "ease-out-cubic";
-        };
-        custom-shader = builtins.readFile ../../assets/shaders/perlin/close.glsl;
-      };
-      window-resize = {
-        kind.easing = {
-          duration-ms = 500;
-          curve = "ease-out-cubic";
-        };
-        custom-shader = builtins.readFile ../../assets/shaders/perlin/resize.glsl;
-      };
-    };
+    animations = niriAnimations;
 
     workspaces = {
       "terminal" = { };

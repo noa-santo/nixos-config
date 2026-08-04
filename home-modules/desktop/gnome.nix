@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  osConfig,
   hostTags ? [ ],
   ...
 }:
@@ -198,14 +199,6 @@ in
       name = "suse-yast.directory";
       translate = true;
     };
-    "org/gnome/desktop/background" = {
-      color-shading-type = "solid";
-      picture-options = "zoom";
-      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/blobs-l.svg";
-      picture-uri-dark = "file:///run/current-system/sw/share/backgrounds/gnome/blobs-d.svg";
-      primary-color = "#241f31";
-      secondary-color = "#000000";
-    };
     "org/gnome/desktop/break-reminders/eyesight" = {
       play-sound = true;
     };
@@ -232,7 +225,7 @@ in
     "org/gnome/desktop/interface" = {
       accent-color = "purple";
       color-scheme = "prefer-dark";
-      cursor-theme = "Bibata-Modern-Pink";
+      cursor-theme = osConfig.styling.theme.cursor.name;
       enable-animations = true;
       enable-hot-corners = false;
       font-antialiasing = "rgba";
@@ -560,9 +553,9 @@ in
     "org/gnome/desktop/screensaver" = {
       color-shading-type = "solid";
       picture-options = "zoom";
-      picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/blobs-l.svg";
-      primary-color = "#241f31";
-      secondary-color = "#000000";
+      picture-uri = "file://${osConfig.styling.theme.image}";
+      primary-color = osConfig.styling.theme.ui.gnome.screensaverPrimary;
+      secondary-color = osConfig.styling.theme.ui.gnome.screensaverSecondary;
     };
     "org/gnome/desktop/search-providers" = {
       enabled = [ "org.gnome.Weather.desktop" ];
@@ -945,22 +938,22 @@ in
       hotkey-open-primary-monitor = true;
       max-search-results = 10;
       menu-arrow-rise = "(false, 6)";
-      menu-background-color = "#262830";
-      menu-border-color = "rgb(60,60,60)";
-      menu-button-active-fg-color = "(true, 'rgb(26,95,180)')";
+      menu-background-color = osConfig.styling.theme.ui.gnome.arcMenu.background;
+      menu-border-color = osConfig.styling.theme.ui.gnome.arcMenu.border;
+      menu-button-active-fg-color = "(true, '${osConfig.styling.theme.ui.gnome.arcMenu.accent}')";
       menu-button-appearance = "Icon";
-      menu-button-border-radius = "(true, 25)";
-      menu-button-fg-color = "(false, 'rgb(26,95,180)')";
+      menu-button-border-radius = "(true, ${toString osConfig.styling.theme.ui.gnome.arcMenu.radius})";
+      menu-button-fg-color = "(false, '${osConfig.styling.theme.ui.gnome.arcMenu.accent}')";
       menu-button-icon = "Distro_Icon";
       menu-button-position-offset = 0;
-      menu-foreground-color = "#e0e0e8";
-      menu-item-active-bg-color = "#004397";
-      menu-item-active-fg-color = " #d6e2ff";
+      menu-foreground-color = osConfig.styling.theme.ui.gnome.arcMenu.foreground;
+      menu-item-active-bg-color = osConfig.styling.theme.ui.gnome.arcMenu.activeBackground;
+      menu-item-active-fg-color = " ${osConfig.styling.theme.ui.gnome.arcMenu.activeForeground}";
       menu-item-grid-icon-size = "Medium";
-      menu-item-hover-bg-color = " #004397";
-      menu-item-hover-fg-color = " #d6e2ff";
+      menu-item-hover-bg-color = " ${osConfig.styling.theme.ui.gnome.arcMenu.activeBackground}";
+      menu-item-hover-fg-color = " ${osConfig.styling.theme.ui.gnome.arcMenu.activeForeground}";
       menu-layout = "Eleven";
-      menu-separator-color = "rgba(255,255,255,0.1)";
+      menu-separator-color = osConfig.styling.theme.ui.gnome.arcMenu.separator;
       multi-monitor = true;
       override-menu-theme = true;
       pinned-app-list = "@as []";

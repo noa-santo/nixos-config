@@ -5,6 +5,7 @@
   ];
 
   mainUser = "u200b";
+  styling.name = "vibrant-wave";
 
   boot.loader.grub = {
     enable = true;

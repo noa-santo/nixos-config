@@ -12,9 +12,6 @@
 
       shell = "${pkgs.fish}/bin/fish";
 
-      font_family = "JetBrains Mono";
-      font_size = "11.0";
-      background_opacity = "0.75";
       window_padding_width = 4;
 
       tab_title_template = "{title}";

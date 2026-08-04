@@ -3,33 +3,44 @@
   pkgs,
   lib,
   config,
+  osConfig,
   ...
 }:
 
 let
-  c = {
-    base = "#1e1e2e";
-    mantle = "#181825";
-    crust = "#11111b";
-    s0 = "#313244";
-    s1 = "#45475a";
-    s2 = "#585b70";
-    ov0 = "#6c7086";
-    ov2 = "#9399b2";
-    text = "#cdd6f4";
-    subtext = "#a6adc8";
-    mauve = "#cba6f7";
-    blue = "#89b4fa";
-    lavender = "#b4befe";
-    sapphire = "#74c7ec";
-    teal = "#94e2d5";
-    green = "#a6e3a1";
-    yellow = "#f9e2af";
-    peach = "#fab387";
-    red = "#f38ba8";
-    pink = "#f5c2e7";
-    sky = "#89dceb";
-  };
+  c = osConfig.styling.theme.palette;
+  u = osConfig.styling.theme.ui;
+
+  cheatsheetCss = builtins.toFile "cheatsheet.css" ''
+    * {
+        font-family: "${u.font}", monospace;
+        font-size: ${toString u.fontSize.md}px;
+        background-color: ${c.base};
+        color: ${c.text};
+    }
+
+    window {
+        border-radius: ${toString u.radius.xl}px;
+        background-color: ${c.base};
+    }
+
+    row:selected {
+        background-color: ${c.s0};
+        color: ${c.mauve};
+    }
+
+    row:nth-child(even) {
+        background-color: ${c.mantle};
+    }
+
+    header {
+        background-color: ${c.crust};
+        color: ${c.lavender};
+        font-weight: bold;
+        padding: 8px 16px;
+        border-bottom: 1px solid ${c.s0};
+    }
+  '';
 
   cheatsheetScript = pkgs.writeShellScriptBin "sway-cheatsheet" ''
     #!/bin/sh
@@ -68,7 +79,7 @@ let
         --column="Keybinding" \
         --column="Action" \
         --no-buttons --fixed \
-        --css=${./cheatsheet.css}
+        --css=${cheatsheetCss}
 
     rm -f "$LOCK_FILE"
   '';
@@ -118,16 +129,16 @@ in
   services.mako = {
     enable = true;
     settings = {
-      font = "JetBrains Mono 11";
+      font = "${u.font} ${toString u.fontSize.sm}";
       backgroundColor = c.base;
       textColor = c.text;
       borderColor = c.mauve;
-      borderRadius = 10;
-      borderSize = 2;
+      borderRadius = u.radius.md;
+      borderSize = u.borderWidth;
       defaultTimeout = 5000;
-      padding = "12,16";
-      margin = "8";
-      width = 380;
+      padding = "${toString u.spacing.md},${toString u.spacing.lg}";
+      margin = toString u.spacing.sm;
+      width = u.mako.width;
     };
     extraConfig = ''
       [urgency=high]
@@ -136,8 +147,8 @@ in
   };
 
   xdg.configFile."wofi/config".text = ''
-    width=640
-    height=480
+    width=${toString u.wofi.windowWidth}
+    height=${toString u.wofi.windowHeight}
     allow_images=true
     allow_markup=true
     insensitive=true
@@ -151,38 +162,38 @@ in
   '';
 
   xdg.configFile."wofi/style.css".text = ''
-    * { font-family: "JetBrainsMono Nerd Font", monospace; font-size: 14px; }
+    * { font-family: "${u.font}", monospace; font-size: ${toString u.fontSize.md}px; }
 
     window {
-      background: alpha(#1e1e2e, 0.92);
-      border-radius: 16px;
-      border: 1px solid #313244;
+      background: alpha(${c.base}, ${toString u.opacity.solid});
+      border-radius: ${toString u.radius.xl}px;
+      border: 1px solid ${c.s0};
     }
 
     #input {
-      background: #181825;
-      color: #cdd6f4;
+      background: ${c.mantle};
+      color: ${c.text};
       border: none;
-      border-bottom: 1px solid #313244;
-      border-radius: 14px 14px 0 0;
-      padding: 12px 18px;
-      font-size: 16px;
+      border-bottom: 1px solid ${c.s0};
+      border-radius: ${toString u.radius.lg}px ${toString u.radius.lg}px 0 0;
+      padding: ${toString u.spacing.md}px ${toString u.spacing.xl}px;
+      font-size: ${toString u.fontSize.xl}px;
     }
-    #input:focus { border-color: #cba6f7; }
+    #input:focus { border-color: ${c.mauve}; }
 
-    #inner-box, #outer-box, #scroll { background: transparent; padding: 4px; }
+    #inner-box, #outer-box, #scroll { background: ${u.transparent}; padding: ${toString u.spacing.xs}px; }
 
     #entry {
-      padding: 8px 12px;
-      border-radius: 10px;
-      transition: all 150ms ease;
+      padding: ${toString u.spacing.sm}px ${toString u.spacing.md}px;
+      border-radius: ${toString u.radius.md}px;
+      transition: all ${u.transitionFast};
     }
-    #entry:selected { background: #313244; }
+    #entry:selected { background: ${c.s0}; }
 
-    #text { color: #cdd6f4; padding: 2px 6px; }
-    #entry:selected #text { color: #cba6f7; }
+    #text { color: ${c.text}; padding: 2px 6px; }
+    #entry:selected #text { color: ${c.mauve}; }
 
-    image { margin-right: 10px; }
+    image { margin-right: ${toString u.spacing.md}px; }
   '';
 
   services.swayosd = {
@@ -204,34 +215,34 @@ in
 
       fonts = {
         names = [
-          "JetBrainsMono Nerd Font"
-          "Font Awesome 6 Free"
+          u.font
+          u.icon
         ];
-        size = 11.0;
+        size = u.fontSize.xs + 0.0;
       };
 
       gaps = {
-        inner = 8;
-        outer = 6;
+        inner = u.gap;
+        outer = u.sway.outerGap;
         smartBorders = "on";
         smartGaps = true;
       };
 
       window = {
-        border = 2;
+        border = u.borderWidth;
         titlebar = false;
         commands = [
           {
             criteria = {
               title = "Sway Keybindings";
             };
-            command = "floating enable, border none, opacity 0.92, move position center";
+            command = "floating enable, border none, opacity ${toString u.opacity.solid}, move position center";
           }
           {
             criteria = {
               app_id = "wofi";
             };
-            command = "floating enable, border none, resize set width 640 height 480, move position center";
+            command = "floating enable, border none, resize set width ${toString u.wofi.windowWidth} height ${toString u.wofi.windowHeight}, move position center";
           }
           {
             criteria = {
@@ -249,7 +260,7 @@ in
       };
 
       floating = {
-        border = 2;
+        border = u.borderWidth;
         titlebar = false;
       };
 
@@ -302,7 +313,7 @@ in
       };
 
       output."*" = {
-        bg = "~/.config/nixos-config/assets/wallpapers/blob.webp fill";
+        bg = "${osConfig.styling.theme.image} fill";
         scale = "1";
       };
 
@@ -329,29 +340,28 @@ in
           "XF86AudioMicMute" = "exec swayosd-client --input-volume mute-toggle";
 
           # Lock
-          "${mod}+Shift+l" = "exec swaylock -f -c 1e1e2e";
+          "${mod}+Shift+l" = "exec swaylock -f -c ${c.base} --ring-color ${c.mauve}";
 
           "${mod}+XF86AudioMute" = "exec sway-cheatsheet";
         };
     };
 
     extraConfig = ''
-      # ── SwayFX visual effects ───────────────────────────────────────────────
-      corner_radius 12
+      corner_radius ${toString u.cornerRadius}
       smart_corner_radius enable
 
       shadows enable
-      shadow_blur_radius 20
-      shadow_color #00000066
+      shadow_blur_radius ${toString u.shadow.blur}
+      shadow_color ${u.shadow.color}
       shadows_on_csd enable
 
       blur enable
-      blur_passes 3
-      blur_radius 5
+      blur_passes ${toString u.shadow.passes}
+      blur_radius ${toString u.shadow.spread}
       blur_xray disable
 
-      default_dim_inactive 0.15
-      dim_inactive_colors.unfocused #000000FF
+      default_dim_inactive ${toString u.opacity.subtle}
+      dim_inactive_colors.unfocused ${u.dim}
 
       # Blur behind the waybar pill
       layer_effects waybar {
@@ -359,13 +369,13 @@ in
         blur_xray enable
         blur_ignore_transparent enable
         shadows enable
-        corner_radius 12
+        corner_radius ${toString u.cornerRadius}
       }
 
       # Blur behind mako notifications
       layer_effects notifications {
         blur enable
-        corner_radius 12
+        corner_radius ${toString u.cornerRadius}
       }
 
       exec_always vicinae server --replace

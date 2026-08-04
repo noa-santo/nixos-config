@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   programs.neovim = {
@@ -20,7 +20,6 @@
     ];
 
     plugins = with pkgs.vimPlugins; [
-      catppuccin-nvim
       nvim-web-devicons
       nvim-treesitter.withAllGrammars
       lualine-nvim
@@ -43,9 +42,7 @@
       cmp_luasnip
       friendly-snippets
     ];
-  };
 
-  # Symlink init.lua out-of-store so edits take effect without rebuilding.
-  xdg.configFile."init.lua".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nixos-config/home-modules/shell/nvim/init.lua";
+    initLua = builtins.readFile ./init.lua;
+  };
 }

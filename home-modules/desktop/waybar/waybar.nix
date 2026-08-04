@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  osConfig,
   hostTags ? [ ],
   ...
 }:
@@ -9,6 +10,177 @@ let
   isNiri = builtins.elem "niri" hostTags; # todo detect at runtime via what DE is actually running
   isKdeConnect = builtins.elem "kde-connect" hostTags;
   workspacesModule = if isNiri then "niri/workspaces" else "sway/workspaces";
+
+  c = osConfig.styling.theme.palette;
+  u = osConfig.styling.theme.ui;
+
+  styleCss = ''
+    @define-color base ${c.base};
+    @define-color text ${c.text};
+    @define-color subtext ${c.subtext};
+    @define-color s0 ${c.s0};
+    @define-color s1 ${c.s1};
+    @define-color mauve ${c.mauve};
+    @define-color red ${c.red};
+    @define-color lavender ${c.lavender};
+    @define-color blue ${c.blue};
+    @define-color yellow ${c.yellow};
+    @define-color teal ${c.teal};
+    @define-color green ${c.green};
+    @define-color sky ${c.sky};
+    @define-color sapphire ${c.sapphire};
+    @define-color pink ${c.pink};
+    @define-color peach ${c.peach};
+    @define-color mantle ${c.mantle};
+
+    * {
+      font-family: "${u.font}", monospace;
+      font-size: ${toString u.fontSize.md}px;
+      border: none;
+      border-radius: ${toString u.cornerRadius}px;
+      min-height: 0;
+    }
+
+    window#waybar {
+      background-color: alpha(@base, ${toString u.opacity.low});
+      color: @text;
+    }
+
+    .modules-center,
+    .modules-right {
+      background: ${u.transparent};
+      margin: ${toString u.spacing.xs}px;
+    }
+
+    .modules-right > * {
+      background-color: alpha(@base, ${toString u.opacity.mid});
+      border: 1px solid alpha(@text, ${toString u.opacity.hairline});
+      border-radius: ${toString u.cornerRadius}px;
+      padding: 0 ${toString u.spacing.sm}px;
+    }
+
+    #workspaces,
+    #mode,
+    #scratchpad,
+    #window,
+    #clock,
+    #cpu,
+    #memory,
+    #temperature,
+    #disk,
+    #network,
+    #pulseaudio,
+    #battery,
+    #tray,
+    #custom-weather,
+    #custom-kdeconnect {
+      margin: 0 ${toString u.spacing.sm}px;
+      color: @text;
+    }
+
+    #custom-weather {
+      margin-left: ${toString u.spacing.md}px;
+    }
+
+    #clock {
+      margin-right: ${toString u.spacing.md}px;
+    }
+
+    #workspaces button {
+      padding: 2px 8px;
+      color: @subtext;
+      background: transparent;
+      border-radius: ${toString u.radius.sm}px;
+      transition: all ${u.transition};
+      font-size: ${toString u.fontSize.lg}px;
+    }
+
+    #workspaces button:hover {
+      background: @s0;
+      color: @text;
+      box-shadow: none;
+    }
+
+    #workspaces button.focused {
+      color: @mauve;
+      font-weight: bold;
+    }
+
+    #workspaces button.urgent {
+      color: @red;
+      animation: blink ${u.animation.pulse};
+    }
+
+    @keyframes blink {
+      to { color: @base; background: @red; }
+    }
+
+    #custom-launcher {
+        margin: 0 ${toString u.spacing.xl}px 0 ${toString u.spacing.xl}px;
+    }
+
+    #clock {
+      color: @lavender;
+      font-weight: bold;
+    }
+
+    #custom-media {
+      background-color: alpha(@base, ${toString u.opacity.mid});
+      border: 1px solid alpha(@text, ${toString u.opacity.hairline});
+      border-radius: ${toString u.cornerRadius}px;
+      margin: ${toString u.spacing.xs}px;
+      padding: 0 ${toString u.spacing.md}px;
+      font-weight: 700;
+    }
+
+    #window {
+      color: @subtext;
+      font-style: italic;
+    }
+
+    #cpu { color: @blue; }
+    #cpu.warning  { color: @yellow; }
+    #cpu.critical { color: @red; }
+
+    #memory { color: @teal; }
+    #memory.warning  { color: @yellow; }
+    #memory.critical { color: @red; }
+
+    #temperature { color: @green; }
+    #temperature.critical { color: @red; }
+
+    #disk { color: @sky; }
+
+    #network { color: @sapphire; }
+    #network.disconnected { color: @red; }
+
+    #pulseaudio { color: @pink; }
+    #pulseaudio.muted { color: @s1; }
+
+    #mode {
+      color: @peach;
+      background: @s0;
+      border-radius: 8px;
+      padding: 2px 12px;
+      font-weight: bold;
+    }
+
+    #tray > .passive { -gtk-icon-effect: dim; }
+    #tray > .needs-attention {
+      -gtk-icon-effect: highlight;
+      background: alpha(@red, ${toString u.opacity.faint});
+      border-radius: ${toString u.radius.xs}px;
+    }
+
+    tooltip {
+      background-color: alpha(@mantle, ${toString u.opacity.high});
+      border: 1px solid @s0;
+      border-radius: ${toString u.radius.md}px;
+      color: @text;
+      font-size: ${toString u.fontSize.sm}px;
+      padding: ${toString u.spacing.xs}px;
+    }
+  '';
 
   pythonWithGObject = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
   playerctlTypelibPath = pkgs.lib.makeSearchPath "lib/girepository-1.0" [
@@ -228,11 +400,11 @@ in
             on-scroll = 1;
             on-click-right = "mode";
             format = {
-              months = "<span color='#cba6f7'><b>{}</b></span>";
-              days = "<span color='#cdd6f4'>{}</span>";
-              weeks = "<span color='#74c7ec'>W{}</span>";
-              weekdays = "<span color='#fab387'><b>{}</b></span>";
-              today = "<span color='#a6e3a1'><b><u>{}</u></b></span>";
+              months = "<span color='${c.mauve}'><b>{}</b></span>";
+              days = "<span color='${c.text}'>{}</span>";
+              weeks = "<span color='${c.sapphire}'>W{}</span>";
+              weekdays = "<span color='${c.peach}'><b>{}</b></span>";
+              today = "<span color='${c.green}'><b><u>{}</u></b></span>";
             };
           };
         };
@@ -354,7 +526,7 @@ in
   };
 
   home.file = {
-    ".config/waybar/style.css".source = ./style.css;
+    ".config/waybar/style.css".text = styleCss;
 
     ".config/waybar/scripts/app_launcher.sh".source = "${appLauncherScript}/bin/app_launcher.sh";
     ".config/waybar/scripts/get_weather.sh".source = "${getWeatherScript}/bin/get_weather";

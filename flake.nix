@@ -32,6 +32,10 @@
     };
     fenix.url = "github:nix-community/fenix";
     niri-screen-time.url = "github:probeldev/niri-screen-time";
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -72,6 +76,7 @@
             ./hosts/${host}/hardware-configuration.nix
             inputs.nix-minecraft.nixosModules.minecraft-servers
             inputs.niri.nixosModules.niri
+            inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
             {
               home-manager = {
