@@ -115,6 +115,18 @@ in
 
   programs.niri.package = pkgs.niri-stable;
   programs.niri.settings = {
+    outputs = {
+      "Philips Consumer Electronics Company PHL BDM4065 0x00000990" = {
+        enable = true;
+        mode = {
+          height = 1440;
+          width = 2560;
+          refresh = 59.951;
+        };
+        variable-refresh-rate = true;
+      };
+    };
+
     input = {
       keyboard.xkb = { };
       touchpad = {

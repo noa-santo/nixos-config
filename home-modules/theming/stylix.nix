@@ -1,5 +1,4 @@
-_:
-{
+_: {
   dconf.enable = true;
   home.pointerCursor.sway.enable = true;
   gtk = {
@@ -10,7 +9,7 @@ _:
     sway.enable = false;
     waybar.enable = false;
     wofi.enable = false;
-    mako.enable = false;
     niri.enable = false;
+    zen-browser.profileNames = [ "default" ];
   };
 }

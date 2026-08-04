@@ -145,8 +145,6 @@ in
       inherit (theme) cursor;
       inherit (theme) fonts;
       inherit (theme) opacity;
-
-      targets.console.enable = true;
     };
   };
 }
