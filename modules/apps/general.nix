@@ -12,5 +12,6 @@
     killall
     usbutils
     nautilus
+    termius
   ];
 }
