@@ -5,4 +5,5 @@
   "minecraft"
   "docker"
   "dev"
+  "kde-connect"
 ]
