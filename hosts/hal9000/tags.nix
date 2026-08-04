@@ -6,4 +6,5 @@
   "docker"
   "dev"
   "kde-connect"
+  "ssh"
 ]
