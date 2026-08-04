@@ -31,8 +31,14 @@ let
 
   waypipeRunner = pkgs.writeShellScriptBin "remote-run" ''
     if [ "$#" -lt 1 ]; then
-      echo "usage: remote-run [user@host|host] <command> [args...]" >&2
+      echo "usage: remote-run [-m|--mount] [user@host|host] <command> [args...]" >&2
       exit 1
+    fi
+
+    ENABLE_MOUNT=0
+    if [ "$1" = "-m" ] || [ "$1" = "--mount" ]; then
+      ENABLE_MOUNT=1
+      shift
     fi
 
     CURRENT_HOST="$(hostname)"
@@ -99,13 +105,46 @@ let
       SSH_TARGET="''${TARGET_USER}@''${TARGET_HOST}"
     fi
 
-    echo "Running '$*' on $SSH_TARGET via waypipe..."
-    exec ${pkgs.waypipe}/bin/waypipe ssh "$SSH_TARGET" "$@"
+    if [ "$ENABLE_MOUNT" -eq 1 ]; then
+      LOCAL_USER="$(whoami)"
+      REMOTE_MOUNT_DIR="/tmp/local-files-$LOCAL_USER"
+
+      echo "Setting up reverse file bridge at $REMOTE_MOUNT_DIR..."
+
+      CMD_STR=""
+      for arg in "$@"; do
+        printf -v escaped '%q' "$arg"
+        CMD_STR="$CMD_STR $escaped"
+      done
+
+      REMOTE_SCRIPT="
+        mkdir -p $REMOTE_MOUNT_DIR || exit 1
+        if ! command -v sshfs >/dev/null 2>&1; then
+          echo 'Error: sshfs is not installed on the remote server.' >&2
+          exit 127
+        fi
+        sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no $LOCAL_USER@localhost:$HOME $REMOTE_MOUNT_DIR || {
+          echo 'Error: sshfs failed to mount local filesystem. Check SSH agent forwarding and local sshd.' >&2
+          exit 1
+        }
+        exec $CMD_STR
+      "
+      B64_SCRIPT=$(echo -n "$REMOTE_SCRIPT" | base64 -w 0)
+
+      ${pkgs.waypipe}/bin/waypipe ssh -A -R 2222:127.0.0.1:22 "$SSH_TARGET" bash -c "echo $B64_SCRIPT | base64 -d | bash"
+
+      echo "Cleaning up remote file bridge..."
+      ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null"
+    else
+      echo "Running '$*' on $SSH_TARGET via waypipe..."
+      exec ${pkgs.waypipe}/bin/waypipe ssh "$SSH_TARGET" "$@"
+    fi
   '';
 in
 {
   environment.systemPackages = [
     pkgs.waypipe
+    pkgs.sshfs
     waypipeRunner
   ];
 }
