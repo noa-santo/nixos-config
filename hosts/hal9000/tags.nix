@@ -7,4 +7,5 @@
   "dev"
   "kde-connect"
   "ssh"
+  "waypipe"
 ]
