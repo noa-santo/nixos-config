@@ -29,6 +29,70 @@ let
     pkgs.lib.mapAttrsToList (host: data: "  [${host}]=\"${data.mainUser}\"") hostData
   );
 
+  remoteMountScript = pkgs.writeShellScript "waypipe-remote-mount" ''
+    set -e
+
+    REMOTE_MOUNT_DIR="$1"
+    LOCAL_USER="$2"
+    shift 2
+
+    mkdir -p "$REMOTE_MOUNT_DIR" || exit 1
+    if ! command -v sshfs >/dev/null 2>&1; then
+      echo "Error: sshfs is not installed on the remote server." >&2
+      exit 127
+    fi
+    if ! command -v bwrap >/dev/null 2>&1; then
+      echo "Error: bubblewrap (bwrap) is not installed on the remote server." >&2
+      exit 127
+    fi
+
+    echo "Waiting for reverse SSH tunnel bridge..."
+    RETRIES=10
+    while ! nc -z 127.0.0.1 2222 2>/dev/null && [ $RETRIES -gt 0 ]; do
+      sleep 0.5
+      RETRIES=$((RETRIES - 1))
+    done
+
+    if [ $RETRIES -eq 0 ]; then
+      echo "Error: Reverse SSH tunnel port 2222 is not accessible." >&2
+      exit 1
+    fi
+
+    sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no,allow_other "''${LOCAL_USER}@localhost:''${HOME}" "$REMOTE_MOUNT_DIR" || {
+      echo "Error: sshfs failed to mount local filesystem." >&2
+      exit 1
+    }
+
+    REMOTE_BASH="$(command -v bash || echo /run/current-system/sw/bin/bash)"
+
+    BWRAP_ARGS=(
+      --unshare-user
+      --uid "$(id -u)"
+      --gid "$(id -g)"
+      --dev-bind / /
+      --dev-bind /run/user /run/user
+      --bind "$REMOTE_MOUNT_DIR" "$HOME"
+      --ro-bind /nix /nix
+      --chdir "$HOME"
+      --setenv HOME "$HOME"
+      --setenv XDG_CONFIG_HOME "$HOME/.config"
+      --setenv XDG_DATA_HOME "$HOME/.local/share"
+      --setenv XDG_CACHE_HOME "$HOME/.cache"
+      --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
+      --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
+    )
+
+    if [ -e "/home/$USER/.nix-profile" ]; then
+      BWRAP_ARGS+=(--bind "/home/$USER/.nix-profile" "$HOME/.nix-profile")
+    fi
+
+    if [ -e "/home/$USER/.local/state" ]; then
+      BWRAP_ARGS+=(--bind "/home/$USER/.local/state" "$HOME/.local/state")
+    fi
+
+    exec bwrap "''${BWRAP_ARGS[@]}" "$REMOTE_BASH" -c 'exec "$@"' -- "$@"
+  '';
+
   waypipeRunner = pkgs.writeShellScriptBin "remote-run" ''
     if [ "$#" -lt 1 ]; then
       echo "usage: remote-run [-m|--mount] [user@host|host] <command> [args...]" >&2
@@ -135,59 +199,8 @@ let
 
       echo "Setting up reverse file bridge at $REMOTE_MOUNT_DIR..."
 
-      CMD_STR=""
-      for arg in "$@"; do
-        printf -v escaped '%q' "$arg"
-        CMD_STR="$CMD_STR $escaped"
-      done
-
-      REMOTE_SCRIPT="
-        mkdir -p $REMOTE_MOUNT_DIR || exit 1
-        if ! command -v sshfs >/dev/null 2>&1; then
-          echo 'Error: sshfs is not installed on the remote server.' >&2
-          exit 127
-        fi
-        if ! command -v bwrap >/dev/null 2>&1; then
-          echo 'Error: bubblewrap (bwrap) is not installed on the remote server.' >&2
-          exit 127
-        fi
-
-        # Wait for the reverse tunnel port to become active with a retry loop
-        echo 'Waiting for reverse SSH tunnel bridge...'
-        RETRIES=10
-        while ! nc -z 127.0.0.1 2222 2>/dev/null && [ \$RETRIES -gt 0 ]; do
-          sleep 0.5
-          RETRIES=\$((RETRIES - 1))
-        done
-
-        if [ \$RETRIES -eq 0 ]; then
-          echo 'Error: Reverse SSH tunnel port 2222 is not accessible.' >&2
-          exit 1
-        fi
-
-        sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no $LOCAL_USER@localhost:$HOME $REMOTE_MOUNT_DIR || {
-          echo 'Error: sshfs failed to mount local filesystem.' >&2
-          exit 1
-        }
-
-        REMOTE_BASH="$(command -v bash || echo /run/current-system/sw/bin/bash)"
-
-        exec bwrap \
-          --unshare-user \
-          --uid \$(id -u) \
-          --gid \$(id -g) \
-          --dev-bind / / \
-          --bind \"$REMOTE_MOUNT_DIR\" \"\$HOME\" \
-          --chdir \"\$HOME\" \
-          --setenv HOME \"\$HOME\" \
-          --setenv XDG_CONFIG_HOME \"\$HOME/.config\" \
-          --setenv XDG_DATA_HOME \"\$HOME/.local/share\" \
-          --setenv XDG_CACHE_HOME \"\$HOME/.cache\" \
-          \"\$REMOTE_BASH\" -c \"exec $CMD_STR\"
-      "
-      B64_SCRIPT=$(echo -n "$REMOTE_SCRIPT" | base64 -w 0)
-
-      ${pkgs.waypipe}/bin/waypipe ssh -A -R 2222:127.0.0.1:22 "$SSH_TARGET" bash -c "'echo $B64_SCRIPT | base64 -d | bash'"
+      ${pkgs.waypipe}/bin/waypipe ssh -A -R 2222:127.0.0.1:22 "$SSH_TARGET" \
+        bash -s -- "$REMOTE_MOUNT_DIR" "$LOCAL_USER" "$@" < ${remoteMountScript}
 
       echo "Cleaning up remote file bridge..."
       ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null"
@@ -208,4 +221,6 @@ in
     pkgs.bubblewrap
     waypipeRunner
   ];
+
+  programs.fuse.userAllowOther = true;
 }
