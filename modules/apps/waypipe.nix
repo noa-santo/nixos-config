@@ -152,10 +152,25 @@ let
           exit 127
         fi
 
-        sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \"\$USER@localhost:\$HOME\" \"$REMOTE_MOUNT_DIR\" || {
+        # Wait for the reverse tunnel port to become active with a retry loop
+        echo 'Waiting for reverse SSH tunnel bridge...'
+        RETRIES=10
+        while ! nc -z 127.0.0.1 2222 2>/dev/null && [ \$RETRIES -gt 0 ]; do
+          sleep 0.5
+          RETRIES=\$((RETRIES - 1))
+        done
+
+        if [ \$RETRIES -eq 0 ]; then
+          echo 'Error: Reverse SSH tunnel port 2222 is not accessible.' >&2
+          exit 1
+        fi
+
+        sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no $LOCAL_USER@localhost:$HOME $REMOTE_MOUNT_DIR || {
           echo 'Error: sshfs failed to mount local filesystem.' >&2
           exit 1
         }
+
+        REMOTE_BASH="$(command -v bash || echo /run/current-system/sw/bin/bash)"
 
         exec bwrap \
           --unshare-user \
@@ -168,7 +183,7 @@ let
           --setenv XDG_CONFIG_HOME \"\$HOME/.config\" \
           --setenv XDG_DATA_HOME \"\$HOME/.local/share\" \
           --setenv XDG_CACHE_HOME \"\$HOME/.cache\" \
-          --sh-c \"exec $CMD_STR\"
+          \"\$REMOTE_BASH\" -c \"exec $CMD_STR\"
       "
       B64_SCRIPT=$(echo -n "$REMOTE_SCRIPT" | base64 -w 0)
 
