@@ -109,6 +109,30 @@ let
       LOCAL_USER="$(whoami)"
       REMOTE_MOUNT_DIR="/tmp/local-files-$LOCAL_USER"
 
+      # Pre-run cleanup guard for stale mounts
+      ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null"
+
+      echo "Setting up automated local loopback authorization..."
+      mkdir -p ~/.ssh
+      if [ -f ~/.ssh/id_ed25519.pub ]; then
+        PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
+      elif [ -f ~/.ssh/id_rsa.pub ]; then
+        PUB_KEY="$(cat ~/.ssh/id_rsa.pub)"
+      else
+        echo "Error: No local SSH public key found in ~/.ssh/" >&2
+        exit 1
+      fi
+
+      touch ~/.ssh/authorized_keys
+      chmod 600 ~/.ssh/authorized_keys
+      if ! grep -qF "$PUB_KEY" ~/.ssh/authorized_keys; then
+        echo "Setting up automated local loopback authorization..."
+        echo "$PUB_KEY" >> ~/.ssh/authorized_keys
+        ADDED_KEY=1
+      else
+        ADDED_KEY=0
+      fi
+
       echo "Setting up reverse file bridge at $REMOTE_MOUNT_DIR..."
 
       CMD_STR=""
@@ -123,18 +147,39 @@ let
           echo 'Error: sshfs is not installed on the remote server.' >&2
           exit 127
         fi
-        sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no $LOCAL_USER@localhost:$HOME $REMOTE_MOUNT_DIR || {
-          echo 'Error: sshfs failed to mount local filesystem. Check SSH agent forwarding and local sshd.' >&2
+        if ! command -v bwrap >/dev/null 2>&1; then
+          echo 'Error: bubblewrap (bwrap) is not installed on the remote server.' >&2
+          exit 127
+        fi
+
+        sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no,UserKnownHostsFile=/dev/null \"\$USER@localhost:\$HOME\" \"$REMOTE_MOUNT_DIR\" || {
+          echo 'Error: sshfs failed to mount local filesystem.' >&2
           exit 1
         }
-        exec $CMD_STR
+
+        exec bwrap \
+          --unshare-user \
+          --uid \$(id -u) \
+          --gid \$(id -g) \
+          --dev-bind / / \
+          --bind \"$REMOTE_MOUNT_DIR\" \"\$HOME\" \
+          --chdir \"\$HOME\" \
+          --setenv HOME \"\$HOME\" \
+          --setenv XDG_CONFIG_HOME \"\$HOME/.config\" \
+          --setenv XDG_DATA_HOME \"\$HOME/.local/share\" \
+          --setenv XDG_CACHE_HOME \"\$HOME/.cache\" \
+          --sh-c \"exec $CMD_STR\"
       "
       B64_SCRIPT=$(echo -n "$REMOTE_SCRIPT" | base64 -w 0)
 
-      ${pkgs.waypipe}/bin/waypipe ssh -A -R 2222:127.0.0.1:22 "$SSH_TARGET" bash -c "echo $B64_SCRIPT | base64 -d | bash"
+      ${pkgs.waypipe}/bin/waypipe ssh -A -R 2222:127.0.0.1:22 "$SSH_TARGET" bash -c "'echo $B64_SCRIPT | base64 -d | bash'"
 
       echo "Cleaning up remote file bridge..."
       ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null"
+
+      if [ "$ADDED_KEY" -eq 1 ]; then
+        sed -i "\|$PUB_KEY|d" ~/.ssh/authorized_keys
+      fi
     else
       echo "Running '$*' on $SSH_TARGET via waypipe..."
       exec ${pkgs.waypipe}/bin/waypipe ssh "$SSH_TARGET" "$@"
@@ -145,6 +190,7 @@ in
   environment.systemPackages = [
     pkgs.waypipe
     pkgs.sshfs
+    pkgs.bubblewrap
     waypipeRunner
   ];
 }

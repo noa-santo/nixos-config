@@ -9,4 +9,5 @@
   "scanner"
   "kde-connect"
   "waypipe"
+  "ssh"
 ]
