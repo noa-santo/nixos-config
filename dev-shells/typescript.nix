@@ -5,12 +5,11 @@ pkgs.mkShell {
     pkgs.fishPlugins.nvm
     pkgs.corepack
 
-    pkgs.nodePackages_latest.typescript
-    pkgs.nodePackages_latest.ts-node
-    pkgs.nodePackages_latest.eslint
-    pkgs.nodePackages_latest.prettier
-    pkgs.nodePackages_latest.pnpm
-    pkgs.nodePackages_latest.typescript-language-server
+    pkgs.typescript
+    pkgs.eslint
+    pkgs.prettier
+    pkgs.pnpm
+    pkgs.typescript-language-server
 
     (buildIdeWithPlugins pkgs "webstorm" [
       "IdeaVIM"
