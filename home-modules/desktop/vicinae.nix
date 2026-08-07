@@ -44,6 +44,7 @@ in
         wikipedia
         player-pilot
         it-tools
+        inputs.emojidb-extension.packages.${pkgs.stdenv.hostPlatform.system}.default
       ]
       ++ lib.optionals isNiri [ niri ];
   };

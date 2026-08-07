@@ -36,6 +36,10 @@
       url = "github:danth/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    emojidb-extension = {
+      url = "github:noa-santo/vicinae-emojidb";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
