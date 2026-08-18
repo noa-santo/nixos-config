@@ -2,9 +2,12 @@
   pkgs,
   lib,
   config,
+  hostTags ? [],
   ...
 }:
-
+let 
+  isDocker = builtins.elem "docker" hostTags;
+in
 {
   options = {
     mainUser = lib.mkOption {
@@ -22,7 +25,7 @@
         "wheel"
         "video"
         "input"
-      ];
+      ] ++ lib.optionals isDocker [ "docker" ];
       shell = pkgs.fish;
     };
   };
