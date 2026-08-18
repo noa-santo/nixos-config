@@ -1,5 +1,4 @@
-_:
-{
+_: {
   programs.cava = {
     enable = true;
     settings = {

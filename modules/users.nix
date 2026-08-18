@@ -2,10 +2,10 @@
   pkgs,
   lib,
   config,
-  hostTags ? [],
+  hostTags ? [ ],
   ...
 }:
-let 
+let
   isDocker = builtins.elem "docker" hostTags;
 in
 {
@@ -25,7 +25,8 @@ in
         "wheel"
         "video"
         "input"
-      ] ++ lib.optionals isDocker [ "docker" ];
+      ]
+      ++ lib.optionals isDocker [ "docker" ];
       shell = pkgs.fish;
     };
   };
