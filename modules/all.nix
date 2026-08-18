@@ -31,5 +31,11 @@ let
 
 in
 {
-  imports = builtins.filter shouldImport nixFiles;
+imports = builtins.filter (
+  file:
+  let
+    res = shouldImport file;
+  in
+  builtins.trace "${toString file}: ${if res then "INCLUDED" else "EXCLUDED"}" res
+) nixFiles;
 }
