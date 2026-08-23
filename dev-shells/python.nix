@@ -18,11 +18,13 @@ pkgs.mkShell {
     ])
   ];
   shellHook = ''
-    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [
-      pkgs.stdenv.cc.cc.lib
-      pkgs.zlib
-      pkgs.glibc
-    ]}:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH="${
+      pkgs.lib.makeLibraryPath [
+        pkgs.stdenv.cc.cc.lib
+        pkgs.zlib
+        pkgs.glibc
+      ]
+    }:$LD_LIBRARY_PATH
     echo "Python dev environment loaded."
   '';
 }
