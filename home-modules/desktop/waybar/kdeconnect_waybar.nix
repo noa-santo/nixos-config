@@ -19,9 +19,9 @@ let
       owner = "Adrien5902";
       repo = "kdeconnect_waybar";
       rev = "main";
-      hash = "sha256-/9dh29PiNVw1yoa/hN9v3szJPB8/vapZrRFuSoouvBA=";
+      hash = "sha256-1pcKR/a6mmrS9/AykBiTOP3McQjwbJ8Wx1lV82jLND0=";
     };
-    cargoHash = "sha256-8es8y/d+mToWGcDfIPHtlogKiUJ+MjFCw5USRBRBCjg=";
+    cargoHash = "sha256-DpY++t4YaU/oCjSwyiPwyXA0U6S/R16mTRF/8ctQ8MM=";
     doCheck = false;
     nativeBuildInputs = [
       pkgs.pkg-config
