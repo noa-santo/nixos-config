@@ -120,14 +120,39 @@ let
             exit 1
           fi
 
+          BEST_HOST=""
+          BEST_USER=""
+          MAX_SCORE=""
+
           for host in "''${VALID_HOSTS[@]}"; do
             user="''${HOST_USERS[$host]}"
-            if ssh -o ConnectTimeout=2 -o BatchMode=yes "''${user}@''${host}" true 2>/dev/null; then
-              TARGET_HOST="$host"
-              TARGET_USER="$user"
-              break
+            metrics=$(ssh -o ConnectTimeout=2 -o BatchMode=yes "''${user}@''${host}" '
+              awk "/MemAvailable/ {avail=\$2} END {print avail}" /proc/meminfo
+              awk "{print \$1}" /proc/loadavg
+              nproc
+            ' 2>/dev/null) || continue
+
+            read -r free_kb load_1 cpu_count <<< "$(echo "$metrics" | tr '\n' ' ')"
+            if [ -z "$free_kb" ] || [ -z "$load_1" ] || [ -z "$cpu_count" ]; then
+              continue
+            fi
+
+            score=$(awk -v ram="$free_kb" -v load_val="$load_1" -v cpus="$cpu_count" 'BEGIN {
+              ram_gb = ram / 1024 / 1024
+              effective_load = load_val / cpus
+              score = ram_gb - (effective_load * 2)
+              print score
+            }')
+
+            if [ -z "$BEST_HOST" ] || $(awk -v s1="$score" -v s2="$MAX_SCORE" 'BEGIN {exit !(s1 > s2)}'); then
+              BEST_HOST="$host"
+              BEST_USER="$user"
+              MAX_SCORE="$score"
             fi
           done
+
+          TARGET_HOST="$BEST_HOST"
+          TARGET_USER="$BEST_USER"
         fi
 
         if [ -z "$TARGET_HOST" ]; then
