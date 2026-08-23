@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   imports = [
     ../../modules/all.nix
@@ -23,6 +23,13 @@
 
   hardware.enableAllFirmware = true;
   services.fwupd.enable = true;
+
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      zlib zstd stdenv.cc.cc curl openssl attr libssh bzip2 libxml2 acl libsodium util-linux xz systemd
+    ];
+  };
 
   system.stateVersion = "25.11";
 }
