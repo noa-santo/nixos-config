@@ -50,10 +50,10 @@ let
       nc -z 127.0.0.1 2222 2>/dev/null && break
       sleep 0.5
     done
-    nc -z 127.0.0.1 2222 2>/dev/null || { echo "Error: reverse SSH tunnel port 2222 is not accessible." >&2; exit 1; }
+    nc -z 127.0.0.1 2222 2>/dev/null || { echo "Error: tunnel port 2222 inaccessible." >&2; exit 1; }
 
     sshfs -p 2222 \
-      -o reconnect,StrictHostKeyChecking=no,idmap=user \
+      -o reconnect,StrictHostKeyChecking=no,allow_other,exec,idmap=user \
       "''${LOCAL_USER}@localhost:''${LOCAL_HOME}" "$REMOTE_MOUNT_DIR"
 
     cleanup() {
@@ -62,8 +62,14 @@ let
     }
     trap cleanup EXIT
 
-    exec ${pkgs.bubblewrap}/bin/bwrap \
-      --dev-bind / / \
+    BWRAP="/run/wrappers/bin/bwrap"
+    if [ ! -x "$BWRAP" ]; then
+      BWRAP="${pkgs.bubblewrap}/bin/bwrap"
+    fi
+
+    exec "$BWRAP" \
+      --bind / / \
+      --dev /dev \
       --bind "$REMOTE_MOUNT_DIR" "$REMOTE_HOME" \
       -- "$@"
   '';
