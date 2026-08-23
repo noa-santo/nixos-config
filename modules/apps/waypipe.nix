@@ -1,5 +1,5 @@
 # tags: waypipe
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 let
   hostData =
     pkgs.lib.filterAttrs
@@ -29,6 +29,33 @@ let
     pkgs.lib.mapAttrsToList (host: data: "  [${host}]=\"${data.mainUser}\"") hostData
   );
 
+  isWaypipeServer = hostData ? ${config.networking.hostName};
+
+  remoteBindMountScript = pkgs.writeShellScriptBin "waypipe-remote-bindmount" ''
+    set -e
+
+    if [ "''${1:-}" != "--in-namespace" ]; then
+      exec unshare --mount --propagation private "$0" --in-namespace "$@"
+    fi
+    shift
+
+    SRC_DIR="$1"
+    DEST_DIR="$2"
+    DROP_USER="$3"
+    DROP_HOME="$4"
+    DROP_WAYLAND_DISPLAY="$5"
+    DROP_XDG_RUNTIME_DIR="$6"
+    shift 6
+
+    mount --bind "$SRC_DIR" "$DEST_DIR"
+
+    exec runuser -u "$DROP_USER" -- env \
+      HOME="$DROP_HOME" \
+      WAYLAND_DISPLAY="$DROP_WAYLAND_DISPLAY" \
+      XDG_RUNTIME_DIR="$DROP_XDG_RUNTIME_DIR" \
+      "$@"
+  '';
+
   remoteMountScript = pkgs.writeShellScript "waypipe-remote-mount" ''
     set -e
 
@@ -37,75 +64,37 @@ let
     LOCAL_HOME="$3"
     shift 3
 
-    mkdir -p "$REMOTE_MOUNT_DIR" 2>/dev/null
-    if ! cd "$REMOTE_MOUNT_DIR" 2>/dev/null; then
-      fusermount3 -uz "$REMOTE_MOUNT_DIR" 2>/dev/null || fusermount -uz "$REMOTE_MOUNT_DIR" 2>/dev/null || umount -l "$REMOTE_MOUNT_DIR" 2>/dev/null
-      rmdir "$REMOTE_MOUNT_DIR" 2>/dev/null
-      mkdir -p "$REMOTE_MOUNT_DIR" || exit 1
-    else
-      cd - >/dev/null
+    REMOTE_USER="$(id -un)"
+    REMOTE_HOME="$HOME"
+
+    mkdir -p "$REMOTE_MOUNT_DIR"
+    if mountpoint -q "$REMOTE_MOUNT_DIR" 2>/dev/null; then
+      fusermount3 -uz "$REMOTE_MOUNT_DIR" 2>/dev/null \
+        || fusermount -uz "$REMOTE_MOUNT_DIR" 2>/dev/null \
+        || umount -l "$REMOTE_MOUNT_DIR" 2>/dev/null \
+        || true
     fi
 
-    if ! command -v sshfs >/dev/null 2>&1; then
-      echo "Error: sshfs is not installed on the remote server." >&2
-      exit 127
-    fi
-    if ! command -v bwrap >/dev/null 2>&1; then
-      echo "Error: bubblewrap (bwrap) is not installed on the remote server." >&2
-      exit 127
-    fi
-
-    echo "Waiting for reverse SSH tunnel bridge..."
-    RETRIES=10
-    while ! nc -z 127.0.0.1 2222 2>/dev/null && [ $RETRIES -gt 0 ]; do
-      sleep 0.5
-      RETRIES=$((RETRIES - 1))
+    for bin in sshfs sudo waypipe-remote-bindmount; do
+      command -v "$bin" >/dev/null 2>&1 || { echo "Error: $bin is not installed on the remote server." >&2; exit 127; }
     done
 
-    if [ $RETRIES -eq 0 ]; then
-      echo "Error: Reverse SSH tunnel port 2222 is not accessible." >&2
-      exit 1
-    fi
+    echo "Waiting for reverse SSH tunnel bridge..." >&2
+    for _ in $(seq 1 20); do
+      nc -z 127.0.0.1 2222 2>/dev/null && break
+      sleep 0.5
+    done
+    nc -z 127.0.0.1 2222 2>/dev/null || { echo "Error: reverse SSH tunnel port 2222 is not accessible." >&2; exit 1; }
 
-    sshfs -p 2222 -o reconnect,StrictHostKeyChecking=no,allow_other,default_permissions,uid=$(id -u),gid=$(id -g) "''${LOCAL_USER}@localhost:''${LOCAL_HOME}" "$REMOTE_MOUNT_DIR" || exit 1
+    sshfs -p 2222 \
+      -o reconnect,StrictHostKeyChecking=no,allow_other,default_permissions,uid=$(id -u),gid=$(id -g) \
+      "''${LOCAL_USER}@localhost:''${LOCAL_HOME}" "$REMOTE_MOUNT_DIR"
 
-    mkdir -p "$REMOTE_MOUNT_DIR/.local/state" || exit 1
+    mkdir -p "$REMOTE_MOUNT_DIR/.local/state"
 
-    REMOTE_BASH="$(command -v bash || echo /run/current-system/sw/bin/bash)"
-
-    BWRAP_ARGS=(
-      --dev-bind / /
-      --dev-bind /run/user /run/user
-      --bind "$REMOTE_MOUNT_DIR" "$HOME"
-      --ro-bind /nix /nix
-      --ro-bind /etc/profiles /etc/profiles
-      --ro-bind /run/current-system /run/current-system
-      --ro-bind /etc/ssl /etc/ssl
-      --chdir "$HOME"
-      --setenv HOME "$HOME"
-      --setenv XDG_CONFIG_HOME "$HOME/.config"
-      --setenv XDG_DATA_HOME "$HOME/.local/share"
-      --setenv XDG_CACHE_HOME "$HOME/.cache"
-      --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
-      --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
-    )
-
-    if [ -e /run/opengl-driver ]; then
-      BWRAP_ARGS+=(--ro-bind /run/opengl-driver /run/opengl-driver)
-    fi
-
-    if [ -e "$HOME/.nix-profile" ]; then
-      NIX_PROFILE_TARGET="$(readlink -f "$HOME/.nix-profile")"
-      if [ -e "$NIX_PROFILE_TARGET" ]; then
-        BWRAP_ARGS+=(--ro-bind "$NIX_PROFILE_TARGET" "$HOME/.nix-profile")
-      fi
-    fi
-
-    if [ -e "$HOME/.local/state" ]; then
-      BWRAP_ARGS+=(--bind "$HOME/.local/state" "$HOME/.local/state")
-    fi
-
-    exec bwrap "''${BWRAP_ARGS[@]}" "$REMOTE_BASH" -c 'exec "$@"' -- "$@"
+    exec sudo waypipe-remote-bindmount \
+      "$REMOTE_MOUNT_DIR" "$REMOTE_HOME" "$REMOTE_USER" "$REMOTE_HOME" \
+      "$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR" "$@"
   '';
 
   waypipeRunner = pkgs.writeShellScriptBin "remote-run" ''
@@ -254,9 +243,21 @@ in
   environment.systemPackages = [
     pkgs.waypipe
     pkgs.sshfs
-    pkgs.bubblewrap
+    pkgs.util-linux
+    remoteBindMountScript
     waypipeRunner
   ];
 
   programs.fuse.userAllowOther = true;
+
+  security.sudo.extraRules = pkgs.lib.optional isWaypipeServer {
+    users = [ hostData.${config.networking.hostName}.mainUser ];
+    runAs = "root";
+    commands = [
+      {
+        command = "/run/current-system/sw/bin/waypipe-remote-bindmount *";
+        options = [ "NOPASSWD" ];
+      }
+    ];
+  };
 }
