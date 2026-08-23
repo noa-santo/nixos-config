@@ -3,10 +3,55 @@
   environment.shellAliases = {
     rebuild = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname)";
     rebuild-fast = "sudo nixos-rebuild switch --flake $HOME/.config/nixos-config#$(hostname) --option substituters 'https://cache.nixos.org https://nix-community.cachix.org https://niri-epireyn.cachix.org' --option trusted-public-keys 'cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs= niri-epireyn.cachix.org-1:tlVyFN7CtsDT+ZcLPS+ekFWeT1X6X4OqvWqbBMyIzFA='";
-    update = "sudo nix flake update --flake $HOME/.config/nixos-config";
   };
 
   environment.systemPackages = [
+    (pkgs.writeShellScriptBin "update" ''
+      do_flake=0
+      do_git=0
+      do_rebuild=0
+
+      while [ $# -gt 0 ]; do
+        case "$1" in
+          -g|--git)
+            do_git=1
+            shift
+            ;;
+          -a|--all)
+            do_flake=1
+            do_git=1
+            shift
+            ;;
+          -r|--rebuild)
+            do_rebuild=1
+            shift
+            ;;
+          *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
+        esac
+      done
+
+      if [ $do_flake -eq 0 ] && [ $do_git -eq 0 ]; then
+        do_flake=1
+      fi
+
+      if [ $do_git -eq 1 ]; then
+        echo "Syncing git repository with remote..."
+        git -C "$HOME/.config/nixos-config" pull --rebase
+      fi
+
+      if [ $do_flake -eq 1 ]; then
+        echo "Updating nix flake..."
+        sudo nix flake update --flake "$HOME/.config/nixos-config"
+      fi
+
+      if [ $do_rebuild -eq 1 ]; then
+        echo "Rebuilding NixOS system..."
+        sudo nixos-rebuild switch --flake "$HOME/.config/nixos-config#$(hostname)"
+      fi
+    '')
     (pkgs.writeShellScriptBin "rebuild-reboot" ''
       sudo nixos-rebuild boot --flake $HOME/.config/nixos-config#$(hostname)
       if [ $? -eq 0 ]; then
@@ -24,22 +69,23 @@
       pkg="$1"
       shift
 
-      nix shell "nixpkgs#''${pkg}" --command "''${pkg}" "$@" 2>/tmp/tmp-error-$$.log
+      errlog=$(mktemp)
+      trap 'rm -f "$errlog"' EXIT
+
+      nix shell "nixpkgs#''${pkg}" --command "''${pkg}" "$@" 2>"$errlog"
       rc=$?
 
       if [ $rc -eq 0 ]; then
         exit 0
       fi
 
-      if grep -qiE "unfree|not allowed|non-free|license" /tmp/tmp-error-$$.log; then
+      if grep -qiE "unfree|not allowed|non-free|license" "$errlog"; then
         echo "Attempting with NIXPKGS_ALLOW_UNFREE=1..." >&2
-        rm -f /tmp/tmp-error-$$.log
         NIXPKGS_ALLOW_UNFREE=1 nix shell --impure "nixpkgs#''${pkg}" --command "''${pkg}" "$@"
         exit $?
       fi
 
-      cat /tmp/tmp-error-$$.log >&2
-      rm -f /tmp/tmp-error-$$.log
+      cat "$errlog" >&2
       exit $rc
     '')
     (pkgs.writeShellScriptBin "cleanup" ''
