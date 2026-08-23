@@ -60,6 +60,8 @@ let
     }
     trap cleanup EXIT
 
+    cd "$REMOTE_MOUNT_DIR"
+
     exec env HOME="$REMOTE_MOUNT_DIR" \
       XDG_CONFIG_HOME="$REMOTE_MOUNT_DIR/.config" \
       XDG_DATA_HOME="$REMOTE_MOUNT_DIR/.local/share" \
