@@ -1,5 +1,5 @@
 # tags: waypipe
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 let
   hostData =
     pkgs.lib.filterAttrs
@@ -29,40 +29,6 @@ let
     pkgs.lib.mapAttrsToList (host: data: "  [${host}]=\"${data.mainUser}\"") hostData
   );
 
-  isWaypipeServer = hostData ? ${config.networking.hostName};
-
-  remoteBindMountScript = pkgs.writeShellScriptBin "waypipe-remote-bindmount" ''
-    set -e
-
-    if [ "''${1:-}" != "--in-namespace" ]; then
-      exec unshare --mount --propagation private "$0" --in-namespace "$@"
-    fi
-    shift
-
-    SRC_DIR="$1"
-    DEST_DIR="$2"
-    DROP_USER="$3"
-    DROP_HOME="$4"
-    DROP_WAYLAND_DISPLAY="$5"
-    DROP_XDG_RUNTIME_DIR="$6"
-    shift 6
-
-    mount --bind "$SRC_DIR" "$DEST_DIR"
-
-    DROP_UID="$(id -u "$DROP_USER")"
-    DROP_GID="$(id -g "$DROP_USER")"
-
-    # setpriv does the uid/gid switch and exec in a single syscall,
-    # no PAM session involved (unlike runuser/su) — one less thing
-    # that can silently deny the exec.
-    HOME="$DROP_HOME" \
-    USER="$DROP_USER" \
-    LOGNAME="$DROP_USER" \
-    WAYLAND_DISPLAY="$DROP_WAYLAND_DISPLAY" \
-    XDG_RUNTIME_DIR="$DROP_XDG_RUNTIME_DIR" \
-    exec setpriv --reuid="$DROP_UID" --regid="$DROP_GID" --init-groups -- "$@"
-  '';
-
   remoteMountScript = pkgs.writeShellScript "waypipe-remote-mount" ''
     set -e
 
@@ -71,18 +37,11 @@ let
     LOCAL_HOME="$3"
     shift 3
 
-    REMOTE_USER="$(id -un)"
     REMOTE_HOME="$HOME"
 
     mkdir -p "$REMOTE_MOUNT_DIR"
-    if mountpoint -q "$REMOTE_MOUNT_DIR" 2>/dev/null; then
-      fusermount3 -uz "$REMOTE_MOUNT_DIR" 2>/dev/null \
-        || fusermount -uz "$REMOTE_MOUNT_DIR" 2>/dev/null \
-        || umount -l "$REMOTE_MOUNT_DIR" 2>/dev/null \
-        || true
-    fi
 
-    for bin in sshfs sudo waypipe-remote-bindmount; do
+    for bin in sshfs bwrap nc; do
       command -v "$bin" >/dev/null 2>&1 || { echo "Error: $bin is not installed on the remote server." >&2; exit 127; }
     done
 
@@ -94,14 +53,19 @@ let
     nc -z 127.0.0.1 2222 2>/dev/null || { echo "Error: reverse SSH tunnel port 2222 is not accessible." >&2; exit 1; }
 
     sshfs -p 2222 \
-      -o reconnect,StrictHostKeyChecking=no,allow_other,default_permissions,uid=$(id -u),gid=$(id -g) \
+      -o reconnect,StrictHostKeyChecking=no,idmap=user \
       "''${LOCAL_USER}@localhost:''${LOCAL_HOME}" "$REMOTE_MOUNT_DIR"
 
-    mkdir -p "$REMOTE_MOUNT_DIR/.local/state"
+    cleanup() {
+      fusermount3 -uz "$REMOTE_MOUNT_DIR" 2>/dev/null || true
+      rmdir "$REMOTE_MOUNT_DIR" 2>/dev/null || true
+    }
+    trap cleanup EXIT
 
-    exec sudo waypipe-remote-bindmount \
-      "$REMOTE_MOUNT_DIR" "$REMOTE_HOME" "$REMOTE_USER" "$REMOTE_HOME" \
-      "$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR" "$@"
+    exec ${pkgs.bubblewrap}/bin/bwrap \
+      --dev-bind / / \
+      --bind "$REMOTE_MOUNT_DIR" "$REMOTE_HOME" \
+      -- "$@"
   '';
 
   waypipeRunner = pkgs.writeShellScriptBin "remote-run" ''
@@ -183,7 +147,7 @@ let
           SSH_DIR="$HOME/.ssh"
           HOST_KEY="$SSH_DIR/ssh_host_rsa_key"
 
-          ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null"
+      ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null || true"
 
           mkdir -p "$SSH_DIR"
           chmod 700 "$SSH_DIR"
@@ -197,7 +161,6 @@ let
     HostKey ''${HOST_KEY}
     AuthorizedKeysFile ''${SSH_DIR}/authorized_keys
     Subsystem sftp ${pkgs.openssh}/libexec/sftp-server
-    UsePrivilegeSeparation no
     PidFile ''${SSH_DIR}/sshd_temp.pid
     PasswordAuthentication no
     PubkeyAuthentication yes
@@ -233,7 +196,7 @@ let
           ${pkgs.waypipe}/bin/waypipe ssh -A -R 2222:127.0.0.1:2222 "$SSH_TARGET" \
             bash -s -- "$REMOTE_MOUNT_DIR" "$LOCAL_USER" "$HOME" "$@" < ${remoteMountScript}
 
-          ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null"
+          ssh "$SSH_TARGET" "fusermount3 -u $REMOTE_MOUNT_DIR 2>/dev/null; rmdir $REMOTE_MOUNT_DIR 2>/dev/null || true"
 
           if [ "$ADDED_KEY" -eq 1 ]; then
             sed -i "\|$PUB_KEY|d" "$SSH_DIR/authorized_keys"
@@ -250,24 +213,9 @@ in
   environment.systemPackages = [
     pkgs.waypipe
     pkgs.sshfs
-    pkgs.util-linux
-    remoteBindMountScript
+    pkgs.bubblewrap
     waypipeRunner
   ];
 
   programs.fuse.userAllowOther = true;
-
-  security.sudo.extraRules = pkgs.lib.optional isWaypipeServer {
-    users = [ hostData.${config.networking.hostName}.mainUser ];
-    runAs = "root";
-    commands = [
-      {
-        command = "/run/current-system/sw/bin/waypipe-remote-bindmount *";
-        options = [
-          "NOPASSWD"
-          "EXEC"
-        ];
-      }
-    ];
-  };
 }
