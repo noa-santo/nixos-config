@@ -78,7 +78,9 @@ Note: `remote-run` will not recognize the local hostname as a host because it ex
 available ones.
 
 By default, all files and dirs in the remote-run execution are the ones on the host machine. To mount the client
-machine's home directory to the remote machine, add the `--mount` (or `-m`) flag.
+machine's home directory to the remote machine, add the `--mount` (or `-m`) flag. This will mount the home directory of
+the client machine to a temporary directory on the remote machine and set various environment variables to make programs
+treat the mounted directory as the home directory.
 
 ### Tag system
 
