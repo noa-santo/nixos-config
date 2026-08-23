@@ -49,11 +49,18 @@ let
 
     mount --bind "$SRC_DIR" "$DEST_DIR"
 
-    exec runuser -u "$DROP_USER" -- env \
-      HOME="$DROP_HOME" \
-      WAYLAND_DISPLAY="$DROP_WAYLAND_DISPLAY" \
-      XDG_RUNTIME_DIR="$DROP_XDG_RUNTIME_DIR" \
-      "$@"
+    DROP_UID="$(id -u "$DROP_USER")"
+    DROP_GID="$(id -g "$DROP_USER")"
+
+    # setpriv does the uid/gid switch and exec in a single syscall,
+    # no PAM session involved (unlike runuser/su) — one less thing
+    # that can silently deny the exec.
+    HOME="$DROP_HOME" \
+    USER="$DROP_USER" \
+    LOGNAME="$DROP_USER" \
+    WAYLAND_DISPLAY="$DROP_WAYLAND_DISPLAY" \
+    XDG_RUNTIME_DIR="$DROP_XDG_RUNTIME_DIR" \
+    exec setpriv --reuid="$DROP_UID" --regid="$DROP_GID" --init-groups -- "$@"
   '';
 
   remoteMountScript = pkgs.writeShellScript "waypipe-remote-mount" ''
@@ -256,7 +263,10 @@ in
     commands = [
       {
         command = "/run/current-system/sw/bin/waypipe-remote-bindmount *";
-        options = [ "NOPASSWD" ];
+        options = [
+          "NOPASSWD"
+          "EXEC"
+        ];
       }
     ];
   };
