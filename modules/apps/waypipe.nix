@@ -37,12 +37,10 @@ let
     LOCAL_HOME="$3"
     shift 3
 
-    REMOTE_HOME="$HOME"
-
     mkdir -p "$REMOTE_MOUNT_DIR"
 
-    for bin in sshfs bwrap nc; do
-      command -v "$bin" >/dev/null 2>&1 || { echo "Error: $bin is not installed on the remote server." >&2; exit 127; }
+    for bin in sshfs nc; do
+      command -v "$bin" >/dev/null 2>&1 || exit 127
     done
 
     echo "Waiting for reverse SSH tunnel bridge..." >&2
@@ -53,7 +51,7 @@ let
     nc -z 127.0.0.1 2222 2>/dev/null || { echo "Error: tunnel port 2222 inaccessible." >&2; exit 1; }
 
     sshfs -p 2222 \
-      -o reconnect,StrictHostKeyChecking=no,allow_other,exec,idmap=user \
+      -o reconnect,StrictHostKeyChecking=no,follow_symlinks,allow_other,uid=$(id -u),gid=$(id -g) \
       "''${LOCAL_USER}@localhost:''${LOCAL_HOME}" "$REMOTE_MOUNT_DIR"
 
     cleanup() {
@@ -62,16 +60,12 @@ let
     }
     trap cleanup EXIT
 
-    BWRAP="/run/wrappers/bin/bwrap"
-    if [ ! -x "$BWRAP" ]; then
-      BWRAP="${pkgs.bubblewrap}/bin/bwrap"
-    fi
-
-    exec "$BWRAP" \
-      --bind / / \
-      --dev /dev \
-      --bind "$REMOTE_MOUNT_DIR" "$REMOTE_HOME" \
-      -- "$@"
+    exec env HOME="$REMOTE_MOUNT_DIR" \
+      XDG_CONFIG_HOME="$REMOTE_MOUNT_DIR/.config" \
+      XDG_DATA_HOME="$REMOTE_MOUNT_DIR/.local/share" \
+      XDG_STATE_HOME="$REMOTE_MOUNT_DIR/.local/state" \
+      XDG_CACHE_HOME="$REMOTE_MOUNT_DIR/.cache" \
+      "$@"
   '';
 
   waypipeRunner = pkgs.writeShellScriptBin "remote-run" ''
@@ -86,9 +80,6 @@ let
         fi
 
         CURRENT_HOST="$(hostname)"
-        TARGET_HOST=""
-        TARGET_USER=""
-
         declare -A HOST_USERS=(
         ${hostUserCases}
         )
@@ -106,7 +97,6 @@ let
         if [ "$#" -ge 2 ] && is_explicit_address "$1"; then
           RAW_TARGET="$1"
           shift
-
           if [[ "$RAW_TARGET" =~ ^([^@]+)@(.+)$ ]]; then
             TARGET_USER="''${BASH_REMATCH[1]}"
             TARGET_HOST="''${BASH_REMATCH[2]}"
@@ -168,6 +158,7 @@ let
     AuthorizedKeysFile ''${SSH_DIR}/authorized_keys
     Subsystem sftp ${pkgs.openssh}/libexec/sftp-server
     PidFile ''${SSH_DIR}/sshd_temp.pid
+    StrictModes no
     PasswordAuthentication no
     PubkeyAuthentication yes
     EOF
@@ -219,7 +210,6 @@ in
   environment.systemPackages = [
     pkgs.waypipe
     pkgs.sshfs
-    pkgs.bubblewrap
     waypipeRunner
   ];
 
