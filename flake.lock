@@ -391,6 +391,26 @@
         "type": "github"
       }
     },
+    "niri-sidebar": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1782239493,
+        "narHash": "sha256-fuqi5WViELpXLhk6NvOWzGQaZjZ4eOZDybP5GJecYYE=",
+        "owner": "kaivalagi",
+        "repo": "niri-sidebar",
+        "rev": "e46daced9f52ce1c56d05bb33faff8d90adf5f76",
+        "type": "github"
+      },
+      "original": {
+        "owner": "kaivalagi",
+        "repo": "niri-sidebar",
+        "type": "github"
+      }
+    },
     "niri-stable": {
       "flake": false,
       "locked": {
@@ -763,6 +783,7 @@
         "home-manager": "home-manager",
         "niri": "niri",
         "niri-screen-time": "niri-screen-time",
+        "niri-sidebar": "niri-sidebar",
         "nix-gaming": "nix-gaming",
         "nix-jetbrains-plugins": "nix-jetbrains-plugins",
         "nix-minecraft": "nix-minecraft",

@@ -40,6 +40,10 @@
       url = "github:noa-santo/vicinae-emojidb";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    niri-sidebar = {
+      url = "github:kaivalagi/niri-sidebar";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
