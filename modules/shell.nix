@@ -112,7 +112,7 @@
       fi
 
       echo "Cleaning up generations older than $count days..."
-      sudo nix-collect-garbage --delete-older-than "$count$unit" && sudo nixos-rebuild boot --flake $HOME/.config/nixos-config#$(hostname)
+      sudo nix-collect-garbage --delete-older-than "$count$unit"
     '')
   ];
 
