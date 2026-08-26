@@ -44,6 +44,10 @@
       url = "github:kaivalagi/niri-sidebar";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-search = {
+      url = "github:diamondburned/nix-search";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
