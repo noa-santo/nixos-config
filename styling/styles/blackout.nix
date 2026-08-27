@@ -7,24 +7,25 @@
 let
   isNiri = builtins.elem "niri" hostTags; # todo detect at runtime via what DE is actually running
   isKdeConnect = builtins.elem "kde-connect" hostTags;
+  hasLeftShortModules = (!isNiri) || isKdeConnect;
 
   base16 = {
-    base00 = "#000000"; # Pure black background
-    base01 = "#0d0d0d"; # Mantle
-    base02 = "#141414"; # Crust / surface
-    base03 = "#262626"; # Subtle borders / hover
-    base04 = "#404040"; # Inactive borders / muted text
-    base05 = "#ffffff"; # Default text (pure white)
-    base06 = "#ffffff"; # Brighter text
-    base07 = "#ffffff"; # Brightest white
-    base08 = "#ffffff"; # Urgent
-    base09 = "#d4d4d4"; # Peach
-    base0A = "#c2c2c2"; # Yellow
-    base0B = "#b0b0b0"; # Green
-    base0C = "#9e9e9e"; # Teal
-    base0D = "#ffffff"; # Blue
-    base0E = "#ffffff"; # Mauve / Accent
-    base0F = "#8c8c84"; # Rosewater
+    base00 = "#000000";
+    base01 = "#0d0d0d";
+    base02 = "#141414";
+    base03 = "#262626";
+    base04 = "#404040";
+    base05 = "#ffffff";
+    base06 = "#ffffff";
+    base07 = "#ffffff";
+    base08 = "#ffffff";
+    base09 = "#d4d4d4";
+    base0A = "#c2c2c2";
+    base0B = "#b0b0b0";
+    base0C = "#9e9e9e";
+    base0D = "#ffffff";
+    base0E = "#ffffff";
+    base0F = "#8c8c84";
   };
 
   extra = {
@@ -145,60 +146,84 @@ in
 
     waybar = {
       settings = {
-        spacing = 6;
+        height = 30;
+        spacing = 0;
         margin-top = 0;
         margin-left = 0;
         margin-right = 0;
         margin-bottom = 8;
 
         extra-modules = {
-          "custom/arrow-left-bg0" = {
+          "custom/slant-left" = {
             format = "  ";
             tooltip = false;
           };
-          "custom/arrow-right-bg0" = {
+          "custom/slant-right" = {
             format = "  ";
             tooltip = false;
           };
-          "custom/arrow-left-bg1" = {
+          "custom/slant-left-short" = {
             format = "  ";
             tooltip = false;
           };
-          "custom/arrow-right-bg1" = {
+          "custom/slant-right-short" = {
+            format = "  ";
+            tooltip = false;
+          };
+          "custom/slant-left-div" = {
+            format = "  ";
+            tooltip = false;
+          };
+          "custom/slant-right-div" = {
             format = "  ";
             tooltip = false;
           };
         };
       };
 
-      moduleLeft = [
-        "custom/launcher"
-        "custom/arrow-left-bg1"
-        "custom/arrow-right-bg0"
+      modulesLeft = [
         "workspaces"
+      ]
+      ++ lib.optionals hasLeftShortModules [
+        "custom/slant-left-div"
       ]
       ++ lib.optionals (!isNiri) [
         "sway/mode"
         "sway/scratchpad"
+      ]
+      ++ lib.optionals isKdeConnect [
+        "custom/kdeconnect"
+      ]
+      ++ [
+        (if hasLeftShortModules then "custom/slant-left-short" else "custom/slant-left")
       ];
 
       modulesCenter = [
-        "custom/arrow-right-bg0"
+        "custom/slant-right-short"
+        "custom/weather"
+        "custom/slant-right-div"
         "custom/media"
-        "custom/arrow-left-bg0"
+        "custom/slant-left-div"
+        "clock"
+        "custom/slant-left-short"
       ];
 
-      modulesRight =
-        lib.optionals isKdeConnect [
-          "custom/arrow-right-bg1"
-          "custom/kdeconnect"
-        ]
-        ++ [
-          "custom/arrow-right-bg0"
-          "tray"
-          "custom/arrow-right-bg0"
-          "group/rightinfo"
-        ];
+      modulesRight = [
+        "custom/slant-right-short"
+        "tray"
+        "custom/slant-right-div"
+        "group/rightinfo"
+      ];
+
+      rightInfoModules = [
+        "pulseaudio"
+        "network"
+        "cpu"
+        "memory"
+        "temperature"
+        "disk"
+        "battery"
+      ];
 
       styleCss = ''
         * {
@@ -225,31 +250,41 @@ in
           margin: 0;
         }
 
-        #custom-launcher,
         #workspaces,
         #custom-media,
-        #custom-kdeconnect,
-        #tray,
         #rightinfo {
           background-color: ${c.base00};
           color: ${c.base05};
-          min-height: 42px;
+          min-height: 40px;
           padding: 0 12px;
           margin: 0;
-          border-bottom: 1px solid white;
+          border-bottom: 2px solid white;
         }
 
-        #custom-launcher,
-        #custom-kdeconnect {
-          background-color: ${c.base01};
+        #clock,
+        #custom-kdeconnect,
+        #mode,
+        #scratchpad,
+        #custom-weather,
+        #tray {
+          background-color: ${c.base00};
+          color: ${c.base05};
+          min-height: 29px;
+          margin-bottom: 11px;
+          padding: 0 6px;
+          border-bottom: 2px solid white;
         }
 
-        #custom-arrow-left-bg0,
-        #custom-arrow-right-bg0,
-        #custom-arrow-left-bg1,
-        #custom-arrow-right-bg1 {
+        #workspaces {
+          padding: 0;
+        }
+
+        #custom-slant-left,
+        #custom-slant-right,
+        #custom-slant-left-div,
+        #custom-slant-right-div {
           min-width: 14px;
-          min-height: 42px;
+          min-height: 40px;
           padding: 0;
           margin: 0;
           border: none;
@@ -258,39 +293,27 @@ in
           background-size: 100% 100%;
         }
 
-        #custom-arrow-left-bg0 {
-          background-image: url("file:///home/owo/.config/waybar/svg/arrow-left-bg0.svg");
-          margin-left: 0;
-          margin-right: 0;
-        }
-        #custom-arrow-right-bg0 {
-          background-image: url("file:///home/owo/.config/waybar/svg/arrow-right-bg0.svg");
-          margin-left: 0;
-          margin-right: 0;
-        }
-        #custom-arrow-left-bg1 {
-          background-image: url("file:///home/owo/.config/waybar/svg/arrow-left-bg1.svg");
-          margin-left: 0;
-          margin-right: 0;
-        }
-        #custom-arrow-right-bg1 {
-          background-image: url("file:///home/owo/.config/waybar/svg/arrow-right-bg1.svg");
-          margin-left: 0;
-          margin-right: 0;
-        }
-
-        #custom-launcher {
-          font-size: 15px;
-          font-weight: bold;
-          margin-left: 0;
-        }
-
-        #workspaces {
+        #custom-slant-left-short,
+        #custom-slant-right-short {
+          min-width: 7px;
+          min-height: 29px;
+          margin-bottom: 11px;
           padding: 0;
+          border: none;
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: 100% 100%;
         }
+
+        #custom-slant-left-short { background-image: url("file:///home/owo/.config/waybar/svg/slant-left.svg"); }
+        #custom-slant-right-short { background-image: url("file:///home/owo/.config/waybar/svg/slant-right.svg"); }
+        #custom-slant-left { background-image: url("file:///home/owo/.config/waybar/svg/slant-left.svg"); }
+        #custom-slant-right { background-image: url("file:///home/owo/.config/waybar/svg/slant-right.svg"); }
+        #custom-slant-left-div { background-image: url("file:///home/owo/.config/waybar/svg/slant-left-div.svg"); }
+        #custom-slant-right-div { background-image: url("file:///home/owo/.config/waybar/svg/slant-right-div.svg"); }
 
         #workspaces button {
-          min-height: 42px;
+          min-height: 40px;
           padding: 0 10px;
           color: ${c.subtext};
           background: transparent;
@@ -325,33 +348,17 @@ in
           padding: 0 13px;
         }
 
-        #mode {
-          color: ${c.base05};
-          background-color: ${c.base02};
-          padding: 0 13px;
-        }
-
-        #scratchpad {
-          color: ${c.base05};
-          padding: 0 12px;
-        }
-
         #custom-media {
           font-weight: 600;
         }
 
-        #rightinfo {
-          padding: 0;
-        }
-
         #rightinfo > * {
           color: ${c.base05};
-          padding: 0 8px;
-          margin: 0 6px;
+          padding: 0 6px;
+          margin: 0;
         }
 
-        #custom-weather { margin-left: 8px; }
-        #clock { color: ${c.base05}; font-weight: bold; margin-right: 8px; }
+        #battery { margin-right: 6px; }
 
         #cpu.warning,
         #memory.warning,
@@ -366,7 +373,7 @@ in
         }
 
         #tray {
-          padding: 0 12px;
+          padding: 0 6px;
         }
         #tray > .passive { -gtk-icon-effect: dim; }
         #tray > .needs-attention {

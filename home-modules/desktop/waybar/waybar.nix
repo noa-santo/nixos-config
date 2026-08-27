@@ -14,19 +14,58 @@ let
   c = osConfig.styling.theme.palette;
   u = osConfig.styling.theme.ui;
 
-  mkArrow =
-    side: fill:
+  mkSlant =
+    {
+      side,
+      fill,
+      divider ? false,
+    }:
     let
-      path = if side == "left" then "M0 0H14V19L0 31V0Z" else "M14 0L0 0L0 17L14 31L14 0Z";
+      diff = 0.8; # factor between big and small version
+      h = u.waybar.settings.height or 42;
+      smallH = h * diff; # 28
+      w = smallH / 2; # 14
+      slantY = h - ((h - smallH) * 2);
+      halfW = w / 2;
+      cutoffCornerX = if side == "left" then w else 0;
 
-      slantOutline = if side == "left" then "M14 19L0 31" else "M0 17L14 31";
-      verticalOutline = if side == "left" then "M14 0V19" else "M0 0V17";
+      path =
+        if side == "left" then
+          "M0 0H${toString w}V${toString slantY}L0 ${toString h}V0Z"
+        else
+          "M${toString w} 0L0 0L0 ${toString slantY}L${toString w} ${toString h}L${toString w} 0Z";
+
+      slantOutline =
+        if side == "left" then
+          "M${toString w} ${toString slantY}L0 ${toString h}"
+        else
+          "M0 ${toString slantY}L${toString w} ${toString h}";
+      verticalOutline =
+        if side == "left" then "M${toString w} 0V${toString slantY}" else "M0 0V${toString slantY}";
+
+      dividerPath =
+        if divider then
+          "M${toString halfW} ${toString smallH}L${toString cutoffCornerX} ${toString smallH}"
+        else
+          "";
+      dividerTriangleFill =
+        if divider then
+          (
+            if side == "left" then
+              "M${toString w} ${toString slantY}L${toString halfW} ${toString smallH}L${toString w} ${toString smallH}Z"
+            else
+              "M0 ${toString slantY}L${toString halfW} ${toString smallH}L0 ${toString smallH}Z"
+          )
+        else
+          "";
     in
     ''
-      <svg width="14" height="31" viewBox="0 0 14 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="${toString w}" height="${toString h}" viewBox="0 0 ${toString w} ${toString h}" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="${path}" fill="${fill}"/>
-      <path d="${slantOutline}" stroke="#ffffff" stroke-width="1" stroke-linecap="square"/>
+      <path d="${slantOutline}" stroke="#ffffff" stroke-width="2" stroke-linecap="square"/>
       <path d="${verticalOutline}" stroke="#ffffff" stroke-width="2" stroke-linecap="square"/>
+      <path d="${dividerTriangleFill}" fill="${fill}"/>
+      <path d="${dividerPath}" stroke="#ffffff" stroke-width="2" stroke-linecap="square"/>
       </svg>
     '';
 
@@ -476,6 +515,7 @@ in
               "🌡"
               "🌡"
               "🌡"
+              "🌡"
             ];
             tooltip = true;
           };
@@ -564,10 +604,24 @@ in
   home.file = {
     ".config/waybar/style.css".text = styleCss;
 
-    ".config/waybar/svg/arrow-left-bg0.svg".text = mkArrow "left" "#000000";
-    ".config/waybar/svg/arrow-right-bg0.svg".text = mkArrow "right" "#000000";
-    ".config/waybar/svg/arrow-left-bg1.svg".text = mkArrow "left" "#0d0d0d";
-    ".config/waybar/svg/arrow-right-bg1.svg".text = mkArrow "right" "#0d0d0d";
+    ".config/waybar/svg/slant-left.svg".text = mkSlant {
+      side = "left";
+      fill = "#000000";
+    };
+    ".config/waybar/svg/slant-right.svg".text = mkSlant {
+      side = "right";
+      fill = "#000000";
+    };
+    ".config/waybar/svg/slant-left-div.svg".text = mkSlant {
+      side = "left";
+      fill = "#000000";
+      divider = true;
+    };
+    ".config/waybar/svg/slant-right-div.svg".text = mkSlant {
+      side = "right";
+      fill = "#000000";
+      divider = true;
+    };
 
     ".config/waybar/scripts/app_launcher.sh".source = "${appLauncherScript}/bin/app_launcher.sh";
     ".config/waybar/scripts/get_weather.sh".source = "${getWeatherScript}/bin/get_weather";
