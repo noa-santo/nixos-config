@@ -346,40 +346,46 @@ in
         };
     };
 
-    extraConfig = ''
-      corner_radius ${toString u.cornerRadius}
-      smart_corner_radius enable
-
-      shadows enable
-      shadow_blur_radius ${toString u.shadow.blur}
-      shadow_color ${u.shadow.color}
-      shadows_on_csd enable
-
-      blur enable
-      blur_passes ${toString u.shadow.passes}
-      blur_radius ${toString u.shadow.spread}
-      blur_xray disable
-
-      default_dim_inactive ${toString u.opacity.subtle}
-      dim_inactive_colors.unfocused ${u.dim}
-
-      # Blur behind the waybar pill
-      layer_effects waybar {
-        blur enable
-        blur_xray enable
-        blur_ignore_transparent enable
-        shadows enable
+    extraConfig =
+      let
+        swayfxToggle = enabled: if enabled then "enable" else "disable";
+        shadowsToggle = swayfxToggle u.effects.shadow;
+        blurToggle = swayfxToggle u.effects.blur;
+      in
+      ''
         corner_radius ${toString u.cornerRadius}
-      }
+        smart_corner_radius enable
 
-      # Blur behind mako notifications
-      layer_effects notifications {
-        blur enable
-        corner_radius ${toString u.cornerRadius}
-      }
+        shadows ${shadowsToggle}
+        shadow_blur_radius ${toString u.shadow.blur}
+        shadow_color ${u.shadow.color}
+        shadows_on_csd ${shadowsToggle}
 
-      exec_always vicinae server --replace
-      exec_always ~/.config/waybar/scripts/launch.sh
-    '';
+        blur ${blurToggle}
+        blur_passes ${toString u.shadow.passes}
+        blur_radius ${toString u.shadow.spread}
+        blur_xray disable
+
+        default_dim_inactive ${toString u.opacity.subtle}
+        dim_inactive_colors.unfocused ${u.dim}
+
+        # Blur behind the waybar pill
+        layer_effects waybar {
+          blur ${blurToggle}
+          blur_xray enable
+          blur_ignore_transparent enable
+          shadows ${shadowsToggle}
+          corner_radius ${toString u.cornerRadius}
+        }
+
+        # Blur behind mako notifications
+        layer_effects notifications {
+          blur ${blurToggle}
+          corner_radius ${toString u.cornerRadius}
+        }
+
+        exec_always vicinae server --replace
+        exec_always ~/.config/waybar/scripts/launch.sh
+      '';
   };
 }

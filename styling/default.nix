@@ -2,11 +2,12 @@
   config,
   lib,
   pkgs,
+  hostTags,
   ...
 }:
 
 let
-  themeFile = import ./styles/${config.styling.name}.nix { inherit pkgs; };
+  themeFile = import ./styles/${config.styling.name}.nix { inherit pkgs lib hostTags; };
   c = themeFile.colors;
 
   requiredThemeSections = [
@@ -15,6 +16,7 @@ let
     [ "image" ]
     [ "svg" ]
     [ "cursor" ]
+    [ "icon" ]
     [ "fonts" ]
     [ "opacity" ]
   ];
@@ -103,6 +105,11 @@ let
       passes = 3;
       spread = 5;
     };
+
+    effects = {
+      blur = true;
+      shadow = true;
+    };
   };
 
   theme = themeFile // {
@@ -145,6 +152,13 @@ in
       inherit (theme) cursor;
       inherit (theme) fonts;
       inherit (theme) opacity;
+
+      icons = {
+        enable = true;
+        package = theme.icon.package;
+        dark = theme.icon.dark or theme.icon.name;
+        light = theme.icon.light or theme.icon.dark or theme.icon.name;
+      };
     };
   };
 }

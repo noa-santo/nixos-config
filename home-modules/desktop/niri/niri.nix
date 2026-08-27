@@ -204,8 +204,10 @@ in
         };
         focus-ring.enable = false;
         background-color = "transparent";
-        shadow.enable = true;
-        shadow.color = u.shadow.color;
+        shadow = {
+          enable = u.effects.shadow;
+          color = u.shadow.color;
+        };
       };
 
       window-rules = [
@@ -245,7 +247,7 @@ in
           ];
           open-on-workspace = "terminal";
           background-effect = {
-            blur = true;
+            blur = u.effects.blur;
           };
         }
       ];
@@ -258,17 +260,17 @@ in
         {
           matches = [ { namespace = "^waybar$"; } ];
           inherit geometry-corner-radius;
-          shadow.enable = true;
+          shadow.enable = u.effects.shadow;
           background-effect = {
-            blur = true;
+            blur = u.effects.blur;
           };
         }
         {
           matches = [ { namespace = "^notifications$"; } ];
           inherit geometry-corner-radius;
-          shadow.enable = true;
+          shadow.enable = u.effects.shadow;
           background-effect = {
-            blur = true;
+            blur = u.effects.blur;
           };
         }
       ];

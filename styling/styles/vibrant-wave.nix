@@ -52,6 +52,13 @@ in
     };
   };
 
+  icon = {
+    name = "Tela-purple-dark";
+    dark = "Tela-purple-dark";
+    light = "Tela-purple-dark";
+    package = pkgs.tela-icon-theme;
+  };
+
   fonts = {
     monospace = {
       name = "JetBrainsMono Nerd Font";
@@ -78,6 +85,11 @@ in
 
   ui = {
     icon = "Font Awesome 6 Free";
+
+    effects = {
+      blur = true;
+      shadow = true;
+    };
 
     mako.width = 380;
     wofi = {

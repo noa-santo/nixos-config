@@ -14,7 +14,23 @@ let
   c = osConfig.styling.theme.palette;
   u = osConfig.styling.theme.ui;
 
-  styleCss = ''
+  mkArrow =
+    side: fill:
+    let
+      path = if side == "left" then "M0 0H14V19L0 31V0Z" else "M14 0L0 0L0 17L14 31L14 0Z";
+
+      slantOutline = if side == "left" then "M14 19L0 31" else "M0 17L14 31";
+      verticalOutline = if side == "left" then "M14 0V19" else "M0 0V17";
+    in
+    ''
+      <svg width="14" height="31" viewBox="0 0 14 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="${path}" fill="${fill}"/>
+      <path d="${slantOutline}" stroke="#ffffff" stroke-width="1" stroke-linecap="square"/>
+      <path d="${verticalOutline}" stroke="#ffffff" stroke-width="2" stroke-linecap="square"/>
+      </svg>
+    '';
+
+  defaultStyleCss = ''
     @define-color base ${c.base};
     @define-color text ${c.text};
     @define-color subtext ${c.subtext};
@@ -182,6 +198,43 @@ let
     }
   '';
 
+  styleCss = u.waybar.styleCss or defaultStyleCss;
+
+  defaultModulesLeft = [
+    "custom/launcher"
+    workspacesModule
+  ]
+  ++ lib.optionals (!isNiri) [
+    "sway/mode"
+    "sway/scratchpad"
+  ];
+  defaultModulesCenter = [ "custom/media" ];
+  defaultModulesRight = lib.optionals isKdeConnect [ "custom/kdeconnect" ] ++ [
+    "tray"
+    "group/rightinfo"
+  ];
+  defaultRightInfoModules = [
+    "custom/weather"
+    "pulseaudio"
+    "network"
+    "cpu"
+    "memory"
+    "temperature"
+    "disk"
+    "battery"
+    "clock"
+  ];
+
+  resolveWorkspacesPlaceholder = map (m: if m == "workspaces" then workspacesModule else m);
+
+  modulesLeft = resolveWorkspacesPlaceholder (u.waybar.modulesLeft or defaultModulesLeft);
+  modulesCenter = resolveWorkspacesPlaceholder (u.waybar.modulesCenter or defaultModulesCenter);
+  modulesRight = resolveWorkspacesPlaceholder (u.waybar.modulesRight or defaultModulesRight);
+  rightInfoModules = resolveWorkspacesPlaceholder (
+    u.waybar.rightInfoModules or defaultRightInfoModules
+  );
+  extraModules = u.waybar.settings.extra-modules or { };
+
   pythonWithGObject = pkgs.python3.withPackages (ps: [ ps.pygobject3 ]);
   playerctlTypelibPath = pkgs.lib.makeSearchPath "lib/girepository-1.0" [
     pkgs.playerctl
@@ -248,285 +301,273 @@ in
     package = pkgs.waybar;
 
     settings = [
-      {
-        layer = "top";
-        position = "top";
-        height = 42;
-        spacing = 6;
-        margin-top = 6;
-        margin-left = 12;
-        margin-right = 12;
-        margin-bottom = 8;
+      (
+        {
+          layer = "top";
+          position = u.waybar.settings.position or "top";
+          height = u.waybar.settings.height or 42;
+          spacing = u.waybar.settings.spacing or 6;
+          margin-top = u.waybar.settings.margin-top or 6;
+          margin-left = u.waybar.settings.margin-left or 12;
+          margin-right = u.waybar.settings.margin-right or 12;
+          margin-bottom = u.waybar.settings.margin-bottom or 8;
 
-        modules-left = [
-          "custom/launcher"
-          workspacesModule
-        ]
-        ++ lib.optionals (!isNiri) [
-          "sway/mode"
-          "sway/scratchpad"
-        ];
-        modules-center = [ "custom/media" ];
-        modules-right = lib.optionals isKdeConnect [ "custom/kdeconnect" ] ++ [
-          "tray"
-          "group/rightinfo"
-        ];
+          modules-left = modulesLeft;
+          modules-center = modulesCenter;
+          modules-right = modulesRight;
 
-        "group/rightinfo" = {
-          orientation = "horizontal";
-          modules = [
-            "custom/weather"
-            "pulseaudio"
-            "network"
-            "cpu"
-            "memory"
-            "temperature"
-            "disk"
-            "battery"
-            "clock"
-          ];
-        };
-
-        "custom/launcher" = {
-          format = "";
-          on-click = "${appLauncherScript}/bin/app_launcher";
-          tooltip-format = "Launch your favorite apps";
-        };
-
-        "custom/weather" = {
-          format = "{}";
-          return-type = "json";
-          tooltip = true;
-          exec = "${getWeatherScript}/bin/get_weather Munich";
-          interval = 300;
-        };
-
-        battery = {
-          format = "{icon}";
-          format-charging = "󰂄";
-          format-icons = [
-            ""
-            ""
-            ""
-            ""
-            ""
-          ];
-          tooltip-format = "Battery is at {capacity}%";
-        };
-
-        "sway/workspaces" = {
-          disable-scroll = true;
-          all-outputs = true;
-          numeric-first = true;
-          format = "{icon}";
-          format-icons = {
-            "1" = "1";
-            "2" = "2";
-            "3" = "3";
-            "4" = "4";
-            "5" = "5";
-            "6" = "6";
-            "7" = "7";
-            "8" = "8";
-            "9" = "9";
-            "10" = "0";
-            urgent = "!";
-            focused = "";
-            default = "○";
+          "group/rightinfo" = {
+            orientation = "horizontal";
+            modules = rightInfoModules;
           };
-        };
 
-        "sway/window" = {
-          max-length = 60;
-          format = "  {class}";
-          rewrite = {
-            "(.*) - kitty" = "  $1";
+          "custom/launcher" = {
+            format = "";
+            on-click = "${appLauncherScript}/bin/app_launcher";
+            tooltip-format = "Launch your favorite apps";
           };
-        };
 
-        "sway/mode" = {
-          format = "<span style='italic'>  {}</span>";
-        };
-
-        "niri/workspaces" = {
-          disable-scroll = true;
-          format = "{icon}";
-          format-icons = {
-            "browser" = "";
-            "ide" = "";
-            "social" = "󰭹";
-            "terminal" = "";
-            "1" = "1";
-            "2" = "2";
-            "3" = "3";
-            "4" = "4";
-            "5" = "5";
-            "6" = "6";
-            "7" = "7";
-            "8" = "8";
-            "9" = "9";
-            "10" = "0";
-            urgent = "!";
-            active = "";
-            default = "○";
+          "custom/weather" = {
+            format = "{}";
+            return-type = "json";
+            tooltip = true;
+            exec = "${getWeatherScript}/bin/get_weather Munich";
+            interval = 300;
           };
-          on-update = "${niriOrderWorkspacesScript}/bin/niri-order-workspaces";
-        };
 
-        "niri/window" = {
-          max-length = 60;
-          format = "  {title}";
-        };
+          battery = {
+            format = "{icon}";
+            format-charging = "󰂄";
+            format-icons = [
+              ""
+              ""
+              ""
+              ""
+              ""
+            ];
+            tooltip-format = "Battery is at {capacity}%";
+          };
 
-        "sway/scratchpad" = {
-          format = "{icon}  {count}";
-          show-empty = false;
-          format-icons = [
-            ""
-            ""
-          ];
-          tooltip = true;
-          tooltip-format = "{app}: {title}";
-        };
-
-        clock = {
-          timezone = "Europe/Berlin";
-          format = " {:%H:%M}";
-          format-alt = " {:%a %d %b}";
-          tooltip-format = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
-          calendar = {
-            mode = "year";
-            mode-mon-col = 3;
-            on-scroll = 1;
-            on-click-right = "mode";
-            format = {
-              months = "<span color='${c.mauve}'><b>{}</b></span>";
-              days = "<span color='${c.text}'>{}</span>";
-              weeks = "<span color='${c.sapphire}'>W{}</span>";
-              weekdays = "<span color='${c.peach}'><b>{}</b></span>";
-              today = "<span color='${c.green}'><b><u>{}</u></b></span>";
+          "sway/workspaces" = {
+            disable-scroll = true;
+            all-outputs = true;
+            numeric-first = true;
+            format = "{icon}";
+            format-icons = {
+              "1" = "1";
+              "2" = "2";
+              "3" = "3";
+              "4" = "4";
+              "5" = "5";
+              "6" = "6";
+              "7" = "7";
+              "8" = "8";
+              "9" = "9";
+              "10" = "0";
+              urgent = "!";
+              focused = "";
+              default = "○";
             };
           };
-        };
 
-        cpu = {
-          format = " {usage}%";
-          tooltip = true;
-          interval = 2;
-          on-click = "kitty -e btop";
-          states = {
-            warning = 70;
-            critical = 90;
+          "sway/window" = {
+            max-length = 60;
+            format = "  {class}";
+            rewrite = {
+              "(.*) - kitty" = "  $1";
+            };
           };
-        };
 
-        memory = {
-          format = "🐏 {percentage}%";
-          tooltip-format = "RAM: {used:0.1f}G / {total:0.1f}G\nSwap: {swapUsed:0.1f}G";
-          interval = 5;
-          on-click = "kitty -e btop";
-          states = {
-            warning = 75;
-            critical = 90;
+          "sway/mode" = {
+            format = "<span style='italic'>  {}</span>";
           };
-        };
 
-        temperature = {
-          critical-threshold = 80;
-          interval = 5;
-          format = "{icon} {temperatureC}°C";
-          format-critical = "⚠ {temperatureC}°C";
-          format-icons = [
-            "🌡"
-            "🌡"
-            "🌡"
-            "🌡"
-            "🌡"
-          ];
-          tooltip = true;
-        };
+          "niri/workspaces" = {
+            disable-scroll = true;
+            format = "{icon}";
+            format-icons = {
+              "browser" = "";
+              "ide" = "";
+              "social" = "󰭹";
+              "terminal" = "";
+              "1" = "1";
+              "2" = "2";
+              "3" = "3";
+              "4" = "4";
+              "5" = "5";
+              "6" = "6";
+              "7" = "7";
+              "8" = "8";
+              "9" = "9";
+              "10" = "0";
+              urgent = "!";
+              active = "";
+              default = "○";
+            };
+            on-update = "${niriOrderWorkspacesScript}/bin/niri-order-workspaces";
+          };
 
-        disk = {
-          format = "{free}";
-          interval = 30;
-          path = "/";
-          tooltip-format = "{used} / {total} used ({percentage_used}%)";
-          on-click = "kitty -e btop";
-        };
+          "niri/window" = {
+            max-length = 60;
+            format = "  {title}";
+          };
 
-        network = {
-          format = "{ifname}";
-          format-wifi = "{icon}";
-          format-ethernet = "{ipaddr}  ";
-          format-disconnected = "⚠  Offline";
-          format-linked = "  (no IP)";
-          tooltip-format-wifi = "{essid} ({signalStrength}%)  \n{ipaddr}/{cidr}";
-          tooltip-format-ethernet = "{ifname}   \n{ipaddr}/{cidr}  via {gwaddr}";
-          tooltip-format-disconnected = "Disconnected";
-          on-click = "kitty -e nmtui";
-          interval = 5;
-          max-length = 50;
-          format-icons = [
-            "󰤯"
-            "󰤟"
-            "󰤢"
-            "󰤥"
-            "󰤨"
-          ];
-        };
+          "sway/scratchpad" = {
+            format = "{icon}  {count}";
+            show-empty = false;
+            format-icons = [
+              ""
+              ""
+            ];
+            tooltip = true;
+            tooltip-format = "{app}: {title}";
+          };
 
-        pulseaudio = {
-          format = "{icon} {volume}%";
-          format-muted = "󰖁";
-          format-bluetooth = "󰂱";
-          format-icons = {
-            "headphone" = "";
-            "hands-free" = "";
-            "headset" = "󰋎";
-            "phone" = "";
-            "portable" = "";
-            "car" = "";
-            "default" = [
-              "󰖀"
-              "󰕾"
+          clock = {
+            timezone = "Europe/Berlin";
+            format = " {:%H:%M}";
+            format-alt = " {:%a %d %b}";
+            tooltip-format = "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>";
+            calendar = {
+              mode = "year";
+              mode-mon-col = 3;
+              on-scroll = 1;
+              on-click-right = "mode";
+              format = {
+                months = "<span color='${c.mauve}'><b>{}</b></span>";
+                days = "<span color='${c.text}'>{}</span>";
+                weeks = "<span color='${c.sapphire}'>W{}</span>";
+                weekdays = "<span color='${c.peach}'><b>{}</b></span>";
+                today = "<span color='${c.green}'><b><u>{}</u></b></span>";
+              };
+            };
+          };
+
+          cpu = {
+            format = " {usage}%";
+            tooltip = true;
+            interval = 2;
+            on-click = "kitty -e btop";
+            states = {
+              warning = 70;
+              critical = 90;
+            };
+          };
+
+          memory = {
+            format = "🐏 {percentage}%";
+            tooltip-format = "RAM: {used:0.1f}G / {total:0.1f}G\nSwap: {swapUsed:0.1f}G";
+            interval = 5;
+            on-click = "kitty -e btop";
+            states = {
+              warning = 75;
+              critical = 90;
+            };
+          };
+
+          temperature = {
+            critical-threshold = 80;
+            interval = 5;
+            format = "{icon} {temperatureC}°C";
+            format-critical = "⚠ {temperatureC}°C";
+            format-icons = [
+              "🌡"
+              "🌡"
+              "🌡"
+              "🌡"
+              "🌡"
+            ];
+            tooltip = true;
+          };
+
+          disk = {
+            format = "{free}";
+            interval = 30;
+            path = "/";
+            tooltip-format = "{used} / {total} used ({percentage_used}%)";
+            on-click = "kitty -e btop";
+          };
+
+          network = {
+            format = "{ifname}";
+            format-wifi = "{icon}";
+            format-ethernet = "{ipaddr}  ";
+            format-disconnected = "⚠  Offline";
+            format-linked = "  (no IP)";
+            tooltip-format-wifi = "{essid} ({signalStrength}%)  \n{ipaddr}/{cidr}";
+            tooltip-format-ethernet = "{ifname}   \n{ipaddr}/{cidr}  via {gwaddr}";
+            tooltip-format-disconnected = "Disconnected";
+            on-click = "kitty -e nmtui";
+            interval = 5;
+            max-length = 50;
+            format-icons = [
+              "󰤯"
+              "󰤟"
+              "󰤢"
+              "󰤥"
+              "󰤨"
             ];
           };
-          on-click = "pavucontrol";
-          on-scroll-up = "pactl set-sink-volume @DEFAULT_SINK@ +1%";
-          on-scroll-down = "pactl set-sink-volume @DEFAULT_SINK@ -1%";
-          scroll-step = 5;
-        };
 
-        "custom/media" = {
-          format = "{}";
-          escape = true;
-          return-type = "json";
-          max-length = 40;
-          on-click = "playerctl play-pause";
-          on-click-right = "playerctl stop";
-          smooth-scrolling-threshold = 1;
-          on-scroll-up = "playerctl next";
-          on-scroll-down = "playerctl previous";
-          exec = "${mediaPlayerScript}/bin/mediaplayer";
-        };
+          pulseaudio = {
+            format = "{icon} {volume}%";
+            format-muted = "󰖁";
+            format-bluetooth = "󰂱";
+            format-icons = {
+              "headphone" = "";
+              "hands-free" = "";
+              "headset" = "󰋎";
+              "phone" = "";
+              "portable" = "";
+              "car" = "";
+              "default" = [
+                "󰖀"
+                "󰕾"
+              ];
+            };
+            on-click = "pavucontrol";
+            on-scroll-up = "pactl set-sink-volume @DEFAULT_SINK@ +1%";
+            on-scroll-down = "pactl set-sink-volume @DEFAULT_SINK@ -1%";
+            scroll-step = 5;
+          };
 
-        "custom/kdeconnect" = {
-          format = "{}";
-          exec = "kdeconnect_waybar";
-          return-type = "json";
-          on-click = "kdeconnect-app";
-        };
+          "custom/media" = {
+            format = "{}";
+            escape = true;
+            return-type = "json";
+            max-length = 40;
+            on-click = "playerctl play-pause";
+            on-click-right = "playerctl stop";
+            smooth-scrolling-threshold = 1;
+            on-scroll-up = "playerctl next";
+            on-scroll-down = "playerctl previous";
+            exec = "${mediaPlayerScript}/bin/mediaplayer";
+          };
 
-        tray = {
-          spacing = 8;
-          icon-size = 18;
-        };
-      }
+          "custom/kdeconnect" = {
+            format = "{}";
+            exec = "kdeconnect_waybar";
+            return-type = "json";
+            on-click = "kdeconnect-app";
+          };
+
+          tray = {
+            spacing = 8;
+            icon-size = 18;
+          };
+        }
+        // extraModules
+      )
     ];
   };
 
   home.file = {
     ".config/waybar/style.css".text = styleCss;
+
+    ".config/waybar/svg/arrow-left-bg0.svg".text = mkArrow "left" "#000000";
+    ".config/waybar/svg/arrow-right-bg0.svg".text = mkArrow "right" "#000000";
+    ".config/waybar/svg/arrow-left-bg1.svg".text = mkArrow "left" "#0d0d0d";
+    ".config/waybar/svg/arrow-right-bg1.svg".text = mkArrow "right" "#0d0d0d";
 
     ".config/waybar/scripts/app_launcher.sh".source = "${appLauncherScript}/bin/app_launcher.sh";
     ".config/waybar/scripts/get_weather.sh".source = "${getWeatherScript}/bin/get_weather";
