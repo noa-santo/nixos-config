@@ -21,6 +21,70 @@ let
       rev = "0b58775be0feeda14ee5a04e415327730d0777c3";
       hash = "sha256-1pcKR/a6mmrS9/AykBiTOP3McQjwbJ8Wx1lV82jLND0=";
     };
+
+    patches = [
+      (pkgs.writeText "device-types.patch" ''
+        diff --git a/src/config/defaults.rs b/src/config/defaults.rs
+        index 72dd3e8..7a00d4f 100644
+        --- a/src/config/defaults.rs
+        +++ b/src/config/defaults.rs
+        @@ -63,3 +63,11 @@ pub fn default_device_phone_text() -> String {
+         pub fn default_device_tablet_text() -> String {
+             "Tablet ".into()
+         }
+        +
+        +pub fn default_device_desktop_text() -> String {
+        +    "Desktop ".to_string()
+        +}
+        +
+        +pub fn default_device_laptop_text() -> String {
+        +    "Laptop ".to_string()
+        +}
+        diff --git a/src/config/mod.rs b/src/config/mod.rs
+        index 8a0d981..d21f0f6 100644
+        --- a/src/config/mod.rs
+        +++ b/src/config/mod.rs
+        @@ -113,6 +113,12 @@ pub struct Config {
+             /// e.g. `"Tablet "`
+             pub device_tablet_text: String,
+
+        +    #[serde(default = "default_device_desktop_text")]
+        +    pub device_desktop_text: String,
+        +
+        +    #[serde(default = "default_device_laptop_text")]
+        +    pub device_laptop_text: String,
+        +
+             #[serde(default)]
+             #[schemars(with = "Option<String>")]
+             /// Groups notifications per app, and for each app replaces {[`Notification::Grouped`]} with the given [`NotificationFormat`]
+        diff --git a/src/formatter/field.rs b/src/formatter/field.rs
+        index ce338b7..a502d75 100644
+        --- a/src/formatter/field.rs
+        +++ b/src/formatter/field.rs
+        @@ -211,6 +211,8 @@ impl FieldCategory {
+                             DeviceInfo::DeviceTypeText => match info.type_ {
+                                 DeviceType::Phone => Cow::Borrowed(&config.device_phone_text),
+                                 DeviceType::Tablet => Cow::Borrowed(&config.device_tablet_text),
+        +                        DeviceType::Desktop => Cow::Borrowed(&config.device_desktop_text),
+        +                        DeviceType::Laptop => Cow::Borrowed(&config.device_laptop_text),
+                             },
+                         }
+                     }
+        diff --git a/src/wrapper/device.rs b/src/wrapper/device.rs
+        index 948e1e6..69a0104 100644
+        --- a/src/wrapper/device.rs
+        +++ b/src/wrapper/device.rs
+        @@ -100,5 +100,7 @@ dbus_enum! {
+             pub enum DeviceType {
+                 Phone,
+                 Tablet,
+        +        Desktop,
+        +        Laptop,
+             }
+         }
+      '')
+    ];
+
     cargoHash = "sha256-DpY++t4YaU/oCjSwyiPwyXA0U6S/R16mTRF/8ctQ8MM=";
     doCheck = false;
     nativeBuildInputs = [
@@ -49,6 +113,7 @@ in
       "$schema" = "./config.schema.json";
       configs = [
         {
+          device_id = "d5c3a6ab621f4db0bef198bc9e5c17f1";
           update_interval_secs = 5;
           format = "{Battery::ChargePercent}% {Battery::ChargeTexts} {Notification::Grouped}";
           tooltip_format = "Device type: {DeviceInfo::DeviceTypeText}\nBattery status: {Battery::IsChargingText} {Battery::ChargePercent}% \nNotifications:\n{Notification::Single}";
