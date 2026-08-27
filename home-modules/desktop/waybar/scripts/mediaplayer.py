@@ -2,6 +2,7 @@ import gi
 gi.require_version("Playerctl", "2.0")
 from gi.repository import Playerctl, GLib
 from gi.repository.Playerctl import Player
+from collections import deque
 import argparse
 import logging
 import sys
@@ -9,7 +10,6 @@ import signal
 import gi
 import json
 import os
-from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,11 @@ class PlayerManager:
         signal.signal(signal.SIGPIPE, signal.SIG_DFL)
         self.selected_player = selected_player
         self.excluded_player = excluded_player.split(',') if excluded_player else []
+        self.scroll_id = None
+        self.title_deque = deque()
+        self.artist_deque = deque()
+        self.icon_ref = ""
+        self.current_player_ref = None
 
         self.init_players()
 
@@ -60,7 +65,7 @@ class PlayerManager:
         self.manager.manage_player(player)
         self.on_metadata_changed(player, player.props.metadata)
 
-    def get_players(self) -> List[Player]:
+    def get_players(self) -> list[Player]:
         return self.manager.props.players
 
     def write_output(self, text, player):
@@ -104,34 +109,60 @@ class PlayerManager:
         current_player = self.get_first_playing_player()
         if current_player is not None:
             self.on_metadata_changed(current_player, current_player.props.metadata)
-        else:    
+        else:
             self.clear_output()
+
+    def do_scroll(self):
+        if len(self.artist_deque) > len(self.title_deque):
+            self.artist_deque.rotate(-1)
+        elif len(self.title_deque) > len(self.artist_deque):
+            self.title_deque.rotate(-1)
+
+        title_str = "".join(self.title_deque)
+        artist_str = "".join(self.artist_deque)
+        self.write_output(f"{self.icon_ref}{title_str} - {artist_str}", self.current_player_ref)
+        return True
 
     def on_metadata_changed(self, player, metadata, _=None):
         logger.debug(f"Metadata changed for player {player.props.player_name}")
+        if self.scroll_id is not None:
+            GLib.source_remove(self.scroll_id)
+            self.scroll_id = None
+
         player_name = player.props.player_name
-        artist = player.get_artist()
-        title = player.get_title()
+        artist = player.get_artist() or ""
+        title = player.get_title() or ""
+
+        if player_name == "spotify" and "mpris:trackid" in metadata.keys() and ":ad:" in player.props.metadata["mpris:trackid"]:
+            self.write_output("Advertisement", player)
+            return
 
         track_info = ""
-        if player_name == "spotify" and "mpris:trackid" in metadata.keys() and ":ad:" in player.props.metadata["mpris:trackid"]:
-            track_info = "Advertisement"
-        elif artist is not None and title is not None:
-            track_info = f"{artist} — {title}"
+        if artist and title:
+            track_info = f"{title} - {artist}"
         else:
-            track_info = title
+            track_info = title or artist
 
-        if track_info:
-            if player.props.status == "Playing":
-                track_info = "   " + track_info
-            else:
-                track_info = "   " + track_info
+        icon = "   " if player.props.status == "Playing" else "   "
+
         # only print output if no other player is playing
         current_playing = self.get_first_playing_player()
-        if current_playing is None or current_playing.props.player_name == player.props.player_name:
-            self.write_output(track_info, player)
-        else:
-            logger.debug(f"Other player {current_playing.props.player_name} is playing, skipping")
+        if current_playing is None or current_playing.props.player_name == player_name:
+            if len(track_info) > 40 and artist and title:
+                if len(artist) > len(title):
+                    self.artist_deque = deque(artist.ljust(len(artist) + 5))
+                    self.title_deque = deque(title)
+                else:
+                    self.title_deque = deque(title.ljust(len(title) + 5))
+                    self.artist_deque = deque(artist)
+                self.current_player_ref = player
+                self.icon_ref = icon
+                self.scroll_id = GLib.timeout_add(200, self.do_scroll)
+            else:
+                if track_info:
+                    self.write_output(f"{icon}{track_info}", player)
+                else:
+                    self.clear_output()
 
     def on_player_appeared(self, _, player):
         logger.info(f"Player has appeared: {player.name}")
@@ -154,16 +185,10 @@ def parse_arguments():
 
     # Increase verbosity with every occurrence of -v
     parser.add_argument("-v", "--verbose", action="count", default=0)
-
-    parser.add_argument("-x", "--exclude", "- Comma-separated list of excluded player")
-
-    # Define for which player we"re listening
+    parser.add_argument("-x", "--exclude", help="Comma-separated list of excluded player")
     parser.add_argument("--player")
-
     parser.add_argument("--enable-logging", action="store_true")
-
     return parser.parse_args()
-
 
 def main():
     arguments = parse_arguments()
