@@ -14,11 +14,11 @@ let
   };
   kdeconnect-waybar = rustPlatform.buildRustPackage {
     pname = "kdeconnect_waybar";
-    version = "1.1.0";
+    version = "1.1.1";
     src = pkgs.fetchFromGitHub {
       owner = "Adrien5902";
       repo = "kdeconnect_waybar";
-      rev = "main";
+      rev = "0b58775be0feeda14ee5a04e415327730d0777c3";
       hash = "sha256-1pcKR/a6mmrS9/AykBiTOP3McQjwbJ8Wx1lV82jLND0=";
     };
     cargoHash = "sha256-DpY++t4YaU/oCjSwyiPwyXA0U6S/R16mTRF/8ctQ8MM=";
@@ -57,6 +57,7 @@ in
           device_phone_text = "Phone ";
           device_tablet_text = "Tablet ";
           device_laptop_text = "Laptop ";
+          device_desktop_text = "Desktop ";
           is_charging_text = "󰂄 Charging...";
           isnt_charging_text = "󱟩 Not charging";
           notification_grouped_format = "{CustomIcon} {CountText} ";
@@ -67,6 +68,10 @@ in
             "YouTube" = "󰗃";
             "WhatsApp" = "";
             "Discord" = "";
+            "Signal" = "󰭹";
+            "Gmail" = "";
+            "YouTube Morphe" = "󰗃";
+            "YouTUbe" = "󰗃";
           };
           notifications_count_text = {
             "1" = "󰲠";
