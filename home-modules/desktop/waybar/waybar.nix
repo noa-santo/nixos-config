@@ -588,6 +588,7 @@ in
             format = "{}";
             exec = "kdeconnect_waybar";
             return-type = "json";
+            escape = "true";
             on-click = "kdeconnect-app";
           };
 

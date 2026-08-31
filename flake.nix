@@ -48,6 +48,10 @@
       url = "github:diamondburned/nix-search";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    kdeconnect_waybar = {
+      url = "github:noa-santo/kdeconnect_waybar";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
