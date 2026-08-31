@@ -6,7 +6,7 @@
 
   mainUser = "owo";
   networking.hostName = "dell";
-  styling.name = "vibrant-wave";
+  styling.name = "blackout";
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -44,5 +44,7 @@
     ];
   };
 
+  users.defaultUserShell = pkgs.fish;
+  
   system.stateVersion = "25.11";
 }
