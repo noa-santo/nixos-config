@@ -255,7 +255,7 @@ in
         #rightinfo {
           background-color: ${c.base00};
           color: ${c.base05};
-          min-height: 40px;
+          min-height: 30px;
           padding: 0 12px;
           margin: 0;
           border-bottom: 2px solid white;
@@ -269,8 +269,8 @@ in
         #tray {
           background-color: ${c.base00};
           color: ${c.base05};
-          min-height: 29px;
-          margin-bottom: 11px;
+          min-height: 24px;
+          margin-bottom: 6px;
           padding: 0 6px;
           border-bottom: 2px solid white;
         }
@@ -283,8 +283,8 @@ in
         #custom-slant-right,
         #custom-slant-left-div,
         #custom-slant-right-div {
-          min-width: 14px;
-          min-height: 40px;
+          min-width: 12px;
+          min-height: 30px;
           padding: 0;
           margin: 0;
           border: none;
@@ -295,9 +295,9 @@ in
 
         #custom-slant-left-short,
         #custom-slant-right-short {
-          min-width: 7px;
-          min-height: 29px;
-          margin-bottom: 11px;
+          min-width: 6px;
+          min-height: 24px;
+          margin-bottom: 6px;
           padding: 0;
           border: none;
           background-repeat: no-repeat;
@@ -313,7 +313,7 @@ in
         #custom-slant-right-div { background-image: url("file:///home/owo/.config/waybar/svg/slant-right-div.svg"); }
 
         #workspaces button {
-          min-height: 40px;
+          min-height: 30px;
           padding: 0 10px;
           color: ${c.subtext};
           background: transparent;
@@ -352,7 +352,13 @@ in
           font-weight: 600;
         }
 
-        #rightinfo > * {
+        #pulseaudio,
+        #network,
+        #cpu,
+        #memory,
+        #temperature,
+        #disk,
+        #battery {
           color: ${c.base05};
           padding: 0 6px;
           margin: 0;
