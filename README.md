@@ -82,6 +82,15 @@ machine's home directory to the remote machine, add the `--mount` (or `-m`) flag
 the client machine to a temporary directory on the remote machine and set various environment variables to make programs
 treat the mounted directory as the home directory.
 
+**Performance**:
+
+If remote-run feels slow, try adding `--optimize` (or `-o`) to the command. This will run benchmarks on the host and
+client machine to determine the optimal compression algorithm and settings per bandwidth. This is stored and will be
+used for future runs as well while dynamically adjusting based on the current network conditions. To refresh the
+benchmarks, add the optimize flag again. If the program you are running with `remote-run` is image and not text-heavy,
+add the `--type image` (or `-t image`) flag to the command. This will use a different compression algorithm better
+suited for images.
+
 ### Tag system
 
 Different host machines require different packages. For example, a server needs a different set of packages than a
