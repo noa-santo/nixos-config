@@ -7,12 +7,12 @@
 
   wsl = {
     enable = true;
-    defaultUser = "owo";
+    defaultUser = "n";
     useWindowsDriver = true;
   };
 
-  mainUser = "owo";
-  networking.hostName = "wsl";
+  mainUser = "n";
+  networking.hostName = "raion";
 
   hardware.graphics = {
     enable = true;
