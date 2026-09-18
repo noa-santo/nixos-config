@@ -10,4 +10,5 @@
   "kde-connect"
   "waypipe"
   "ssh"
+  "wireguard"
 ]
