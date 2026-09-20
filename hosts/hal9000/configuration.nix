@@ -14,9 +14,13 @@
   };
 
   networking.firewall = {
-    allowedTCPPorts = [ 8482 8095 8097 ];
+    allowedTCPPorts = [ 5000 8482 8095 8097 ];
     allowedUDPPorts = [ 5353 1900 ];
+    allowedUDPPortRanges = [
+      { from = 6000; to = 6009; }
+    ];
   }; 
+
 
   networking.hostName = "hal9000";
 
