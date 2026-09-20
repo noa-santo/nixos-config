@@ -13,7 +13,10 @@
     useOSProber = true;
   };
 
-  networking.firewall.allowedTCPPorts = [ 8482 ];
+  networking.firewall = {
+    allowedTCPPorts = [ 8482 8095 8097 ];
+    allowedUDPPorts = [ 5353 1900 ];
+  }  
 
   networking.hostName = "hal9000";
 
