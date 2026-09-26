@@ -49,7 +49,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     kdeconnect_waybar = {
-      url = "github:noa-santo/kdeconnect_waybar";
+      url = "github:Adrien5902/kdeconnect_waybar";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-wsl = {
