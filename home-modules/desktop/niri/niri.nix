@@ -295,13 +295,6 @@ in
         }
         {
           argv = [
-            "vicinae"
-            "server"
-            "--replace"
-          ];
-        }
-        {
-          argv = [
             "niri-screen-time"
             "-daemon"
           ];
