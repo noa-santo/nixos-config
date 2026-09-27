@@ -13,6 +13,7 @@
     extraPackages = with pkgs; [
       ripgrep
       fd
+      tree-sitter
       lua-language-server
       pyright
       nil
@@ -41,6 +42,7 @@
       luasnip
       cmp_luasnip
       friendly-snippets
+      mini-nvim
     ];
 
     initLua = builtins.readFile ./init.lua;
