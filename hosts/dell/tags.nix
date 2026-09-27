@@ -1,6 +1,5 @@
 [
   "laptop"
-  "sway"
   "niri"
   "dev"
   "docker"
