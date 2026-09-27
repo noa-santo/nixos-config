@@ -23,11 +23,13 @@
     plugins = with pkgs.vimPlugins; [
       nvim-web-devicons
       nvim-treesitter.withAllGrammars
+      render-markdown-nvim
       lualine-nvim
       bufferline-nvim
       indent-blankline-nvim
       gitsigns-nvim
       which-key-nvim
+      neogit
       nvim-tree-lua
       telescope-nvim
       telescope-ui-select-nvim

@@ -94,6 +94,42 @@ if ok_treesitter then
 
 end
 
+require("render-markdown").setup({
+    enabled = true,
+    render_modes = { "n", "c", "t" },
+    file_types = { "markdown" },
+})
+
+vim.keymap.set("n", "<leader>m", "<cmd>RenderMarkdown toggle<CR>", { silent = true })
+
+local started_without_args = vim.fn.argc() == 0
+
+if started_without_args then
+    vim.api.nvim_create_autocmd("VimEnter", {
+        callback = function()
+            require("nvim-tree.api").tree.open()
+        end,
+    })
+
+    local autosave_group = vim.api.nvim_create_augroup("AutoSave", {})
+
+    vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged" }, {
+        group = autosave_group,
+        callback = function(args)
+            local buf = args.buf
+            local name = vim.api.nvim_buf_get_name(buf)
+
+            if vim.bo[buf].modified
+                and vim.bo[buf].buftype == ""
+                and name ~= ""
+                and vim.fn.filereadable(name) == 1
+            then
+                vim.cmd("silent update")
+            end
+        end,
+    })
+end
+
 local ok_ibl, ibl = pcall(require, "ibl")
 
 if ok_ibl then
@@ -105,6 +141,10 @@ local ok_gitsigns, gitsigns = pcall(require, "gitsigns")
 if ok_gitsigns then
 	gitsigns.setup()
 end
+
+require("neogit").setup({})
+
+vim.keymap.set("n", "<leader>gg", "<cmd>Neogit<CR>", { silent = true })
 
 local ok_autopairs, autopairs = pcall(require, "nvim-autopairs")
 
