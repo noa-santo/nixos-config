@@ -1,5 +1,4 @@
-# tags: sunshine
-# todo: add "server" and "minecraft" tag
+# tags: sunshine, server, minecraft
 { pkgs, ... }:
 
 let

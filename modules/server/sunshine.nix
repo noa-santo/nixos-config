@@ -1,5 +1,4 @@
-# tags: sunshine
-# todo: add "server" tag
+# tags: sunshine, server
 { pkgs, config, ... }:
 {
   environment.systemPackages = [ pkgs.gamescope ];

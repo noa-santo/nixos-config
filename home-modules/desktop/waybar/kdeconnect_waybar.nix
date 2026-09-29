@@ -18,7 +18,7 @@
     settings = {
       configs = [
         {
-	  name = "default-device";
+          name = "default-device";
           device_id = "d5c3a6ab621f4db0bef198bc9e5c17f1";
           update_interval_secs = 5.0;
           format = "{Battery::ChargePercent}% {Battery::ChargeTexts} {Notification::Grouped}";

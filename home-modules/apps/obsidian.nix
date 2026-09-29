@@ -1,6 +1,5 @@
 # tags: obsidian
-_:
-{
+_: {
   programs.obsidian = {
     enable = true;
 
@@ -12,4 +11,3 @@ _:
     };
   };
 }
-

@@ -1,1 +1,0 @@
-{ imports = [ ../styling/default.nix ]; }

@@ -1,6 +1,7 @@
 # tags: sway
 _: {
+  imports = [ ./gdm.nix ];
+
   hardware.graphics.enable = true;
-  services.displayManager.gdm.enable = true;
   programs.sway.enable = true;
 }

@@ -1,4 +1,4 @@
-# ssh
+# tags: ssh
 { config, ... }:
 {
   services.openssh = {
