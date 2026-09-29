@@ -1,18 +1,12 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
 {
-  imports = [
-    inputs.nixos-wsl.nixosModules.default
-    ../../modules/all.nix
-  ];
+  imports = [ inputs.nixos-wsl.nixosModules.default ];
 
   wsl = {
     enable = true;
-    defaultUser = "n";
+    defaultUser = config.mainUser;
     useWindowsDriver = true;
   };
-
-  mainUser = "n";
-  networking.hostName = "raion";
 
   hardware.graphics = {
     enable = true;

@@ -1,8 +1,9 @@
 # tags: niri
 { pkgs, ... }:
 {
+  imports = [ ./gdm.nix ];
+
   hardware.graphics.enable = true;
-  services.displayManager.gdm.enable = true;
 
   programs.niri = {
     enable = true;

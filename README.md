@@ -7,22 +7,30 @@ config is pretty specific for my needs, so just using it yourself as is will pro
 
 This repo should be in the location `~/.config/nixos-config/`. Parts of the config rely on that.
 
-```
 .
 ├── dev-shells # auto imported dev shells for different languages and their IDEs
+│   └── lib # shared data (e.g. the common JetBrains plugin list) for dev-shells
 ├── flake.lock
 ├── flake.nix
 ├── home-modules # user space configs 
 │   ├── all.nix # auto importer respecting tags and exclude comments
+│   ├── apps # user space applications (browser, dev tooling, app launcher)
+│   ├── core # always-on user space basics (git, usb/udiskie)
 │   ├── desktop # user space desktop env config 
 │   │   └── waybar # waybar config 
 │   ├── shell # shell config 
 │   └── theming # user specific themeing 
-├── hosts # host specific configs 
+├── hosts # host specific configs (configuration.nix, hardware-configuration.nix, meta.nix, optional home.nix)
+├── lib # repo-specific helper functions (e.g. dev-environments.nix)
 ├── modules # system wide configs for stuff
 │   ├── all.nix # auto importer respecting tags and exclude comments
 │   ├── apps # system wide apps 
-│   └── desktop # system wide configs for desktop enviroments
+│   ├── boot # bootloader configs (e.g. uefi)
+│   ├── core # always-on system basics (locale, networking, shell, sound, styling, users)
+│   ├── desktop # system wide configs for desktop enviroments
+│   ├── hardware # optional hardware support (scanner, Apple SuperDrive, ...)
+│   ├── server # server-side services (ssh, minecraft, ...)
+│   └── virtualisation # docker, etc.
 ├── overlays # automatically imported and applied overlays
 └── assets # assets for themeing (custom cursor)
 ```
@@ -91,6 +99,29 @@ benchmarks, add the optimize flag again. If the program you are running with `re
 add the `--type image` (or `-t image`) flag to the command. This will use a different compression algorithm better
 suited for images.
 
+### Dev shells
+
+Every file in `dev-shells/` is auto-imported as a flake devShell (`nix develop .#<name>`).
+
+A dev shell can additionally declare a `meta` block (alongside its `shell`) with `ide`, `icon`, `displayName`, and
+optionally `comment`/`binName`:
+
+```nix
+{
+  meta = {
+    ide = "pycharm";
+    icon = "python";
+    displayName = "PyCharm (Python Env)";
+  };
+  shell = pkgs.mkShell { ... };
+}
+```
+
+Hosts tagged `dev` then automatically get a `<name>-env` (drops into a fish shell inside the dev shell) and
+`<name>-ide` (launches the declared IDE inside it) wrapper script, plus a matching desktop entry. 
+A dev shell without a `meta` block still works fine with `nix develop`, it just won't get wrapper scripts or a desktop entry.
+`dev-shells/lib/common-plugins.nix` holds the JetBrains plugin baseline every IDE-based shell builds on top of.
+
 ### Tag system
 
 Different host machines require different packages. For example, a server needs a different set of packages than a
@@ -98,8 +129,8 @@ laptop. Also, you may want to use Gnome on one device but Sway on another.
 
 For that reason I made a tag system in my config.
 
-In `./hosts/<host>/tags.nix` you can set a list of tags. The auto importer in the `all.nix` files then only imports
-files automatically that have no tags or only matching tags.
+In `./hosts/<host>/meta.nix` you set `mainUser` and a list of `tags` for that host. The auto importer in the `all.nix`
+files then only imports files automatically that have no tags or only matching tags.
 
 The tags of a file are configured in a comment in the first line with the following syntax:
 

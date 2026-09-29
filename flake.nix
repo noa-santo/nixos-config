@@ -84,13 +84,24 @@
       mkHost =
         host:
         let
-          tagsPath = ./hosts/${host}/tags.nix;
-          hostTags = if builtins.pathExists tagsPath then import tagsPath else [ ];
+          metaPath = ./hosts/${host}/meta.nix;
+          meta =
+            if builtins.pathExists metaPath then
+              import metaPath
+            else
+              throw "hosts/${host}/meta.nix is required and must define mainUser";
+          hostTags = meta.tags or [ ];
+          homePath = ./hosts/${host}/home.nix;
         in
         lib.nixosSystem {
           inherit system;
           specialArgs = { inherit inputs hostTags; };
           modules = [
+            ./modules/all.nix
+            {
+              networking.hostName = lib.mkDefault host;
+              mainUser = meta.mainUser or (throw "hosts/${host}/meta.nix must define mainUser");
+            }
             ./hosts/${host}/configuration.nix
             { nixpkgs = { inherit pkgs; }; }
             ./hosts/${host}/hardware-configuration.nix
@@ -98,17 +109,27 @@
             inputs.niri.nixosModules.niri
             inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-                extraSpecialArgs = { inherit inputs hostTags; };
-              };
-            }
-            ({ config, ... }: {
-              home-manager.users."${config.mainUser}" = import ./hosts/${host}/home.nix;
-            })
+            (
+              { config, ... }:
+              {
+                home-manager = {
+                  useGlobalPkgs = true;
+                  useUserPackages = true;
+                  backupFileExtension = "backup";
+                  extraSpecialArgs = { inherit inputs hostTags; };
+                  users.${config.mainUser} =
+                    { osConfig, ... }:
+                    {
+                      imports = [ ./home-modules/all.nix ] ++ lib.optional (builtins.pathExists homePath) homePath;
+                      home = {
+                        username = osConfig.mainUser;
+                        homeDirectory = "/home/${osConfig.mainUser}";
+                        stateVersion = osConfig.system.stateVersion;
+                      };
+                    };
+                };
+              }
+            )
           ];
         };
     in
@@ -119,7 +140,7 @@
         map
           (file: {
             name = lib.removeSuffix ".nix" file;
-            value = import (./dev-shells + "/${file}") { inherit pkgs inputs; };
+            value = (import (./dev-shells + "/${file}") { inherit pkgs inputs; }).shell;
           })
           (
             builtins.filter (file: lib.hasSuffix ".nix" file) (

@@ -1,6 +1,0 @@
-[
-  "wsl"
-  "ssh"
-  "gaming"
-  "waypipe"
-]

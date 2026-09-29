@@ -1,6 +1,5 @@
+# tags: kde-connect
 _: {
-  networking.networkmanager.enable = true;
-
   networking.firewall = rec {
     allowedTCPPortRanges = [
       {

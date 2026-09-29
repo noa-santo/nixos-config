@@ -11,16 +11,12 @@ let
         pkgs.lib.genAttrs (builtins.attrNames (builtins.readDir ../../hosts)) (
           host:
           let
-            tagsPath = ../../hosts/${host}/tags.nix;
-            configPath = ../../hosts/${host}/configuration.nix;
-
-            tags = if builtins.pathExists tagsPath then import tagsPath else [ ];
-            configContent = if builtins.pathExists configPath then builtins.readFile configPath else "";
-            userMatch = builtins.match ".*mainUser[[:space:]]*=[[:space:]]*\"([^\"]+)\".*" configContent;
-            mainUser = if userMatch != null then builtins.elemAt userMatch 0 else null;
+            metaPath = ../../hosts/${host}/meta.nix;
+            meta = if builtins.pathExists metaPath then import metaPath else { };
           in
           {
-            inherit tags mainUser;
+            tags = meta.tags or [ ];
+            mainUser = meta.mainUser or null;
           }
         )
       );

@@ -1,3 +1,4 @@
+# tags: gui
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
