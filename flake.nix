@@ -85,7 +85,11 @@
         host:
         let
           metaPath = ./hosts/${host}/meta.nix;
-          meta = if builtins.pathExists metaPath then import metaPath else { tags = [ ]; };
+          meta =
+            if builtins.pathExists metaPath then
+              import metaPath
+            else
+              throw "hosts/${host}/meta.nix is required and must define mainUser";
           hostTags = meta.tags or [ ];
           homePath = ./hosts/${host}/home.nix;
         in
@@ -96,7 +100,7 @@
             ./modules/all.nix
             {
               networking.hostName = lib.mkDefault host;
-              mainUser = meta.mainUser;
+              mainUser = meta.mainUser or (throw "hosts/${host}/meta.nix must define mainUser");
             }
             ./hosts/${host}/configuration.nix
             { nixpkgs = { inherit pkgs; }; }
