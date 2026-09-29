@@ -6,7 +6,6 @@
     "uefi"
     "niri"
     "dev"
-    "docker"
     "gaming"
     "superdrive"
     "scanner"
