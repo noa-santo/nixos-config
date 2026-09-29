@@ -14,9 +14,6 @@ _: {
     LC_TIME = "de_DE.UTF-8";
   };
 
-  # Personal keyboard default. Was duplicated per-host on dell and
-  # lenowo-thiccpad; it's a "me" preference, not a host-specific one,
-  # so it lives here now like the rest of the locale settings.
   services.xserver.xkb = {
     layout = "us";
     variant = "altgr-intl";

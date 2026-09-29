@@ -7,6 +7,7 @@ config is pretty specific for my needs, so just using it yourself as is will pro
 
 This repo should be in the location `~/.config/nixos-config/`. Parts of the config rely on that.
 
+```
 .
 ├── dev-shells # auto imported dev shells for different languages and their IDEs
 │   └── lib # shared data (e.g. the common JetBrains plugin list) for dev-shells
@@ -118,8 +119,9 @@ optionally `comment`/`binName`:
 ```
 
 Hosts tagged `dev` then automatically get a `<name>-env` (drops into a fish shell inside the dev shell) and
-`<name>-ide` (launches the declared IDE inside it) wrapper script, plus a matching desktop entry. 
-A dev shell without a `meta` block still works fine with `nix develop`, it just won't get wrapper scripts or a desktop entry.
+`<name>-ide` (launches the declared IDE inside it) wrapper script, plus a matching desktop entry.
+A dev shell without a `meta` block still works fine with `nix develop`, it just won't get wrapper scripts or a desktop
+entry.
 `dev-shells/lib/common-plugins.nix` holds the JetBrains plugin baseline every IDE-based shell builds on top of.
 
 ### Tag system
