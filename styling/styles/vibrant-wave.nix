@@ -103,6 +103,7 @@ in
       window-close = ../../assets/shaders/perlin/close.glsl;
       window-resize = ../../assets/shaders/perlin/resize.glsl;
     };
+    niri.useWavepaper = true;
 
     gnome = {
       screensaverPrimary = "#241f31";

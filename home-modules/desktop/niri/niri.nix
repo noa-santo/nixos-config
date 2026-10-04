@@ -11,6 +11,7 @@
 
 let
   isKdeConnect = builtins.elem "kde-connect" hostTags;
+  useWavepaper = osConfig.styling.theme.ui.niri.useWavepaper;
 
   c = osConfig.styling.theme.palette;
   u = osConfig.styling.theme.ui;
@@ -88,8 +89,7 @@ in
     screenshotSelectScript
     librsvg
     xwayland-satellite
-    wavepaper
-  ];
+  ] ++ lib.optionals useWavepaper [wavepaper];
 
   fonts.fontconfig.enable = true;
 
@@ -203,7 +203,7 @@ in
           };
         };
         focus-ring.enable = false;
-        background-color = "transparent";
+        background-color = "black";
         shadow = {
           enable = u.effects.shadow;
           color = u.shadow.color;
@@ -284,6 +284,20 @@ in
         }
         {
           argv = [
+            "env"
+            "SHELL=${pkgs.bash}/bin/bash"
+            "niri-screen-time"
+            "-daemon"
+          ];
+        }
+        { argv = [ "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh" ]; }
+      ]
+      ++ lib.optionals isKdeConnect [
+        { argv = [ "kdeconnectd" ]; }
+      ] 
+      ++ lib.optionals useWavepaper [
+        {
+          argv = [
             "wavepaper"
             "--svg"
             "${osConfig.styling.theme.svg}"
@@ -293,17 +307,7 @@ in
             "0.1"
           ];
         }
-        {
-          argv = [
-            "niri-screen-time"
-            "-daemon"
-          ];
-        }
-        { argv = [ "${config.home.homeDirectory}/.config/waybar/scripts/launch.sh" ]; }
-      ]
-      ++ lib.optionals isKdeConnect [
-        { argv = [ "kdeconnectd" ]; }
-      ];
+      ];   
 
       animations = niriAnimations;
 

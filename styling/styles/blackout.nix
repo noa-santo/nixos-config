@@ -107,6 +107,7 @@ in
       # todo: write a glitch resize shader
       window-resize = ../../assets/shaders/perlin/resize.glsl;
     };
+    niri.useWavepaper = false;
 
     gnome = {
       screensaverPrimary = c.base00;
