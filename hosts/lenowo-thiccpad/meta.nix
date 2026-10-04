@@ -10,4 +10,5 @@
     "waypipe"
     "ssh"
   ];
+  theme = "blackout";
 }
