@@ -8,6 +8,7 @@
     "dev"
     "kde-connect"
     "waypipe"
+    "obsidian"
     "ssh"
   ];
   theme = "blackout";
