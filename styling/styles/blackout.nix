@@ -108,7 +108,7 @@ in
       window-resize = ../../assets/shaders/perlin/resize.glsl;
     };
     niri.useWavepaper = false;
-    niri.backgroundColor = "black"
+    niri.backgroundColor = "black";
 
     gnome = {
       screensaverPrimary = c.base00;
