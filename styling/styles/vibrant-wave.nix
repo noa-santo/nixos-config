@@ -104,6 +104,7 @@ in
       window-resize = ../../assets/shaders/perlin/resize.glsl;
     };
     niri.useWavepaper = true;
+    niri.backgroundColor = "transparent";
 
     gnome = {
       screensaverPrimary = "#241f31";

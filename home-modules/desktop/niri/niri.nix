@@ -203,7 +203,7 @@ in
           };
         };
         focus-ring.enable = false;
-        background-color = "black";
+        background-color = u.niri.backgroundColor;
         shadow = {
           enable = u.effects.shadow;
           color = u.shadow.color;
