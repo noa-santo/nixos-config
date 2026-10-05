@@ -1,5 +1,6 @@
 { pkgs, ... }:
 {
+  zramSwap.enable = true;  
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
   hardware.enableAllFirmware = true;
