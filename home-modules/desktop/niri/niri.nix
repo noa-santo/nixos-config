@@ -30,14 +30,14 @@ let
 
   wavepaper = pkgs.buildGoModule {
     pname = "wavepaper";
-    version = "0.1.1";
+    version = "0.1.2";
     src = pkgs.fetchFromGitHub {
       owner = "noa-santo";
       repo = "wavepaper";
-      rev = "919298196efbe33a7ca32d0712a336c52b58d01d";
-      hash = "sha256-iEbYPvA8iwtFv+eEsRiDZXyWngLAptcsM1m54jt/GyE=";
+      rev = "8b62caec9ff24e4ec9537a8498cac99116b9eeff";
+      hash = "sha256-ytDhI2hYPj6aFgfIJ8gUi2X034vdyYCWR77R7Mp1fvc=";
     };
-    vendorHash = "sha256-PkX/1LBBQMI8mavbpLeBD5Pmn0t3Vs0sM3l/QrGsZjk=";
+    vendorHash = "sha256-ncshoR0zAQGaJ8HowJi4CPyKluy/+1W0FQyGaIjS7dI=";
     nativeBuildInputs = [ pkgs.librsvg ];
   };
 
