@@ -10,6 +10,7 @@
     "waypipe"
     "obsidian"
     "ssh"
+    "eduroam"
   ];
   theme = "blackout";
 }

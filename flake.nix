@@ -101,7 +101,7 @@
             {
               networking.hostName = lib.mkDefault host;
               mainUser = meta.mainUser or (throw "hosts/${host}/meta.nix must define mainUser");
-	      styling.name = meta.theme or "vibrant-wave";
+              styling.name = meta.theme or "vibrant-wave";
             }
             ./hosts/${host}/configuration.nix
             { nixpkgs = { inherit pkgs; }; }

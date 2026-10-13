@@ -66,30 +66,33 @@ in
     inputs.niri-sidebar.homeModules.default
   ];
 
-  home.packages = with pkgs; [
-    brightnessctl
-    grim
-    slurp
-    playerctl
-    pulseaudio
-    swayidle
-    swaylock
-    swaybg
-    fuzzel
-    wl-clipboard
-    mako
-    waybar
-    pavucontrol
-    yad
-    btop
-    networkmanagerapplet
-    nerd-fonts.jetbrains-mono
-    font-awesome
-    screenshotScript
-    screenshotSelectScript
-    librsvg
-    xwayland-satellite
-  ] ++ lib.optionals useWavepaper [wavepaper];
+  home.packages =
+    with pkgs;
+    [
+      brightnessctl
+      grim
+      slurp
+      playerctl
+      pulseaudio
+      swayidle
+      swaylock
+      swaybg
+      fuzzel
+      wl-clipboard
+      mako
+      waybar
+      pavucontrol
+      yad
+      btop
+      networkmanagerapplet
+      nerd-fonts.jetbrains-mono
+      font-awesome
+      screenshotScript
+      screenshotSelectScript
+      librsvg
+      xwayland-satellite
+    ]
+    ++ lib.optionals useWavepaper [ wavepaper ];
 
   fonts.fontconfig.enable = true;
 
@@ -294,7 +297,7 @@ in
       ]
       ++ lib.optionals isKdeConnect [
         { argv = [ "kdeconnectd" ]; }
-      ] 
+      ]
       ++ lib.optionals useWavepaper [
         {
           argv = [
@@ -307,7 +310,7 @@ in
             "0.1"
           ];
         }
-      ];   
+      ];
 
       animations = niriAnimations;
 
