@@ -1,5 +1,6 @@
 # tags: gaming
 {
+  pkgs,
   hostTags ? [ ],
   ...
 }:
@@ -13,5 +14,13 @@ in
     dedicatedServer.openFirewall = isServer;
     localNetworkGameTransfers.openFirewall = true;
     gamescopeSession.enable = true;
+  };
+  
+  environment.systemPackages = with pkgs; [
+    moonlight-qt
+  ];
+  hardware = {
+    steam-hardware.enable = true;
+    graphics.enable = true;
   };
 }
