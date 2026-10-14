@@ -1,6 +1,6 @@
 { pkgs, ... }:
 {
-  zramSwap.enable = true;  
+  zramSwap.enable = true;
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
   hardware.enableAllFirmware = true;
@@ -27,6 +27,22 @@
   };
 
   users.defaultUserShell = pkgs.fish;
+
+  boot.kernelModules = [
+    "hid-nintendo"
+    "btusb"
+  ];
+  environment.systemPackages = with pkgs; [
+    joycond
+  ];
+  services.joycond.enable = true;
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.settings = {
+    General = {
+      Privacy = "device";
+      Experimental = true;
+    };
+  };
 
   system.stateVersion = "25.11";
 }
