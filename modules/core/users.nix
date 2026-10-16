@@ -17,7 +17,12 @@ in
   };
 
   config = {
+    sops.secrets."user_password_hash" = {
+      neededForUsers = true;
+    };
+
     users.users.${config.mainUser} = {
+      hashedPasswordFile = config.sops.secrets."user_password_hash".path;  
       isNormalUser = true;
       description = lib.mkDefault config.mainUser;
       extraGroups = [
