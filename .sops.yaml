@@ -2,7 +2,7 @@ keys:
   # generate with `sudo nix shell nixpkgs#ssh-to-age -c ssh-to-age -i /etc/ssh/ssh_host_ed25519_key.pub`
   # after adding a new key: `nix shell nixpkgs#sops -c sops updatekeys secrets/**`
   - &dell  age1fx873ekx44lxx8gcxe2gcagteu6tvkkqr05xpkqjr2thph63dyqq3kvrfx
-  - &hall9000 age179h8vkcynyxrpyk9s028gh0qdwzsfw6p08t4zh2w4kh9h6eqtvzqgufjw2
+  - &hall9000 age1tz5cqycwwx5zrdxmd827m93tf97wcswdsl00un5vsyyhaz6s5f8semp9fl
   - &lenowo-thiccpad age1nfqgrlgxytv8fys692h332j93lsk693gw6z9rvwemskzrt3zmupszvnx7u
 
 creation_rules:
