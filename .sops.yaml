@@ -1,0 +1,11 @@
+keys:
+  - &dell_user age1nvmwrvvwd74gdelmvq4w89zla8pc77j4j6rka2fjgx5lesyu858s766x0s
+  - &dell  age1fx873ekx44lxx8gcxe2gcagteu6tvkkqr05xpkqjr2thph63dyqq3kvrfx
+
+creation_rules:
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+      - age: [*dell_user, *dell]
+  - path_regex: secrets/wg0\.conf$
+    key_groups:
+      - age: [*dell_user, *dell]

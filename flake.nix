@@ -56,6 +56,10 @@
       url = "github:nix-community/NixOS-WSL";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -109,6 +113,7 @@
             inputs.nix-minecraft.nixosModules.minecraft-servers
             inputs.niri.nixosModules.niri
             inputs.stylix.nixosModules.stylix
+            inputs.sops-nix.nixosModules.sops
             home-manager.nixosModules.home-manager
             (
               { config, ... }:
