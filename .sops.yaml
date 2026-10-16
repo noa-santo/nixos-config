@@ -12,3 +12,6 @@ creation_rules:
   - path_regex: (secrets|/etc/wireguard)/wg0\.conf$
     key_groups:
       - age: [*dell, *lenowo-thiccpad]
+  - path_regex: secrets/openproject_secrets\.yaml$
+    key_groups:
+      - age: [*hall9000]

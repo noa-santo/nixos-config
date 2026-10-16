@@ -6,10 +6,12 @@
     "server"
     "sway"
     "minecraft"
-    "docker"
+    "podman"
     "dev"
     "kde-connect"
     "ssh"
     "waypipe"
+    "music-assistant"
+    "openproject"
   ];
 }

@@ -7,6 +7,7 @@
 }:
 let
   isDocker = builtins.elem "docker" hostTags;
+  isPodman = builtins.elem "podman" hostTags;
 in
 {
   options = {
@@ -31,7 +32,8 @@ in
         "video"
         "input"
       ]
-      ++ lib.optionals isDocker [ "docker" ];
+      ++ lib.optionals isDocker [ "docker" ]
+      ++ lib.optionals isPodman [ "podman" ];
       shell = pkgs.fish;
     };
   };
