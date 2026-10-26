@@ -155,13 +155,16 @@ in
 
   virtualisation.oci-containers.backend = "podman";
 
-  sops.secrets = lib.genAttrs [
-    "openproject_db_password"
-    "openproject_secret_key_base"
-    "openproject_hocuspocus_secret"
-  ] (_: {
-    sopsFile = ../../../secrets/openproject_secrets.yaml;
-  });
+  sops.secrets =
+    lib.genAttrs
+      [
+        "openproject_db_password"
+        "openproject_secret_key_base"
+        "openproject_hocuspocus_secret"
+      ]
+      (_: {
+        sopsFile = ../../../secrets/openproject_secrets.yaml;
+      });
 
   sops.templates."openproject-app.env" = {
     restartUnits = [
@@ -341,4 +344,3 @@ in
     wantedBy = [ "multi-user.target" ];
   };
 }
-

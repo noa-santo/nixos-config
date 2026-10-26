@@ -11,10 +11,10 @@ let
 
   base16 = {
     base00 = "#000000";
-    base01 = "#0d0d0d";
-    base02 = "#141414";
-    base03 = "#262626";
-    base04 = "#404040";
+    base01 = "#1a1a1a";
+    base02 = "#383838";
+    base03 = "#666666";
+    base04 = "#999999";
     base05 = "#ffffff";
     base06 = "#ffffff";
     base07 = "#ffffff";
@@ -23,15 +23,15 @@ let
     base0A = "#c2c2c2";
     base0B = "#b0b0b0";
     base0C = "#9e9e9e";
-    base0D = "#ffffff";
+    base0D = "#808080";
     base0E = "#ffffff";
     base0F = "#8c8c84";
   };
 
   extra = {
     crust = "#000000";
-    ov0 = "#1c1c1c";
-    ov2 = "#333333";
+    ov0 = "#666666";
+    ov2 = "#999999";
     subtext = "#808080";
     lavender = "#ffffff";
     sapphire = "#ffffff";
