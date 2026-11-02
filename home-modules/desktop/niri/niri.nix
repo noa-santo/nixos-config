@@ -53,7 +53,7 @@ let
       duration-ms = u.animation.duration;
       curve = u.animation.curve;
     };
-    custom-shader = builtins.readFile shaderPath;
+     custom-shader.text = builtins.readFile shaderPath;
   };
   niriAnimations = {
     window-open = mkNiriAnim u.niri.shaders.window-open;
