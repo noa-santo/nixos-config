@@ -18,7 +18,7 @@ let
     base05 = "#ffffff";
     base06 = "#ffffff";
     base07 = "#ffffff";
-    base08 = "#808080"; 
+    base08 = "#808080";
     base09 = "#d4d4d4";
     base0A = "#c2c2c2";
     base0B = "#b0b0b0";
